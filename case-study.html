@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Case Study — Puzzle Game Analysis | Ezgi Ekinci</title>
+  <meta name="description" content="A comparative product analysis of Gardenscapes, Toon Blast, and Candy Crush Saga covering core mechanics, monetization, social systems, and LiveOps.">
+  <meta property="og:title" content="Case Study — Puzzle Game Analysis | Ezgi Ekinci">
+  <meta property="og:description" content="Comparative analysis of three puzzle games — mechanics, monetization, social systems.">
+  <meta property="og:type" content="article">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#F0E6FF',
+            navy: '#1A0A2E',
+            'navy-light': '#2D1B4E',
+            slate: '#7C6F9B',
+            coral: '#FF4D8D',
+            'coral-dark': '#CC3D71',
+            lavender: '#D4B8FF',
+            sage: '#4DC9F6',
+            gold: '#FFD23F',
+            border: '#D4B8FF',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .nav-blur { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .accent-line { width: 48px; height: 3px; background: linear-gradient(90deg, #FF4D8D, #FFD23F); border-radius: 2px; }
+    .gradient-text { background: linear-gradient(135deg, #FF4D8D, #FFD23F, #4DC9F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .game-btn {
+      background: linear-gradient(180deg, #FF6DA0 0%, #FF4D8D 100%);
+      color: white;
+      box-shadow: 0 4px 0 #CC3D71, 0 6px 16px rgba(255,77,141,0.3);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .game-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #CC3D71, 0 8px 20px rgba(255,77,141,0.4); }
+    .game-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #CC3D71; }
+    .game-btn-outline {
+      border: 3px solid #D4B8FF;
+      box-shadow: 0 4px 0 rgba(212,184,255,0.6);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .game-btn-outline:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(212,184,255,0.6); border-color: #FF4D8D; }
+    .game-btn-outline:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(212,184,255,0.6); }
+    .game-tile {
+      background: white;
+      border: 3px solid #D4B8FF;
+      border-radius: 1.25rem;
+      box-shadow: 0 6px 0 rgba(212,184,255,0.4);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .game-tile:hover { transform: translateY(-4px); box-shadow: 0 8px 0 rgba(212,184,255,0.4), 0 0 20px rgba(255,77,141,0.1); }
+    .prose-table { width: 100%; border-collapse: collapse; }
+    .prose-table th, .prose-table td { padding: 0.625rem 0.875rem; text-align: left; border-bottom: 1px solid #D4B8FF; font-size: 0.8125rem; }
+    .prose-table th { font-weight: 600; background: #F0E6FF; color: #1A0A2E; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .prose-table tr:hover td { background: #F0E6FF; }
+    @media (max-width: 768px) {
+      .table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .prose-table { min-width: 500px; }
+    }
+    .insight-card { border-left: 3px solid #FF4D8D; }
+    .stat-number { font-variant-numeric: tabular-nums; }
+    .game-img { transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .game-img:hover { transform: scale(1.05); }
+  </style>
+</head>
+<body class="bg-cream text-navy font-sans antialiased">
+
+  <!-- Navigation -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <a href="index.html" class="text-lg font-extrabold tracking-tight">EE<span class="text-coral">.</span></a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="index.html#about" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.about">About</a>
+        <a href="#" class="text-sm text-navy font-semibold" data-i18n="nav.work">Work</a>
+        <a href="index.html#contact" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.contact">Contact</a>
+        <div class="flex items-center gap-1.5 text-xs font-mono border border-border rounded-full px-3 py-1.5">
+          <button onclick="setLang('en')" data-lang-toggle="en" class="font-medium text-navy transition-colors">EN</button>
+          <span class="text-lavender">|</span>
+          <button onclick="setLang('tr')" data-lang-toggle="tr" class="text-slate hover:text-navy transition-colors">TR</button>
+        </div>
+      </div>
+      <button id="menu-btn" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Menu">
+        <span class="block w-6 h-0.5 bg-navy transition-all duration-300" id="bar1"></span>
+        <span class="block w-6 h-0.5 bg-navy transition-all duration-300" id="bar2"></span>
+        <span class="block w-6 h-0.5 bg-navy transition-all duration-300" id="bar3"></span>
+      </button>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden bg-white/95 nav-blur border-t border-border">
+      <div class="px-6 py-6 flex flex-col gap-5">
+        <a href="index.html#about" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.about">About</a>
+        <a href="#" class="text-sm text-navy font-semibold" data-i18n="nav.work">Work</a>
+        <a href="index.html#contact" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.contact">Contact</a>
+        <div class="flex items-center gap-1.5 text-xs font-mono">
+          <button onclick="setLang('en')" data-lang-toggle="en" class="font-medium text-navy transition-colors">EN</button>
+          <span class="text-lavender">|</span>
+          <button onclick="setLang('tr')" data-lang-toggle="tr" class="text-slate hover:text-navy transition-colors">TR</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="pt-32 pb-20 md:pt-40 md:pb-28 bg-navy text-white relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-coral/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-72 h-72 bg-sage/10 rounded-full blur-3xl"></div>
+
+    <div class="max-w-5xl mx-auto px-6 relative">
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors mb-10 fade-up" data-i18n="cs.back">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to Home
+      </a>
+      <div class="flex items-center gap-3 mb-6 fade-up">
+        <div class="w-12 h-0.5 bg-coral rounded"></div>
+        <span class="text-sm font-mono text-coral font-medium">Case Study</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-extrabold leading-[1.1] tracking-tight fade-up" data-i18n="cs.hero.title">
+        Puzzle Game Analysis
+      </h1>
+      <p class="mt-2 text-lg text-white/40 font-mono fade-up">
+        Gardenscapes &middot; Toon Blast &middot; Candy Crush Saga
+      </p>
+      <p class="mt-6 text-white/60 leading-relaxed max-w-2xl fade-up" data-i18n="cs.hero.desc">
+        A product-focused competitive analysis of three puzzle games. I played each for 60+ levels, analyzed their mechanics, monetization psychology, and social systems.
+      </p>
+
+      <!-- Game Screenshots -->
+      <div class="mt-12 grid grid-cols-3 gap-3 md:gap-4 fade-up">
+        <div class="rounded-2xl overflow-hidden">
+          <img src="assets/img/gardenscapes_ana_bahce_ekrani.jpeg" alt="Gardenscapes" class="w-full h-32 md:h-52 object-cover">
+        </div>
+        <div class="rounded-2xl overflow-hidden">
+          <img src="assets/img/toonblast_ana_ekran_seviye_72.jpeg" alt="Toon Blast" class="w-full h-32 md:h-52 object-cover">
+        </div>
+        <div class="rounded-2xl overflow-hidden">
+          <img src="assets/img/candycrush_ana_harita_seviye_66.jpeg" alt="Candy Crush" class="w-full h-32 md:h-52 object-cover">
+        </div>
+      </div>
+
+      <!-- Stats Bar -->
+      <div class="mt-10 flex flex-wrap gap-8 md:gap-16 fade-up">
+        <div>
+          <p class="text-3xl font-extrabold text-coral">3</p>
+          <p class="text-xs text-white/40 font-mono mt-1" data-i18n="cs.hero.stat1">Games Analyzed</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-white">60+</p>
+          <p class="text-xs text-white/40 font-mono mt-1" data-i18n="cs.hero.stat2">Levels Each</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-lavender">7</p>
+          <p class="text-xs text-white/40 font-mono mt-1" data-i18n="cs.hero.stat3">Analysis Sections</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <article class="py-20">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="space-y-20">
+
+        <!-- 01: Game Overview -->
+        <section class="fade-up">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">01</span>
+            <h2 class="text-2xl font-extrabold" data-i18n="cs.s01.title">Game Overview</h2>
+          </div>
+          <div class="table-scroll">
+            <table class="prose-table">
+              <thead><tr><th></th><th>Gardenscapes</th><th>Toon Blast</th><th>Candy Crush Saga</th></tr></thead>
+              <tbody>
+                <tr><td class="font-semibold" data-i18n="cs.s01.developer">Developer</td><td>Playrix</td><td>Peak Games (Zynga)</td><td>King (Activision Blizzard)</td></tr>
+                <tr><td class="font-semibold" data-i18n="cs.s01.mechanic">Mechanic</td><td>Swipe Match-3</td><td>Tap-to-Blast</td><td>Swipe Match-3</td></tr>
+                <tr><td class="font-semibold" data-i18n="cs.s01.meta">Meta Layer</td><td data-i18n="cs.s01.meta.gs">Garden + story</td><td data-i18n="cs.s01.meta.tb">Team/event-driven</td><td data-i18n="cs.s01.meta.cc">Saga map (classic)</td></tr>
+                <tr><td class="font-semibold" data-i18n="cs.s01.level">My Level</td><td>70</td><td>72</td><td>66</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <!-- 02: Core Mechanics -->
+        <section class="fade-up">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">02</span>
+            <h2 class="text-2xl font-extrabold" data-i18n="cs.s02.title">Core Mechanics: Tap vs. Swipe</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="game-tile p-6">
+              <p class="text-xs font-mono text-coral font-medium uppercase">Toon Blast</p>
+              <p class="mt-3 text-3xl font-extrabold">Tap</p>
+              <p class="mt-2 text-sm text-slate" data-i18n="cs.s02.tb">Single tap. Min 2 cubes. Fast, snackable. Low physical effort &mdash; maximizes accessibility.</p>
+            </div>
+            <div class="game-tile p-6">
+              <p class="text-xs font-mono text-gold font-medium uppercase">Candy Crush</p>
+              <p class="mt-3 text-3xl font-extrabold">Swipe</p>
+              <p class="mt-2 text-sm text-slate" data-i18n="cs.s02.cc">Drag-and-drop. Min 3 candies. Pattern recognition. Slower, more strategic.</p>
+            </div>
+            <div class="game-tile p-6">
+              <p class="text-xs font-mono text-sage font-medium uppercase">Gardenscapes</p>
+              <p class="mt-3 text-3xl font-extrabold">Swipe</p>
+              <p class="mt-2 text-sm text-slate" data-i18n="cs.s02.gs">Drag-and-drop. Min 3 pieces. Pattern recognition + explosion area awareness.</p>
+            </div>
+          </div>
+          <div class="mt-6 insight-card bg-white rounded-r-xl p-5">
+            <p class="text-sm text-slate leading-relaxed" data-i18n-html="cs.s02.insight"><strong class="text-navy">Key Insight:</strong> Toon Blast&rsquo;s tap mechanic isn&rsquo;t &ldquo;easier = less depth.&rdquo; With just 3 special items, it creates surprising strategic depth while being accessible to the widest audience.</p>
+          </div>
+        </section>
+
+        <!-- 03: Special Items & Combos -->
+        <section class="fade-up">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">03</span>
+            <h2 class="text-2xl font-extrabold" data-i18n="cs.s03.title">Special Items &amp; Combos</h2>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
+            <div class="game-tile p-6 text-center">
+              <p class="text-4xl font-extrabold text-coral">3</p>
+              <p class="text-sm font-semibold mt-1">Toon Blast</p>
+              <p class="text-xs text-slate mt-1" data-i18n="cs.s03.tb.items">Rocket, Bomb, Disco Ball</p>
+              <p class="text-xs text-slate mt-2" data-i18n="cs.s03.tb.rule">Group size only. No shape needed.</p>
+            </div>
+            <div class="game-tile p-6 text-center">
+              <p class="text-4xl font-extrabold text-gold">4</p>
+              <p class="text-sm font-semibold mt-1">Candy Crush</p>
+              <p class="text-xs text-slate mt-1" data-i18n="cs.s03.cc.items">Striped, Wrapped, Color Bomb, Fish</p>
+              <p class="text-xs text-slate mt-2" data-i18n="cs.s03.cc.rule">Shape + length matters.</p>
+            </div>
+            <div class="game-tile p-6 text-center">
+              <p class="text-4xl font-extrabold text-sage">5</p>
+              <p class="text-sm font-semibold mt-1">Gardenscapes</p>
+              <p class="text-xs text-slate mt-1" data-i18n="cs.s03.gs.items">Firecracker to TNT + Rainbow</p>
+              <p class="text-xs text-slate mt-2" data-i18n="cs.s03.gs.rule">Shape + length + charge system.</p>
+            </div>
+          </div>
+          <div class="insight-card bg-white rounded-r-xl p-5">
+            <p class="text-sm text-slate leading-relaxed" data-i18n-html="cs.s03.insight"><strong class="text-navy">Key Insight:</strong> More items &ne; better experience. Toon Blast&rsquo;s 3 items &times; 6 combos = 18 clear, satisfying scenarios. Players learn the full system in 10 levels. Gardenscapes&rsquo; 5-item system adds depth but also confusion (Dynamite vs. TNT?).</p>
+          </div>
+        </section>
+
+        <!-- 04: Events & LiveOps -->
+        <section class="fade-up">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">04</span>
+            <h2 class="text-2xl font-extrabold" data-i18n="cs.s04.title">Events &amp; LiveOps</h2>
+          </div>
+
+          <!-- Event screenshots -->
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-8">
+            <div class="rounded-xl overflow-hidden border-2 border-border">
+              <img src="assets/img/toonblast_disko_partisi_etkinligi.jpeg" alt="Disco Party" class="w-full h-32 object-cover">
+              <p class="text-[10px] font-mono text-slate p-2 bg-white">Disco Party &middot; 56 min</p>
+            </div>
+            <div class="rounded-xl overflow-hidden border-2 border-border">
+              <img src="assets/img/gardenscapes_bir_dalga_yakala_etkinlik_siralamasi.png" alt="Catch a Wave" class="w-full h-32 object-cover">
+              <p class="text-[10px] font-mono text-slate p-2 bg-white">Catch a Wave &middot; Race</p>
+            </div>
+            <div class="rounded-xl overflow-hidden border-2 border-border">
+              <img src="assets/img/toonblast_topcu_festivali_mini_oyun.png" alt="Cannon Festival" class="w-full h-32 object-cover">
+              <p class="text-[10px] font-mono text-slate p-2 bg-white">Cannon Festival &middot; Mini-game</p>
+            </div>
+            <div class="rounded-xl overflow-hidden border-2 border-border">
+              <img src="assets/img/gardenscapes_bataklik_gorevi_kaybetme_ekrani.jpeg" alt="FOMO Quest" class="w-full h-32 object-cover">
+              <p class="text-[10px] font-mono text-slate p-2 bg-white">Swamp Quest &middot; FOMO</p>
+            </div>
+          </div>
+
+          <div class="table-scroll">
+            <table class="prose-table">
+              <thead><tr><th></th><th>Gardenscapes</th><th>Toon Blast</th><th>Candy Crush</th></tr></thead>
+              <tbody>
+                <tr><td class="font-semibold" data-i18n="cs.s04.concurrent">Concurrent events</td><td>6</td><td>7</td><td>2</td></tr>
+                <tr><td class="font-semibold" data-i18n="cs.s04.variety">Format variety</td><td data-i18n="cs.s04.high">High</td><td data-i18n="cs.s04.vhigh">Very High</td><td data-i18n="cs.s04.low">Low</td></tr>
+                <tr><td class="font-semibold" data-i18n="cs.s04.time">Time range</td><td data-i18n="cs.s04.time.gs">Daily &ndash; weeks</td><td data-i18n="cs.s04.time.tb">56 min &ndash; 52 days</td><td data-i18n="cs.s04.time.cc">Daily &ndash; week</td></tr>
+                <tr><td class="font-semibold" data-i18n="cs.s04.team">Team events</td><td data-i18n="cs.s04.yes">Yes</td><td data-i18n="cs.s04.yes2">Yes</td><td data-i18n="cs.s04.none">None</td></tr>
+                <tr><td class="font-semibold" data-i18n="cs.s04.mini">Mini-games</td><td data-i18n="cs.s04.yes3">Yes</td><td data-i18n="cs.s04.yes4">Yes</td><td data-i18n="cs.s04.none2">None</td></tr>
+              </tbody>
+            </table>
+          </div>
+          <div class="mt-6 insight-card bg-white rounded-r-xl p-5">
+            <p class="text-sm text-slate leading-relaxed" data-i18n-html="cs.s04.insight"><strong class="text-navy">Key Insight:</strong> The saga map is dead. What brings players back is constantly renewed live content. Toon Blast runs 7 concurrent events with formats ranging from 56-minute sprints to 52-day collections.</p>
+          </div>
+        </section>
+
+        <!-- 05: Social & 06: Monetization -->
+        <section class="fade-up">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+            <!-- Social -->
+            <div>
+              <div class="flex items-center gap-3 mb-6">
+                <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">05</span>
+                <h2 class="text-xl font-extrabold" data-i18n="cs.s05.title">Social Systems</h2>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="rounded-xl overflow-hidden border-2 border-border">
+                  <img src="assets/img/toonblast_takim_sohbet_can_isteme.jpeg" alt="Toon Blast Team" class="w-full h-28 object-cover">
+                </div>
+                <div class="rounded-xl overflow-hidden border-2 border-border">
+                  <img src="assets/img/gardenscapes_takim_bowlingi_lider_panosu.png" alt="Team Bowling" class="w-full h-28 object-cover">
+                </div>
+              </div>
+              <div class="space-y-3">
+                <div class="flex items-start gap-3">
+                  <span class="w-2 h-2 rounded-full bg-sage mt-1.5 flex-shrink-0"></span>
+                  <p class="text-sm text-slate" data-i18n-html="cs.s05.tb"><strong class="text-navy">Toon Blast &amp; Gardenscapes:</strong> Deep team chat, life requests, team tournaments. Social bonds drive retention.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                  <span class="w-2 h-2 rounded-full bg-coral mt-1.5 flex-shrink-0"></span>
+                  <p class="text-sm text-slate" data-i18n-html="cs.s05.cc"><strong class="text-navy">Candy Crush:</strong> Friend list only. No team chat, no resource sharing. Stuck in 2015 standards.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Monetization -->
+            <div>
+              <div class="flex items-center gap-3 mb-6">
+                <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">06</span>
+                <h2 class="text-xl font-extrabold" data-i18n="cs.s06.title">Monetization</h2>
+              </div>
+              <div class="grid grid-cols-2 gap-3 mb-4">
+                <div class="rounded-xl overflow-hidden border-2 border-border">
+                  <img src="assets/img/toonblast_baslangic_paketi_satin_alma.jpeg" alt="Starter Pack" class="w-full h-28 object-cover">
+                </div>
+                <div class="rounded-xl overflow-hidden border-2 border-border">
+                  <img src="assets/img/candycrush_kumbara_satin_alma_teklifi.jpeg" alt="Piggy Bank" class="w-full h-28 object-cover">
+                </div>
+              </div>
+              <div class="space-y-3">
+                <div class="flex items-start gap-3">
+                  <span class="w-2 h-2 rounded-full bg-sage mt-1.5 flex-shrink-0"></span>
+                  <p class="text-sm text-slate" data-i18n-html="cs.s06.tb"><strong class="text-navy">Toon Blast:</strong> &#8378;29.99 entry pack (90% off label). Social monetization &mdash; buying benefits for your team.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                  <span class="w-2 h-2 rounded-full bg-gold mt-1.5 flex-shrink-0"></span>
+                  <p class="text-sm text-slate" data-i18n-html="cs.s06.cc"><strong class="text-navy">Candy Crush:</strong> Piggy Bank &mdash; the most elegant mechanic. Fills passively as you play. Sunk cost triggers purchase.</p>
+                </div>
+                <div class="flex items-start gap-3">
+                  <span class="w-2 h-2 rounded-full bg-coral mt-1.5 flex-shrink-0"></span>
+                  <p class="text-sm text-slate" data-i18n-html="cs.s06.gs"><strong class="text-navy">Gardenscapes:</strong> Hardest levels force IAP. Strong urgency + sunk cost psychology.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 07: Overall Assessment -->
+        <section class="fade-up">
+          <div class="flex items-center gap-3 mb-6">
+            <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">07</span>
+            <h2 class="text-2xl font-extrabold" data-i18n="cs.s07.title">Overall Assessment</h2>
+          </div>
+          <div class="table-scroll">
+            <table class="prose-table">
+              <thead><tr><th></th><th>Gardenscapes</th><th>Toon Blast</th><th>Candy Crush</th></tr></thead>
+              <tbody>
+                <tr><td class="font-semibold" data-i18n="cs.s07.access">Accessibility</td><td data-i18n="cs.s07.medium">Medium</td><td class="text-sage font-semibold" data-i18n="cs.s07.high">High</td><td data-i18n="cs.s07.medium2">Medium</td></tr>
+                <tr><td class="font-semibold" data-i18n="cs.s07.events">Event variety</td><td data-i18n="cs.s07.high2">High</td><td class="text-sage font-semibold" data-i18n="cs.s07.vhigh">Very High</td><td class="text-coral" data-i18n="cs.s07.low">Low</td></tr>
+                <tr><td class="font-semibold" data-i18n="cs.s07.social">Social integration</td><td data-i18n="cs.s07.strong">Strong</td><td class="text-sage font-semibold" data-i18n="cs.s07.strong2">Strong</td><td class="text-coral" data-i18n="cs.s07.weak">Weak</td></tr>
+                <tr><td class="font-semibold" data-i18n="cs.s07.meta">Meta layer</td><td class="text-sage font-semibold" data-i18n="cs.s07.strongest">Strongest</td><td data-i18n="cs.s07.eventdriven">Event-driven</td><td class="text-coral" data-i18n="cs.s07.weakest">Weakest</td></tr>
+                <tr><td class="font-semibold" data-i18n="cs.s07.retention">Retention hooks</td><td data-i18n="cs.s07.multiple">Multiple</td><td class="text-sage font-semibold" data-i18n="cs.s07.multiple2">Multiple</td><td class="text-coral" data-i18n="cs.s07.limited">Limited</td></tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div class="mt-8 bg-navy rounded-2xl p-8 text-white">
+            <h3 class="font-extrabold text-lg mb-4" data-i18n="cs.s07.takeaways.title">Industry Takeaways</h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div class="flex items-start gap-3">
+                <span class="text-coral text-lg font-extrabold">1</span>
+                <p class="text-sm text-white/70 leading-relaxed" data-i18n-html="cs.s07.t1"><strong class="text-white">Simplicity &ne; shallow.</strong> Toon Blast proves 3 items can create more satisfaction than 6.</p>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="text-coral text-lg font-extrabold">2</span>
+                <p class="text-sm text-white/70 leading-relaxed" data-i18n-html="cs.s07.t2"><strong class="text-white">Events are the new saga map.</strong> Live content drives retention, not map progression.</p>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="text-coral text-lg font-extrabold">3</span>
+                <p class="text-sm text-white/70 leading-relaxed" data-i18n-html="cs.s07.t3"><strong class="text-white">Social = retention.</strong> Deep team mechanics keep players coming back daily.</p>
+              </div>
+              <div class="flex items-start gap-3">
+                <span class="text-coral text-lg font-extrabold">4</span>
+                <p class="text-sm text-white/70 leading-relaxed" data-i18n-html="cs.s07.t4"><strong class="text-white">First payment is everything.</strong> Low entry price + passive fill = ideal monetization funnel.</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- CTA -->
+  <section class="py-20 bg-white">
+    <div class="max-w-3xl mx-auto px-6 text-center fade-up">
+      <h2 class="text-2xl md:text-3xl font-extrabold" data-i18n="cs.cta.title">Interested in working together?</h2>
+      <p class="mt-4 text-slate" data-i18n="cs.cta.desc">I&rsquo;m looking for PM internship opportunities where I can learn fast and contribute from day one.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="mailto:ekinciiezgi02@gmail.com" class="game-btn group inline-flex items-center gap-2 px-7 py-3.5 font-semibold rounded-xl">
+          <span data-i18n="cs.cta.contact">Get in Touch</span>
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+        <a href="index.html" class="game-btn-outline inline-flex items-center px-7 py-3.5 text-navy font-semibold rounded-xl">
+          <span data-i18n="cs.cta.home">Back to Home</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-border py-8">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-slate font-mono" data-i18n="footer.credit">Designed &amp; built by Ezgi Ekinci</p>
+      <a href="#" class="text-xs text-slate hover:text-navy transition-colors font-mono" data-i18n="footer.top">Back to top &uarr;</a>
+    </div>
+  </footer>
+
+  <script>
+    const translations = {
+      en: {
+        'nav.about': 'About',
+        'nav.work': 'Work',
+        'nav.contact': 'Contact',
+        'cs.back': '\u2190 Back to Home',
+        'cs.hero.title': 'Puzzle Game Analysis',
+        'cs.hero.desc': 'A product-focused competitive analysis of three puzzle games. I played each for 60+ levels, analyzed their mechanics, monetization psychology, and social systems.',
+        'cs.hero.stat1': 'Games Analyzed',
+        'cs.hero.stat2': 'Levels Each',
+        'cs.hero.stat3': 'Analysis Sections',
+        'cs.s01.title': 'Game Overview',
+        'cs.s01.developer': 'Developer',
+        'cs.s01.mechanic': 'Mechanic',
+        'cs.s01.meta': 'Meta Layer',
+        'cs.s01.meta.gs': 'Garden + story',
+        'cs.s01.meta.tb': 'Team/event-driven',
+        'cs.s01.meta.cc': 'Saga map (classic)',
+        'cs.s01.level': 'My Level',
+        'cs.s02.title': 'Core Mechanics: Tap vs. Swipe',
+        'cs.s02.tb': 'Single tap. Min 2 cubes. Fast, snackable. Low physical effort \u2014 maximizes accessibility.',
+        'cs.s02.cc': 'Drag-and-drop. Min 3 candies. Pattern recognition. Slower, more strategic.',
+        'cs.s02.gs': 'Drag-and-drop. Min 3 pieces. Pattern recognition + explosion area awareness.',
+        'cs.s02.insight': '<strong class="text-navy">Key Insight:</strong> Toon Blast\u2019s tap mechanic isn\u2019t \u201Ceasier = less depth.\u201D With just 3 special items, it creates surprising strategic depth while being accessible to the widest audience.',
+        'cs.s03.title': 'Special Items & Combos',
+        'cs.s03.tb.items': 'Rocket, Bomb, Disco Ball',
+        'cs.s03.tb.rule': 'Group size only. No shape needed.',
+        'cs.s03.cc.items': 'Striped, Wrapped, Color Bomb, Fish',
+        'cs.s03.cc.rule': 'Shape + length matters.',
+        'cs.s03.gs.items': 'Firecracker to TNT + Rainbow',
+        'cs.s03.gs.rule': 'Shape + length + charge system.',
+        'cs.s03.insight': '<strong class="text-navy">Key Insight:</strong> More items \u2260 better experience. Toon Blast\u2019s 3 items \u00D7 6 combos = 18 clear, satisfying scenarios. Players learn the full system in 10 levels. Gardenscapes\u2019 5-item system adds depth but also confusion (Dynamite vs. TNT?).',
+        'cs.s04.title': 'Events & LiveOps',
+        'cs.s04.concurrent': 'Concurrent events',
+        'cs.s04.variety': 'Format variety',
+        'cs.s04.high': 'High',
+        'cs.s04.vhigh': 'Very High',
+        'cs.s04.low': 'Low',
+        'cs.s04.time': 'Time range',
+        'cs.s04.time.gs': 'Daily \u2013 weeks',
+        'cs.s04.time.tb': '56 min \u2013 52 days',
+        'cs.s04.time.cc': 'Daily \u2013 week',
+        'cs.s04.team': 'Team events',
+        'cs.s04.yes': 'Yes', 'cs.s04.yes2': 'Yes', 'cs.s04.yes3': 'Yes', 'cs.s04.yes4': 'Yes',
+        'cs.s04.none': 'None', 'cs.s04.none2': 'None',
+        'cs.s04.mini': 'Mini-games',
+        'cs.s04.insight': '<strong class="text-navy">Key Insight:</strong> The saga map is dead. What brings players back is constantly renewed live content. Toon Blast runs 7 concurrent events with formats ranging from 56-minute sprints to 52-day collections.',
+        'cs.s05.title': 'Social Systems',
+        'cs.s05.tb': '<strong class="text-navy">Toon Blast & Gardenscapes:</strong> Deep team chat, life requests, team tournaments. Social bonds drive retention.',
+        'cs.s05.cc': '<strong class="text-navy">Candy Crush:</strong> Friend list only. No team chat, no resource sharing. Stuck in 2015 standards.',
+        'cs.s06.title': 'Monetization',
+        'cs.s06.tb': '<strong class="text-navy">Toon Blast:</strong> \u20BA29.99 entry pack (90% off label). Social monetization \u2014 buying benefits for your team.',
+        'cs.s06.cc': '<strong class="text-navy">Candy Crush:</strong> Piggy Bank \u2014 the most elegant mechanic. Fills passively as you play. Sunk cost triggers purchase.',
+        'cs.s06.gs': '<strong class="text-navy">Gardenscapes:</strong> Hardest levels force IAP. Strong urgency + sunk cost psychology.',
+        'cs.s07.title': 'Overall Assessment',
+        'cs.s07.access': 'Accessibility', 'cs.s07.medium': 'Medium', 'cs.s07.high': 'High', 'cs.s07.medium2': 'Medium',
+        'cs.s07.events': 'Event variety', 'cs.s07.high2': 'High', 'cs.s07.vhigh': 'Very High', 'cs.s07.low': 'Low',
+        'cs.s07.social': 'Social integration', 'cs.s07.strong': 'Strong', 'cs.s07.strong2': 'Strong', 'cs.s07.weak': 'Weak',
+        'cs.s07.meta': 'Meta layer', 'cs.s07.strongest': 'Strongest', 'cs.s07.eventdriven': 'Event-driven', 'cs.s07.weakest': 'Weakest',
+        'cs.s07.retention': 'Retention hooks', 'cs.s07.multiple': 'Multiple', 'cs.s07.multiple2': 'Multiple', 'cs.s07.limited': 'Limited',
+        'cs.s07.takeaways.title': 'Industry Takeaways',
+        'cs.s07.t1': '<strong class="text-white">Simplicity \u2260 shallow.</strong> Toon Blast proves 3 items can create more satisfaction than 6.',
+        'cs.s07.t2': '<strong class="text-white">Events are the new saga map.</strong> Live content drives retention, not map progression.',
+        'cs.s07.t3': '<strong class="text-white">Social = retention.</strong> Deep team mechanics keep players coming back daily.',
+        'cs.s07.t4': '<strong class="text-white">First payment is everything.</strong> Low entry price + passive fill = ideal monetization funnel.',
+        'cs.cta.title': 'Interested in working together?',
+        'cs.cta.desc': 'I\u2019m looking for PM internship opportunities where I can learn fast and contribute from day one.',
+        'cs.cta.contact': 'Get in Touch',
+        'cs.cta.home': 'Back to Home',
+        'footer.credit': 'Designed & built by Ezgi Ekinci',
+        'footer.top': 'Back to top \u2191',
+      },
+      tr: {
+        'nav.about': 'Hakk\u0131mda',
+        'nav.work': '\u00C7al\u0131\u015Fma',
+        'nav.contact': '\u0130leti\u015Fim',
+        'cs.back': '\u2190 Ana Sayfaya D\u00F6n',
+        'cs.hero.title': 'Puzzle Oyun Analizi',
+        'cs.hero.desc': '\u00DC\u00E7 puzzle oyunun \u00FCr\u00FCn odakl\u0131 rekabet analizi. Her birini 60+ seviye oynad\u0131m, mekanikleri, monetizasyon psikolojisini ve sosyal sistemleri analiz ettim.',
+        'cs.hero.stat1': 'Oyun Analiz Edildi',
+        'cs.hero.stat2': 'Seviye',
+        'cs.hero.stat3': 'Analiz B\u00F6l\u00FCm\u00FC',
+        'cs.s01.title': 'Oyunlara Genel Bak\u0131\u015F',
+        'cs.s01.developer': 'Geli\u015Ftirici',
+        'cs.s01.mechanic': '\u00C7ekirdek Mekanik',
+        'cs.s01.meta': 'Meta Katman',
+        'cs.s01.meta.gs': 'Bah\u00E7e + hikaye',
+        'cs.s01.meta.tb': 'Tak\u0131m/etkinlik odakl\u0131',
+        'cs.s01.meta.cc': 'Saga haritas\u0131 (klasik)',
+        'cs.s01.level': 'Oynanan Seviye',
+        'cs.s02.title': '\u00C7ekirdek Mekanik: Tap vs. Swipe',
+        'cs.s02.tb': 'Tek dokunma. Min 2 k\u00FCp. H\u0131zl\u0131, at\u0131\u015Ft\u0131rmal\u0131k. D\u00FC\u015F\u00FCk fiziksel efor \u2014 eri\u015Filebilirli\u011Fi maksimize ediyor.',
+        'cs.s02.cc': 'S\u00FCr\u00FCkle-b\u0131rak. Min 3 \u015Feker. Desen tan\u0131ma. Daha yava\u015F, daha stratejik.',
+        'cs.s02.gs': 'S\u00FCr\u00FCkle-b\u0131rak. Min 3 par\u00E7a. Desen tan\u0131ma + patlama alan\u0131 fark\u0131ndal\u0131\u011F\u0131.',
+        'cs.s02.insight': '<strong class="text-navy">\u00D6nemli \u00C7\u0131kar\u0131m:</strong> Toon Blast\u0131n tap mekani\u011Fi \u201Ckolay = s\u0131\u011F\u201D anlam\u0131na gelmiyor. Sadece 3 \u00F6zel par\u00E7ayla, en geni\u015F kitleye eri\u015Filebilir olurken \u015Fa\u015F\u0131rt\u0131c\u0131 stratejik derinlik yarat\u0131yor.',
+        'cs.s03.title': '\u00D6zel Par\u00E7alar ve Kombolar',
+        'cs.s03.tb.items': 'Roket, Bomba, Disko Topu',
+        'cs.s03.tb.rule': 'Sadece grup b\u00FCy\u00FCkl\u00FC\u011F\u00FC. \u015Eekil gerekmiyor.',
+        'cs.s03.cc.items': '\u00C7izgili, Paketli, Renk Bombas\u0131, Bal\u0131k',
+        'cs.s03.cc.rule': '\u015Eekil + uzunluk \u00F6nemli.',
+        'cs.s03.gs.items': 'Havai Fi\u015Fek\u2019ten TNT + G\u00F6kku\u015Fa\u011F\u0131',
+        'cs.s03.gs.rule': '\u015Eekil + uzunluk + \u015Farj sistemi.',
+        'cs.s03.insight': '<strong class="text-navy">\u00D6nemli \u00C7\u0131kar\u0131m:</strong> Daha fazla par\u00E7a \u2260 daha iyi deneyim. Toon Blast\u0131n 3 par\u00E7as\u0131 \u00D7 6 kombo = 18 net, tatmin edici senaryo. Oyuncu sistemi 10 seviyede \u00F6\u011Freniyor. Gardenscapes\u0131n 5 par\u00E7al\u0131 sistemi derinlik ama ayn\u0131 zamanda kafa kar\u0131\u015F\u0131kl\u0131\u011F\u0131 yarat\u0131yor.',
+        'cs.s04.title': 'Etkinlik ve LiveOps',
+        'cs.s04.concurrent': 'E\u015Fzamanl\u0131 etkinlik',
+        'cs.s04.variety': 'Format \u00E7e\u015Fitlili\u011Fi',
+        'cs.s04.high': 'Y\u00FCksek',
+        'cs.s04.vhigh': '\u00C7ok Y\u00FCksek',
+        'cs.s04.low': 'D\u00FC\u015F\u00FCk',
+        'cs.s04.time': 'Zaman ufku',
+        'cs.s04.time.gs': 'G\u00FCnl\u00FCk \u2013 haftal\u0131k',
+        'cs.s04.time.tb': '56 dk \u2013 52 g\u00FCn',
+        'cs.s04.time.cc': 'G\u00FCnl\u00FCk \u2013 hafta',
+        'cs.s04.team': 'Tak\u0131m etkinlikleri',
+        'cs.s04.yes': 'Var', 'cs.s04.yes2': 'Var', 'cs.s04.yes3': 'Var', 'cs.s04.yes4': 'Var',
+        'cs.s04.none': 'Yok', 'cs.s04.none2': 'Yok',
+        'cs.s04.mini': 'Mini oyunlar',
+        'cs.s04.insight': '<strong class="text-navy">\u00D6nemli \u00C7\u0131kar\u0131m:</strong> Saga haritas\u0131 \u00F6ld\u00FC. Oyuncular\u0131 geri getiren \u015Fey s\u00FCrekli yenilenen canl\u0131 i\u00E7erik. Toon Blast, 56 dakikal\u0131k sprintlerden 52 g\u00FCnl\u00FCk koleksiyonlara kadar formatlarda 7 e\u015Fzamanl\u0131 etkinlik y\u00FCr\u00FCt\u00FCyor.',
+        'cs.s05.title': 'Sosyal Sistemler',
+        'cs.s05.tb': '<strong class="text-navy">Toon Blast ve Gardenscapes:</strong> Derin tak\u0131m sohbeti, can isteme, tak\u0131m turnuvalar\u0131. Sosyal ba\u011Flar retention\u0131 g\u00FC\u00E7lendiriyor.',
+        'cs.s05.cc': '<strong class="text-navy">Candy Crush:</strong> Sadece arkada\u015F listesi. Tak\u0131m sohbeti veya kaynak payla\u015F\u0131m\u0131 yok. 2015 standartlar\u0131nda kalm\u0131\u015F.',
+        'cs.s06.title': 'Monetizasyon',
+        'cs.s06.tb': '<strong class="text-navy">Toon Blast:</strong> \u20BA29,99 ba\u015Flang\u0131\u00E7 paketi (%90 indirim etiketi). Sosyal monetizasyon \u2014 tak\u0131m\u0131n\u0131z i\u00E7in fayda sat\u0131n alma.',
+        'cs.s06.cc': '<strong class="text-navy">Candy Crush:</strong> Kumbara \u2014 en zarif mekanik. Oynarken pasif olarak doluyor. Bat\u0131k maliyet sat\u0131n almay\u0131 tetikliyor.',
+        'cs.s06.gs': '<strong class="text-navy">Gardenscapes:</strong> En zor seviyeler IAP\u2019a zorluyor. G\u00FC\u00E7l\u00FC aciliyet + bat\u0131k maliyet psikolojisi.',
+        'cs.s07.title': 'Genel De\u011Ferlendirme',
+        'cs.s07.access': 'Eri\u015Filebilirlik', 'cs.s07.medium': 'Orta', 'cs.s07.high': 'Y\u00FCksek', 'cs.s07.medium2': 'Orta',
+        'cs.s07.events': 'Etkinlik \u00E7e\u015Fitlili\u011Fi', 'cs.s07.high2': 'Y\u00FCksek', 'cs.s07.vhigh': '\u00C7ok Y\u00FCksek', 'cs.s07.low': 'D\u00FC\u015F\u00FCk',
+        'cs.s07.social': 'Sosyal entegrasyon', 'cs.s07.strong': 'G\u00FC\u00E7l\u00FC', 'cs.s07.strong2': 'G\u00FC\u00E7l\u00FC', 'cs.s07.weak': 'Zay\u0131f',
+        'cs.s07.meta': 'Meta katman', 'cs.s07.strongest': 'En G\u00FC\u00E7l\u00FC', 'cs.s07.eventdriven': 'Etkinlik odakl\u0131', 'cs.s07.weakest': 'En Zay\u0131f',
+        'cs.s07.retention': 'Oyuncu tutma', 'cs.s07.multiple': '\u00C7oklu kanca', 'cs.s07.multiple2': '\u00C7oklu kanca', 'cs.s07.limited': 'S\u0131n\u0131rl\u0131',
+        'cs.s07.takeaways.title': 'End\u00FCstriden \u00C7\u0131kar\u0131lacak Dersler',
+        'cs.s07.t1': '<strong class="text-white">Sadelik \u2260 s\u0131\u011Fl\u0131k.</strong> Toon Blast, 3 par\u00E7an\u0131n 6\u2019dan daha fazla tatmin yaratabileceğini kan\u0131tl\u0131yor.',
+        'cs.s07.t2': '<strong class="text-white">Etkinlikler yeni saga haritas\u0131.</strong> Canl\u0131 i\u00E7erik retention\u0131 y\u00F6nlendiriyor, harita ilerlemesi de\u011Fil.',
+        'cs.s07.t3': '<strong class="text-white">Sosyal = retention.</strong> Derin tak\u0131m mekanikleri oyuncular\u0131 her g\u00FCn geri getiriyor.',
+        'cs.s07.t4': '<strong class="text-white">\u0130lk \u00F6deme her \u015Feydir.</strong> D\u00FC\u015F\u00FCk giri\u015F fiyat\u0131 + pasif dolum = ideal monetizasyon d\u00F6n\u00FC\u015F\u00FCm hunisi.',
+        'cs.cta.title': 'Birlikte \u00E7al\u0131\u015Fmak ister misiniz?',
+        'cs.cta.desc': 'H\u0131zl\u0131 \u00F6\u011Frenebilece\u011Fim, ilk g\u00FCnden katk\u0131 sa\u011Flayabilece\u011Fim PM staj\u0131 f\u0131rsatlar\u0131 ar\u0131yorum.',
+        'cs.cta.contact': '\u0130leti\u015Fime Ge\u00E7',
+        'cs.cta.home': 'Ana Sayfaya D\u00F6n',
+        'footer.credit': 'Ezgi Ekinci taraf\u0131ndan tasarland\u0131 ve geli\u015Ftirildi',
+        'footer.top': 'Ba\u015Fa d\u00F6n \u2191',
+      }
+    };
+
+    function setLang(lang) {
+      const t = translations[lang];
+      if (!t) return;
+      document.documentElement.lang = lang;
+      localStorage.setItem('lang', lang);
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) el.textContent = t[key];
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        if (t[key] !== undefined) el.innerHTML = t[key];
+      });
+      document.querySelectorAll('[data-lang-toggle]').forEach(btn => {
+        if (btn.getAttribute('data-lang-toggle') === lang) {
+          btn.classList.add('font-medium', 'text-navy');
+          btn.classList.remove('text-slate');
+        } else {
+          btn.classList.remove('font-medium', 'text-navy');
+          btn.classList.add('text-slate');
+        }
+      });
+    }
+
+    const savedLang = localStorage.getItem('lang') || 'en';
+    setLang(savedLang);
+
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 40) {
+        navbar.classList.add('bg-cream/90', 'nav-blur', 'shadow-sm');
+      } else {
+        navbar.classList.remove('bg-cream/90', 'nav-blur', 'shadow-sm');
+      }
+    });
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    const bar3 = document.getElementById('bar3');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      bar1.classList.toggle('rotate-45');
+      bar1.classList.toggle('translate-y-2');
+      bar2.classList.toggle('opacity-0');
+      bar3.classList.toggle('-rotate-45');
+      bar3.classList.toggle('-translate-y-2');
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        bar1.classList.remove('rotate-45', 'translate-y-2');
+        bar2.classList.remove('opacity-0');
+        bar3.classList.remove('-rotate-45', '-translate-y-2');
+      });
+    });
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
