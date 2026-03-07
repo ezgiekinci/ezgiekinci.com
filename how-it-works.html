@@ -1344,9 +1344,59 @@
       d.spawnParticles(2,2,'#FFFFFF',10,40);
       const pinkCells = [];
       for (let r=0;r<5;r++) for (let c=0;c<5;c++) if (d.board[r][c]&&d.board[r][c].color===0) pinkCells.push([r,c]);
-      pinkCells.forEach(([r,c]) => { d._removeCell(r,c); const type=Math.random()>0.5?'rocket':'rocket-v'; const el=d._createPowerUpCell(r,c,type); el.style.animation='powerup-spawn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards'; d.grid.appendChild(el); d.board[r][c]={color:-1,el,type}; });
+      // Alternate directions: no same direction in same row
+      const rowDir = {};
+      pinkCells.forEach(([r,c], i) => {
+        let type = i % 2 === 0 ? 'rocket' : 'rocket-v';
+        if (rowDir[r] === type) type = type === 'rocket' ? 'rocket-v' : 'rocket';
+        rowDir[r] = type;
+        d._removeCell(r,c);
+        const el = d._createPowerUpCell(r,c,type);
+        el.style.animation='powerup-spawn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards';
+        d.grid.appendChild(el); d.board[r][c]={color:-1,el,type};
+      });
       await sleep(500); if (!d._ok(rid)) return;
-      for (const [r,c] of pinkCells) { if (!d._ok(rid)) return; if (d.board[r][c]&&d.board[r][c].type!=='normal') { await d.activateRocket(r,c,d.board[r][c].type); await sleep(100); } }
+      // Chain activation with queue: each rocket triggers rockets in its blast path
+      async function fireRocketAt(r, c, type) {
+        const horiz = type !== 'rocket-v';
+        if (d.board[r][c]) {
+          await d.activateRocket(r, c, type);
+        } else {
+          d.showRocketTrail(r, c, horiz, '#FFA500');
+          d.shakeGrid(false);
+          const toClear = [];
+          if (horiz) { for (let cc=0;cc<d.cols;cc++) if (d.board[r][cc]) toClear.push([r,cc]); }
+          else { for (let rr=0;rr<d.rows;rr++) if (d.board[rr][c]) toClear.push([rr,c]); }
+          toClear.forEach(([cr,cc]) => { if (!d.board[cr][cc]) return; d.board[cr][cc].el.classList.add('popping'); d.spawnParticles(cr,cc,d.board[cr][cc].color>=0?COLORS[d.board[cr][cc].color]:'#FFA500',3,15); });
+          await sleep(POP_DURATION);
+          toClear.forEach(([cr,cc]) => d._removeCell(cr,cc));
+        }
+      }
+      while (true) {
+        if (!d._ok(rid)) return;
+        // Find first rocket on board
+        let start = null;
+        for (let r=0;r<d.rows&&!start;r++) for (let c=0;c<d.cols&&!start;c++)
+          if (d.board[r][c]&&(d.board[r][c].type==='rocket'||d.board[r][c].type==='rocket-v')) start={r,c,type:d.board[r][c].type};
+        if (!start) break;
+        // BFS chain
+        const queued = new Set();
+        const queue = [start];
+        queued.add(`${start.r},${start.c}`);
+        while (queue.length) {
+          const {r,c,type} = queue.shift();
+          const horiz = type!=='rocket-v';
+          // Find rockets in blast path → queue them before firing
+          if (horiz) { for (let cc=0;cc<d.cols;cc++) { const k=`${r},${cc}`; if (cc!==c&&!queued.has(k)&&d.board[r][cc]&&(d.board[r][cc].type==='rocket'||d.board[r][cc].type==='rocket-v')) { queue.push({r,c:cc,type:d.board[r][cc].type}); queued.add(k); } } }
+          else { for (let rr=0;rr<d.rows;rr++) { const k=`${rr},${c}`; if (rr!==r&&!queued.has(k)&&d.board[rr][c]&&(d.board[rr][c].type==='rocket'||d.board[rr][c].type==='rocket-v')) { queue.push({r:rr,c,type:d.board[rr][c].type}); queued.add(k); } } }
+          await fireRocketAt(r, c, type);
+          if (!d._ok(rid)) return;
+          await sleep(80);
+        }
+        await d.applyGravity();
+        if (!d._ok(rid)) return;
+        await sleep(100);
+      }
     }
 
     async function scriptComboDB(d, rid) {
@@ -1361,7 +1411,7 @@
       for (let r=0;r<5;r++) for (let c=0;c<5;c++) if (d.board[r][c]&&d.board[r][c].color===0) pinkCells.push([r,c]);
       pinkCells.forEach(([r,c]) => { d._removeCell(r,c); const el=d._createPowerUpCell(r,c,'bomb'); el.style.animation='powerup-spawn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards'; d.grid.appendChild(el); d.board[r][c]={color:-1,el,type:'bomb'}; });
       await sleep(500); if (!d._ok(rid)) return;
-      for (const [r,c] of pinkCells) { if (!d._ok(rid)) return; if (d.board[r][c]&&d.board[r][c].type==='bomb') { await d.activateBomb(r,c); await sleep(100); } }
+      for (const [r,c] of pinkCells) { if (!d._ok(rid)) return; if (d.board[r][c]&&d.board[r][c].type==='bomb') { await d.activateBomb(r,c); if (!d._ok(rid)) return; await d.applyGravity(); await sleep(100); } }
     }
 
     async function scriptComboDD(d, rid) {
