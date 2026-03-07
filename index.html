@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ezgi Ekinci — Product-Minded Engineer</title>
+  <title>EE. — Product-Minded Engineer</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='2' y='24' font-family='system-ui,sans-serif' font-weight='800' font-size='22' fill='%231A0A2E'>EE</text><text x='22' y='24' font-family='system-ui,sans-serif' font-weight='800' font-size='22' fill='%23FF4D8D'>.</text></svg>">
   <meta name="description" content="Control & Automation Engineer turning systems thinking into product strategy. Portfolio featuring puzzle game analysis and A/B test case study.">
   <meta property="og:title" content="Ezgi Ekinci — Product-Minded Engineer">
   <meta property="og:description" content="Control & Automation Engineer turning systems thinking into product strategy.">
@@ -44,6 +45,8 @@
     .fade-up-delay-2 { transition-delay: 0.2s; }
     .fade-up-delay-3 { transition-delay: 0.3s; }
     .nav-blur { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .logo-collapse { display: inline-block; max-width: 200px; opacity: 1; overflow: hidden; vertical-align: bottom; transition: max-width 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease; }
+    .logo-collapsed .logo-collapse { max-width: 0; opacity: 0; }
     .hero-gradient { background: linear-gradient(135deg, #F0E6FF 0%, #E8D5FF 50%, #D4B8FF 100%); }
     .hero-pattern { background-image: radial-gradient(circle, rgba(212,184,255,0.5) 1px, transparent 1px); background-size: 24px 24px; }
     .accent-line { width: 48px; height: 3px; background: linear-gradient(90deg, #FF4D8D, #FFD23F); border-radius: 2px; }
@@ -320,7 +323,7 @@
   <!-- Navigation -->
   <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
     <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
-      <a href="#" class="text-lg font-extrabold tracking-tight">EE<span class="text-coral">.</span></a>
+      <a href="#" id="nav-logo" class="text-lg font-extrabold tracking-tight whitespace-nowrap">E<span class="logo-collapse">zgi</span>E<span class="logo-collapse">kinci</span><span class="text-coral">.</span></a>
       <div class="hidden md:flex items-center gap-8">
         <a href="#about" class="text-sm text-slate hover:text-navy transition-colors duration-300" data-i18n="nav.about">About</a>
         <a href="#work" class="text-sm text-slate hover:text-navy transition-colors duration-300" data-i18n="nav.work">Work</a>
@@ -796,13 +799,16 @@
 
     // Navbar scroll
     const navbar = document.getElementById('navbar');
+    const navLogo = document.getElementById('nav-logo');
     window.addEventListener('scroll', () => {
       if (window.scrollY > 40) {
         navbar.classList.add('bg-cream/90', 'nav-blur', 'shadow-sm', 'py-3');
         navbar.classList.remove('py-5');
+        navLogo.classList.add('logo-collapsed');
       } else {
         navbar.classList.remove('bg-cream/90', 'nav-blur', 'shadow-sm', 'py-3');
         navbar.classList.add('py-5');
+        navLogo.classList.remove('logo-collapsed');
       }
     });
 
