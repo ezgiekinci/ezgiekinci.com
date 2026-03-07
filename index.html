@@ -736,8 +736,9 @@
     const FALL_DURATION = 350;
     const SPAWN_DURATION = 400;
     const CHAIN_DELAY = 450;
-    const ROCKET_THRESHOLD = 5;  // 5-6 pieces → rocket
-    const BOMB_THRESHOLD = 7;    // 7+ pieces → bomb
+    const ROCKET_THRESHOLD = 4;
+    const BOMB_THRESHOLD = 6;
+    const POWERUP_LIFESPAN = 2; // auto-activate after this many turns
 
     const grid = document.getElementById('puzzle-grid');
     if (!grid) return;
@@ -748,9 +749,9 @@
     let comboEl = null;
     let turnCount = 0;
 
-    function randColor() {
-      return Math.floor(Math.random() * COLORS.length);
-    }
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    function randColor() { return Math.floor(Math.random() * COLORS.length); }
+    function cellColor(cell) { return (cell && cell.color >= 0) ? COLORS[cell.color] : '#FFA500'; }
 
     function createCell(row, col, colorIdx) {
       const el = document.createElement('div');
@@ -766,7 +767,6 @@
       el.className = 'puzzle-cell';
       el.style.gridRow = row + 1;
       el.style.gridColumn = col + 1;
-      // No background color — CSS handles it via !important
       const isVertical = type === 'rocket-v';
       el.classList.add(isVertical ? 'rocket' : type);
       if (isVertical) el.classList.add('rocket-v');
@@ -779,78 +779,56 @@
       for (let r = 0; r < ROWS; r++) {
         board[r] = [];
         for (let c = 0; c < COLS; c++) {
-          const colorIdx = randColor();
-          const el = createCell(r, c, colorIdx);
+          const ci = randColor();
+          const el = createCell(r, c, ci);
           grid.appendChild(el);
-          board[r][c] = { color: colorIdx, el, type: 'normal', bornAt: -1 };
+          board[r][c] = { color: ci, el, type: 'normal', bornAt: -1 };
         }
       }
-    }
-
-    function floodFill(startR, startC, visited) {
-      const group = [];
-      const color = board[startR][startC].color;
-      if (color < 0) return group; // power-ups don't match
-      const stack = [[startR, startC]];
-      while (stack.length) {
-        const [r, c] = stack.pop();
-        if (r < 0 || r >= ROWS || c < 0 || c >= COLS) continue;
-        if (visited[r][c] || !board[r][c] || board[r][c].color !== color) continue;
-        visited[r][c] = true;
-        group.push([r, c]);
-        stack.push([r-1,c],[r+1,c],[r,c-1],[r,c+1]);
-      }
-      return group;
-    }
-
-    function findAllGroups() {
-      const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
-      const groups = [];
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          if (visited[r][c] || !board[r][c]) continue;
-          const group = floodFill(r, c, visited);
-          if (group.length >= 2) groups.push(group);
-        }
-      }
-      groups.sort((a, b) => b.length - a.length);
-      return groups;
     }
 
     function findLargestGroup() {
-      const groups = findAllGroups();
-      return groups.length > 0 ? groups[0] : null;
+      const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+      let best = [];
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (visited[r][c] || !board[r][c] || board[r][c].color < 0) continue;
+          const group = [];
+          const color = board[r][c].color;
+          const stack = [[r, c]];
+          while (stack.length) {
+            const [cr, cc] = stack.pop();
+            if (cr < 0 || cr >= ROWS || cc < 0 || cc >= COLS) continue;
+            if (visited[cr][cc] || !board[cr][cc] || board[cr][cc].color !== color) continue;
+            visited[cr][cc] = true;
+            group.push([cr, cc]);
+            stack.push([cr-1,cc],[cr+1,cc],[cr,cc-1],[cr,cc+1]);
+          }
+          if (group.length > best.length) best = group;
+        }
+      }
+      return best.length >= 2 ? best : null;
     }
 
     function getCellCenter(row, col) {
-      const pad = 12;
-      const gap = 4;
-      const totalGaps = (COLS - 1) * gap;
-      const cellSize = (grid.offsetWidth - pad * 2 - totalGaps) / COLS;
-      return {
-        x: pad + col * (cellSize + gap) + cellSize / 2,
-        y: pad + row * (cellSize + gap) + cellSize / 2,
-        size: cellSize
-      };
+      const pad = 12, gap = 4;
+      const cellSize = (grid.offsetWidth - pad * 2 - (COLS - 1) * gap) / COLS;
+      return { x: pad + col * (cellSize + gap) + cellSize / 2, y: pad + row * (cellSize + gap) + cellSize / 2, size: cellSize };
     }
 
     function spawnParticles(row, col, color, count, spread) {
-      count = count || 6;
-      spread = spread || 30;
+      count = count || 6; spread = spread || 30;
       const { x: cx, y: cy } = getCellCenter(row, col);
       for (let i = 0; i < count; i++) {
         const p = document.createElement('div');
         p.className = 'particle';
-        const size = 4 + Math.random() * 4;
-        p.style.width = size + 'px';
-        p.style.height = size + 'px';
+        const sz = 4 + Math.random() * 4;
+        p.style.width = sz + 'px'; p.style.height = sz + 'px';
         p.style.backgroundColor = color;
-        p.style.left = cx + 'px';
-        p.style.top = cy + 'px';
+        p.style.left = cx + 'px'; p.style.top = cy + 'px';
         const angle = (Math.PI * 2 / count) * i + Math.random() * 0.8;
         const dist = spread * 0.5 + Math.random() * spread;
-        const dx = Math.cos(angle) * dist;
-        const dy = Math.sin(angle) * dist;
+        const dx = Math.cos(angle) * dist, dy = Math.sin(angle) * dist;
         p.animate([
           { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
           { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0)`, opacity: 0 }
@@ -861,141 +839,69 @@
     }
 
     function showRocketTrail(row, col, horizontal, color) {
-      const { x: cx, y: cy, size } = getCellCenter(row, col);
-
-      // Main bright beam
+      const { x: cx, y: cy } = getCellCenter(row, col);
+      // Beam
       const beam = document.createElement('div');
       beam.className = 'rocket-trail';
       beam.style.background = `linear-gradient(${horizontal ? '90deg' : '180deg'}, transparent, ${color}, white, ${color}, transparent)`;
-      if (horizontal) {
-        beam.style.left = '0';
-        beam.style.top = (cy - 3) + 'px';
-        beam.style.width = grid.offsetWidth + 'px';
-        beam.style.height = '6px';
-      } else {
-        beam.style.left = (cx - 3) + 'px';
-        beam.style.top = '0';
-        beam.style.width = '6px';
-        beam.style.height = grid.offsetHeight + 'px';
-      }
+      if (horizontal) { beam.style.left = '0'; beam.style.top = (cy - 3) + 'px'; beam.style.width = grid.offsetWidth + 'px'; beam.style.height = '6px'; }
+      else { beam.style.left = (cx - 3) + 'px'; beam.style.top = '0'; beam.style.width = '6px'; beam.style.height = grid.offsetHeight + 'px'; }
       grid.appendChild(beam);
-      beam.animate([
-        { opacity: 1, filter: 'blur(0px)' },
-        { opacity: 0.8, filter: 'blur(2px)' },
-        { opacity: 0, filter: 'blur(6px)' }
-      ], { duration: 600, easing: 'ease-out', fill: 'forwards' });
+      beam.animate([{ opacity: 1, filter: 'blur(0px)' }, { opacity: 0, filter: 'blur(6px)' }], { duration: 600, easing: 'ease-out', fill: 'forwards' });
       setTimeout(() => beam.remove(), 600);
-
-      // Glow halo behind beam
+      // Glow
       const glow = document.createElement('div');
       glow.className = 'rocket-trail';
-      glow.style.background = color;
-      glow.style.filter = 'blur(8px)';
-      if (horizontal) {
-        glow.style.left = '0';
-        glow.style.top = (cy - 8) + 'px';
-        glow.style.width = grid.offsetWidth + 'px';
-        glow.style.height = '16px';
-      } else {
-        glow.style.left = (cx - 8) + 'px';
-        glow.style.top = '0';
-        glow.style.width = '16px';
-        glow.style.height = grid.offsetHeight + 'px';
-      }
+      glow.style.background = color; glow.style.filter = 'blur(8px)';
+      if (horizontal) { glow.style.left = '0'; glow.style.top = (cy - 8) + 'px'; glow.style.width = grid.offsetWidth + 'px'; glow.style.height = '16px'; }
+      else { glow.style.left = (cx - 8) + 'px'; glow.style.top = '0'; glow.style.width = '16px'; glow.style.height = grid.offsetHeight + 'px'; }
       grid.appendChild(glow);
-      glow.animate([
-        { opacity: 0.5 },
-        { opacity: 0 }
-      ], { duration: 500, easing: 'ease-out', fill: 'forwards' });
+      glow.animate([{ opacity: 0.5 }, { opacity: 0 }], { duration: 500, easing: 'ease-out', fill: 'forwards' });
       setTimeout(() => glow.remove(), 500);
-
-      // Sparks along the trail
+      // Sparks
       const steps = horizontal ? COLS : ROWS;
       for (let i = 0; i < steps; i++) {
-        const pr = horizontal ? row : i;
-        const pc = horizontal ? i : col;
-        setTimeout(() => {
-          spawnParticles(pr, pc, '#FFFFFF', 3, 18);
-          spawnParticles(pr, pc, color, 2, 12);
-        }, i * 40);
+        const pr = horizontal ? row : i, pc = horizontal ? i : col;
+        setTimeout(() => { spawnParticles(pr, pc, '#FFFFFF', 3, 18); spawnParticles(pr, pc, color, 2, 12); }, i * 40);
       }
     }
 
     function showBombBlast(row, col, color) {
       const { x: cx, y: cy, size } = getCellCenter(row, col);
-
-      // Inner white flash
+      // Flash
       const flash = document.createElement('div');
-      flash.style.cssText = `position:absolute;border-radius:50%;pointer-events:none;z-index:25;background:radial-gradient(circle, white 0%, ${color} 40%, transparent 70%);`;
-      const flashSize = size * 5;
-      flash.style.left = (cx - flashSize / 2) + 'px';
-      flash.style.top = (cy - flashSize / 2) + 'px';
-      flash.style.width = flashSize + 'px';
-      flash.style.height = flashSize + 'px';
+      flash.style.cssText = `position:absolute;border-radius:50%;pointer-events:none;z-index:25;background:radial-gradient(circle,white 0%,${color} 40%,transparent 70%)`;
+      const fs = size * 5;
+      flash.style.left = (cx-fs/2)+'px'; flash.style.top = (cy-fs/2)+'px'; flash.style.width = fs+'px'; flash.style.height = fs+'px';
       grid.appendChild(flash);
-      flash.animate([
-        { transform: 'scale(0)', opacity: 1 },
-        { transform: 'scale(0.5)', opacity: 0.8 },
-        { transform: 'scale(1.2)', opacity: 0 }
-      ], { duration: 450, easing: 'ease-out', fill: 'forwards' });
+      flash.animate([{ transform:'scale(0)', opacity:1 },{ transform:'scale(1.2)', opacity:0 }], { duration:450, easing:'ease-out', fill:'forwards' });
       setTimeout(() => flash.remove(), 450);
-
-      // Shockwave ring 1
-      const ring1 = document.createElement('div');
-      ring1.className = 'bomb-ring';
-      const ringSize = size * 5;
-      ring1.style.left = (cx - ringSize / 2) + 'px';
-      ring1.style.top = (cy - ringSize / 2) + 'px';
-      ring1.style.width = ringSize + 'px';
-      ring1.style.height = ringSize + 'px';
-      ring1.style.border = `3px solid ${color}`;
-      grid.appendChild(ring1);
-      ring1.animate([
-        { transform: 'scale(0)', opacity: 1, borderWidth: '4px' },
-        { transform: 'scale(1)', opacity: 0, borderWidth: '1px' }
-      ], { duration: 500, easing: 'ease-out', fill: 'forwards' });
-      setTimeout(() => ring1.remove(), 500);
-
-      // Shockwave ring 2 (delayed, larger)
-      setTimeout(() => {
-        const ring2 = document.createElement('div');
-        ring2.className = 'bomb-ring';
-        const r2Size = size * 6;
-        ring2.style.left = (cx - r2Size / 2) + 'px';
-        ring2.style.top = (cy - r2Size / 2) + 'px';
-        ring2.style.width = r2Size + 'px';
-        ring2.style.height = r2Size + 'px';
-        ring2.style.border = '2px solid rgba(255,255,255,0.6)';
-        grid.appendChild(ring2);
-        ring2.animate([
-          { transform: 'scale(0)', opacity: 0.8 },
-          { transform: 'scale(1)', opacity: 0 }
-        ], { duration: 400, easing: 'ease-out', fill: 'forwards' });
-        setTimeout(() => ring2.remove(), 400);
-      }, 80);
-
+      // Ring
+      const ring = document.createElement('div');
+      ring.className = 'bomb-ring';
+      ring.style.left = (cx-fs/2)+'px'; ring.style.top = (cy-fs/2)+'px'; ring.style.width = fs+'px'; ring.style.height = fs+'px';
+      ring.style.border = `3px solid ${color}`;
+      grid.appendChild(ring);
+      ring.animate([{ transform:'scale(0)', opacity:1 },{ transform:'scale(1)', opacity:0 }], { duration:500, easing:'ease-out', fill:'forwards' });
+      setTimeout(() => ring.remove(), 500);
       // Screen flash
-      const screenFlash = document.createElement('div');
-      screenFlash.style.cssText = `position:absolute;inset:0;background:white;border-radius:1.5rem;z-index:26;pointer-events:none;`;
-      grid.appendChild(screenFlash);
-      screenFlash.animate([
-        { opacity: 0.4 },
-        { opacity: 0 }
-      ], { duration: 200, easing: 'ease-out', fill: 'forwards' });
-      setTimeout(() => screenFlash.remove(), 200);
-
-      // Burst particles — colored + white + fire
+      const sf = document.createElement('div');
+      sf.style.cssText = 'position:absolute;inset:0;background:white;border-radius:1.5rem;z-index:26;pointer-events:none';
+      grid.appendChild(sf);
+      sf.animate([{ opacity:0.4 },{ opacity:0 }], { duration:200, easing:'ease-out', fill:'forwards' });
+      setTimeout(() => sf.remove(), 200);
+      // Particles
       spawnParticles(row, col, color, 10, 55);
       spawnParticles(row, col, '#FFFFFF', 8, 45);
       spawnParticles(row, col, '#FF6B35', 6, 40);
     }
 
-    function showCombo(count) {
+    function showCombo(n) {
       if (comboEl) comboEl.remove();
-      if (count < 2) return;
+      if (n < 2) return;
       comboEl = document.createElement('div');
       comboEl.className = 'combo-badge';
-      comboEl.textContent = 'x' + count;
+      comboEl.textContent = 'x' + n;
       grid.appendChild(comboEl);
       setTimeout(() => { if (comboEl) comboEl.remove(); comboEl = null; }, 1200);
     }
@@ -1003,239 +909,196 @@
     function shakeGrid(big) {
       const cls = big ? 'puzzle-big-shake' : 'puzzle-shake';
       grid.classList.remove('puzzle-shake', 'puzzle-big-shake');
-      void grid.offsetWidth; // force reflow
+      void grid.offsetWidth;
       grid.classList.add(cls);
       setTimeout(() => grid.classList.remove(cls), big ? 500 : 400);
     }
 
-    // Remove a single cell from the board
     function removeCell(r, c) {
-      if (board[r][c]) {
-        board[r][c].el.remove();
-        board[r][c] = null;
-      }
+      if (board[r][c]) { board[r][c].el.remove(); board[r][c] = null; }
     }
 
-    // Pop a group, create power-up if big enough
+    // Pop a group of normal cells. If big enough, leave a power-up behind.
     async function popGroup(group) {
       const groupSize = group.length;
       const firstCell = board[group[0][0]][group[0][1]];
       if (!firstCell) return;
-      const color = firstCell.color;
 
-      // Determine power-up to create
-      let powerUpType = null;
-      let powerUpPos = null;
-      if (groupSize >= BOMB_THRESHOLD) {
-        powerUpType = 'bomb';
-        powerUpPos = group[Math.floor(group.length / 2)];
-      } else if (groupSize >= ROCKET_THRESHOLD) {
-        powerUpType = Math.random() > 0.5 ? 'rocket' : 'rocket-v';
-        powerUpPos = group[Math.floor(group.length / 2)];
-      }
+      // Determine power-up
+      let puType = null, puPos = null;
+      if (groupSize >= BOMB_THRESHOLD) { puType = 'bomb'; puPos = group[Math.floor(group.length / 2)]; }
+      else if (groupSize >= ROCKET_THRESHOLD) { puType = Math.random() > 0.5 ? 'rocket' : 'rocket-v'; puPos = group[Math.floor(group.length / 2)]; }
 
-      // Collect power-ups that exist in this group (to activate after)
-      const existingPowerUps = [];
-      group.forEach(([r, c]) => {
-        if (board[r][c] && board[r][c].type !== 'normal') {
-          existingPowerUps.push({ row: r, col: c, type: board[r][c].type, color: board[r][c].color });
-        }
-      });
+      const spawnKey = puPos ? `${puPos[0]},${puPos[1]}` : null;
 
-      // Exclude power-up spawn position from removal
-      const spawnKey = powerUpPos ? `${powerUpPos[0]},${powerUpPos[1]}` : null;
-
-      // Pop animation for all cells
+      // Pop animation
       group.forEach(([r, c]) => {
         const cell = board[r][c];
         if (!cell) return;
-        if (spawnKey && `${r},${c}` === spawnKey) return; // don't pop the spawn position yet
+        if (spawnKey && `${r},${c}` === spawnKey) return;
         cell.el.classList.add('popping');
         spawnParticles(r, c, COLORS[cell.color], 5, 25);
       });
-
       await sleep(POP_DURATION);
 
-      // Remove popped cells
+      // Remove cells
       group.forEach(([r, c]) => {
         if (spawnKey && `${r},${c}` === spawnKey) return;
         removeCell(r, c);
       });
 
-      // Place power-up (colorless — stands out from normal tiles)
-      if (powerUpType && powerUpPos) {
-        const [pr, pc] = powerUpPos;
+      // Spawn power-up
+      if (puType && puPos) {
+        const [pr, pc] = puPos;
         removeCell(pr, pc);
-        const el = createPowerUpCell(pr, pc, powerUpType);
+        const el = createPowerUpCell(pr, pc, puType);
         el.style.animation = 'powerup-spawn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
         grid.appendChild(el);
-        board[pr][pc] = { color: -1, el, type: powerUpType, bornAt: turnCount };
+        board[pr][pc] = { color: -1, el, type: puType, bornAt: turnCount };
         spawnParticles(pr, pc, '#FFFFFF', 8, 35);
         await sleep(SPAWN_DURATION);
         el.style.animation = '';
       }
-
-      return existingPowerUps;
     }
 
-    // Activate a rocket: clear its row or column with trail effect
+    // Activate a rocket
     async function activateRocket(row, col, rocketType) {
       const horizontal = rocketType !== 'rocket-v';
-      const cell = board[row][col];
-      const color = (cell && cell.color >= 0) ? COLORS[cell.color] : '#FFA500';
-
-      // Remove the rocket itself
+      const color = '#FFA500';
       removeCell(row, col);
-
-      // Show trail
       showRocketTrail(row, col, horizontal, color);
       shakeGrid(false);
 
-      // Separate normal cells from chain power-ups
-      const chainPowerUps = [];
-      const toClear = [];
-      if (horizontal) {
-        for (let c = 0; c < COLS; c++) {
-          if (!board[row][c]) continue;
-          if (board[row][c].type !== 'normal') {
-            chainPowerUps.push({ row, col: c, type: board[row][c].type, color: board[row][c].color });
-          } else {
-            toClear.push([row, c]);
-          }
-        }
-      } else {
-        for (let r = 0; r < ROWS; r++) {
-          if (!board[r][col]) continue;
-          if (board[r][col].type !== 'normal') {
-            chainPowerUps.push({ row: r, col, type: board[r][col].type, color: board[r][col].color });
-          } else {
-            toClear.push([r, col]);
-          }
-        }
-      }
+      const chainPUs = [], toClear = [];
+      const scan = horizontal
+        ? Array.from({length: COLS}, (_, c) => [row, c])
+        : Array.from({length: ROWS}, (_, r) => [r, col]);
 
-      // Pop normal cells
+      scan.forEach(([r, c]) => {
+        if (!board[r][c]) return;
+        if (board[r][c].type !== 'normal') chainPUs.push({ row: r, col: c, type: board[r][c].type });
+        else toClear.push([r, c]);
+      });
+
       toClear.forEach(([r, c]) => {
-        if (board[r][c]) {
-          board[r][c].el.classList.add('popping');
-          spawnParticles(r, c, board[r][c].color >= 0 ? COLORS[board[r][c].color] : color, 4, 20);
-        }
+        if (!board[r][c]) return;
+        board[r][c].el.classList.add('popping');
+        spawnParticles(r, c, cellColor(board[r][c]), 4, 20);
       });
       await sleep(POP_DURATION);
       toClear.forEach(([r, c]) => removeCell(r, c));
 
-      // Chain-activate power-ups hit by the rocket (they're still on the board)
-      for (const pu of chainPowerUps) {
+      for (const pu of chainPUs) {
         if (!board[pu.row][pu.col]) continue;
-        if (pu.type === 'rocket' || pu.type === 'rocket-v') {
-          await activateRocket(pu.row, pu.col, pu.type);
-        } else if (pu.type === 'bomb') {
-          await activateBomb(pu.row, pu.col);
-        }
+        await activatePowerUp(pu.row, pu.col);
       }
     }
 
-    // Activate a bomb: clear diamond area
+    // Activate a bomb
     async function activateBomb(row, col) {
-      const cell = board[row][col];
-      const color = (cell && cell.color >= 0) ? COLORS[cell.color] : '#FFD23F';
-
-      // Remove bomb itself
+      const color = '#FFD23F';
       removeCell(row, col);
-
-      // Show blast effect
       showBombBlast(row, col, color);
       shakeGrid(true);
 
-      // Separate normal cells from chain power-ups
       const RADIUS = 2;
-      const toClear = [];
-      const chainPowerUps = [];
+      const chainPUs = [], toClear = [];
       for (let dr = -RADIUS; dr <= RADIUS; dr++) {
         for (let dc = -RADIUS; dc <= RADIUS; dc++) {
           if (Math.abs(dr) + Math.abs(dc) > RADIUS) continue;
           const r = row + dr, c = col + dc;
-          if (r < 0 || r >= ROWS || c < 0 || c >= COLS) continue;
-          if (!board[r][c]) continue;
-          if (board[r][c].type !== 'normal') {
-            chainPowerUps.push({ row: r, col: c, type: board[r][c].type, color: board[r][c].color });
-          } else {
-            toClear.push([r, c]);
-          }
+          if (r < 0 || r >= ROWS || c < 0 || c >= COLS || !board[r][c]) continue;
+          if (board[r][c].type !== 'normal') chainPUs.push({ row: r, col: c, type: board[r][c].type });
+          else toClear.push([r, c]);
         }
       }
 
-      // Pop normal cells
       toClear.forEach(([r, c]) => {
-        if (board[r][c]) {
-          board[r][c].el.classList.add('popping');
-          spawnParticles(r, c, board[r][c].color >= 0 ? COLORS[board[r][c].color] : color, 4, 20);
-        }
+        if (!board[r][c]) return;
+        board[r][c].el.classList.add('popping');
+        spawnParticles(r, c, cellColor(board[r][c]), 4, 20);
       });
       await sleep(POP_DURATION);
       toClear.forEach(([r, c]) => removeCell(r, c));
 
-      // Chain-activate power-ups caught in blast (they're still on the board)
-      for (const pu of chainPowerUps) {
+      for (const pu of chainPUs) {
         if (!board[pu.row][pu.col]) continue;
-        if (pu.type === 'rocket' || pu.type === 'rocket-v') {
-          await activateRocket(pu.row, pu.col, pu.type);
-        } else if (pu.type === 'bomb') {
-          await activateBomb(pu.row, pu.col);
-        }
+        await activatePowerUp(pu.row, pu.col);
       }
+    }
+
+    // Generic power-up activator
+    async function activatePowerUp(row, col) {
+      const cell = board[row][col];
+      if (!cell || cell.type === 'normal') return;
+      const type = cell.type;
+      if (type === 'rocket' || type === 'rocket-v') await activateRocket(row, col, type);
+      else if (type === 'bomb') await activateBomb(row, col);
     }
 
     // Gravity
     async function applyGravity() {
       let moved = false;
       for (let c = 0; c < COLS; c++) {
-        let writeRow = ROWS - 1;
+        let wr = ROWS - 1;
         for (let r = ROWS - 1; r >= 0; r--) {
           if (board[r][c]) {
-            if (r !== writeRow) {
-              board[writeRow][c] = board[r][c];
+            if (r !== wr) {
+              board[wr][c] = board[r][c];
               board[r][c] = null;
-              board[writeRow][c].el.style.gridRow = writeRow + 1;
-              board[writeRow][c].el.classList.add('falling');
+              board[wr][c].el.style.gridRow = wr + 1;
+              board[wr][c].el.classList.add('falling');
               moved = true;
             }
-            writeRow--;
+            wr--;
           }
         }
-        for (let r = writeRow; r >= 0; r--) {
-          const colorIdx = randColor();
-          const el = createCell(r, c, colorIdx);
+        for (let r = wr; r >= 0; r--) {
+          const ci = randColor();
+          const el = createCell(r, c, ci);
           el.classList.add('spawning');
           grid.appendChild(el);
-          board[r][c] = { color: colorIdx, el, type: 'normal', bornAt: -1 };
+          board[r][c] = { color: ci, el, type: 'normal', bornAt: -1 };
           moved = true;
         }
       }
       if (moved) {
         await sleep(FALL_DURATION);
-        for (let r = 0; r < ROWS; r++) {
-          for (let c = 0; c < COLS; c++) {
-            if (board[r][c]) {
-              board[r][c].el.classList.remove('falling', 'spawning');
-            }
-          }
-        }
+        for (let r = 0; r < ROWS; r++)
+          for (let c = 0; c < COLS; c++)
+            if (board[r][c]) board[r][c].el.classList.remove('falling', 'spawning');
       }
-      return moved;
     }
 
-    // Find mature power-ups (2+ turns old) to auto-activate
+    // Find a power-up that's been on the board long enough
     function findMaturePowerUp() {
       for (let r = 0; r < ROWS; r++) {
         for (let c = 0; c < COLS; c++) {
           const cell = board[r][c];
-          if (cell && cell.type !== 'normal' && cell.bornAt >= 0 && (turnCount - cell.bornAt) >= 2) {
-            return { row: r, col: c, type: cell.type, color: cell.color };
+          if (cell && cell.type !== 'normal' && cell.bornAt >= 0 && (turnCount - cell.bornAt) >= POWERUP_LIFESPAN) {
+            return { row: r, col: c };
           }
         }
       }
       return null;
+    }
+
+    // Pop groups in a loop until no more chain reactions
+    async function popChains() {
+      let group = findLargestGroup();
+      while (group) {
+        combo++;
+        if (combo > 1) showCombo(combo);
+
+        group.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.add('highlight'); });
+        await sleep(350);
+        group.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.remove('highlight'); });
+
+        await popGroup(group);
+        await applyGravity();
+        await sleep(CHAIN_DELAY);
+        group = findLargestGroup();
+      }
     }
 
     // Main turn
@@ -1245,124 +1108,32 @@
       combo = 0;
       turnCount++;
 
-      // Check if there's a mature power-up to activate first
-      const maturePU = findMaturePowerUp();
-      if (maturePU) {
-        // Highlight the power-up before activation
-        const cell = board[maturePU.row][maturePU.col];
-        if (cell) cell.el.classList.add('highlight');
-        await sleep(400);
-        if (cell) cell.el.classList.remove('highlight');
-
-        if (maturePU.type === 'rocket' || maturePU.type === 'rocket-v') {
-          await activateRocket(maturePU.row, maturePU.col, maturePU.type);
-        } else if (maturePU.type === 'bomb') {
-          await activateBomb(maturePU.row, maturePU.col);
+      // 1) Check for mature power-ups first
+      const pu = findMaturePowerUp();
+      if (pu) {
+        const cell = board[pu.row][pu.col];
+        if (cell) {
+          cell.el.classList.add('highlight');
+          await sleep(500);
+          cell.el.classList.remove('highlight');
         }
-        await applyGravity();
-
-        // After power-up activation, continue with chain reactions
-        await sleep(CHAIN_DELAY);
-        let chainGroup = findLargestGroup();
-        while (chainGroup) {
-          combo++;
-          if (combo > 1) { showCombo(combo); }
-          chainGroup.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.add('highlight'); });
-          await sleep(350);
-          chainGroup.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.remove('highlight'); });
-          await popGroup(chainGroup);
+        // Cell might still be there — activate it
+        if (board[pu.row][pu.col] && board[pu.row][pu.col].type !== 'normal') {
+          await activatePowerUp(pu.row, pu.col);
           await applyGravity();
           await sleep(CHAIN_DELAY);
-          chainGroup = findLargestGroup();
+          await popChains();
         }
-
         animating = false;
         return;
       }
 
-      // Normal turn: find and pop largest group
-      let group = findLargestGroup();
-      if (!group) {
-        initBoard();
-        animating = false;
-        return;
-      }
+      // 2) Normal: pop largest group + chain reactions
+      const group = findLargestGroup();
+      if (!group) { initBoard(); animating = false; return; }
 
-      while (group) {
-        combo++;
-        if (combo > 1) {
-          showCombo(combo);
-        }
-
-        // Highlight
-        group.forEach(([r, c]) => {
-          if (board[r][c]) board[r][c].el.classList.add('highlight');
-        });
-        await sleep(350);
-        group.forEach(([r, c]) => {
-          if (board[r][c]) board[r][c].el.classList.remove('highlight');
-        });
-
-        // Pop the group and get any existing power-ups that were in it
-        const triggeredPowerUps = await popGroup(group);
-
-        // Activate triggered power-ups (ones that were already on the board and got caught in the group)
-        if (triggeredPowerUps && triggeredPowerUps.length > 0) {
-          for (const pu of triggeredPowerUps) {
-            // These were already removed by popGroup, fire their effect from saved position
-            const puColor = pu.color >= 0 ? COLORS[pu.color] : '#FFA500';
-            if (pu.type === 'rocket' || pu.type === 'rocket-v') {
-              showRocketTrail(pu.row, pu.col, pu.type !== 'rocket-v', puColor);
-              shakeGrid(false);
-              const horizontal = pu.type !== 'rocket-v';
-              const toClear = [];
-              if (horizontal) {
-                for (let c = 0; c < COLS; c++) { if (board[pu.row][c]) toClear.push([pu.row, c]); }
-              } else {
-                for (let r = 0; r < ROWS; r++) { if (board[r][pu.col]) toClear.push([r, pu.col]); }
-              }
-              toClear.forEach(([r, c]) => {
-                if (board[r][c]) {
-                  board[r][c].el.classList.add('popping');
-                  spawnParticles(r, c, board[r][c].color >= 0 ? COLORS[board[r][c].color] : '#FFA500', 4, 20);
-                }
-              });
-              await sleep(POP_DURATION);
-              toClear.forEach(([r, c]) => removeCell(r, c));
-            } else if (pu.type === 'bomb') {
-              showBombBlast(pu.row, pu.col, puColor);
-              shakeGrid(true);
-              const RADIUS = 2;
-              const toClear = [];
-              for (let dr = -RADIUS; dr <= RADIUS; dr++) {
-                for (let dc = -RADIUS; dc <= RADIUS; dc++) {
-                  if (Math.abs(dr) + Math.abs(dc) > RADIUS) continue;
-                  const r = pu.row + dr, c = pu.col + dc;
-                  if (r >= 0 && r < ROWS && c >= 0 && c < COLS && board[r][c]) toClear.push([r, c]);
-                }
-              }
-              toClear.forEach(([r, c]) => {
-                if (board[r][c]) {
-                  board[r][c].el.classList.add('popping');
-                  spawnParticles(r, c, board[r][c].color >= 0 ? COLORS[board[r][c].color] : '#FFD23F', 4, 20);
-                }
-              });
-              await sleep(POP_DURATION);
-              toClear.forEach(([r, c]) => removeCell(r, c));
-            }
-          }
-        }
-
-        await applyGravity();
-        await sleep(CHAIN_DELAY);
-        group = findLargestGroup();
-      }
-
+      await popChains();
       animating = false;
-    }
-
-    function sleep(ms) {
-      return new Promise(resolve => setTimeout(resolve, ms));
     }
 
     initBoard();
