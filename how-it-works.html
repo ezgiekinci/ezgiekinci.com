@@ -1241,12 +1241,12 @@
       ]);
       await sleep(600);
       if (!d._ok(rid)) return;
-      const group = [[1,1],[1,2],[1,3],[2,1],[2,2],[2,3]];
+      const group = [[0,3],[1,1],[1,2],[1,3],[2,1],[2,2],[2,3]];
       d.highlightCells(group);
       await sleep(800);
       if (!d._ok(rid)) return;
       d.unhighlightCells(group);
-      await d.popCells([[1,1],[1,3],[2,1],[2,3],[1,2]]);
+      await d.popCells([[0,3],[1,1],[1,3],[2,1],[2,3],[1,2]]);
       if (!d._ok(rid)) return;
       await d.spawnPowerUp(2, 2, 'bomb');
       if (!d._ok(rid)) return;
@@ -1392,7 +1392,7 @@
         [1, 3, 0, 0, 2],
       ]);
       await sleep(600); if (!d._ok(rid)) return;
-      const group1 = [[2,0],[2,1],[2,2]];
+      const group1 = [[1,1],[2,0],[2,1],[2,2]];
       d.highlightCells(group1);
       await sleep(800); if (!d._ok(rid)) return;
       d.unhighlightCells(group1);
@@ -1426,8 +1426,8 @@
     let currentCombo = 'rr';
 
     function startDemo(key) {
-      if (key === 'color-matching') loopDemo(key, scriptColorMatching, 'demo-01', 4, 4);
-      else if (key === 'gravity') loopDemo(key, scriptGravity, 'demo-02', 4, 4);
+      if (key === 'color-matching') replayDemo(key, scriptColorMatching, 'demo-01', 4, 4);
+      else if (key === 'gravity') replayDemo(key, scriptGravity, 'demo-02', 4, 4);
       else if (key === 'rocket') replayDemo(key, scriptRocket, 'demo-03', 5, 5);
       else if (key === 'bomb') replayDemo(key, scriptBomb, 'demo-04', 5, 5);
       else if (key === 'disco') replayDemo(key, scriptDisco, 'demo-05', 5, 5);
