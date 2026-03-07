@@ -77,15 +77,156 @@
       transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .game-card:hover { border-color: rgba(255,77,141,0.4); box-shadow: 0 0 40px rgba(255,77,141,0.15), 0 10px 30px rgba(26,10,46,0.2); transform: translateY(-6px); }
-    .photo-placeholder {
-      background: linear-gradient(135deg, #D4B8FF 0%, #FF4D8D 50%, #FFD23F 100%);
-      background-size: 200% 200%;
-      animation: gradient-shift 6s ease infinite;
-    }
     @keyframes gradient-shift { 0%,100% { background-position: 0% 50%; } 50% { background-position: 100% 50%; } }
     .stat-number { font-variant-numeric: tabular-nums; }
     .game-img { transition: transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .game-img:hover { transform: scale(1.05); }
+
+    /* Puzzle Grid */
+    .puzzle-container {
+      position: relative;
+      display: grid;
+      grid-template-columns: repeat(6, 1fr);
+      gap: 4px;
+      padding: 12px;
+      background: rgba(255,255,255,0.6);
+      border: 3px solid #D4B8FF;
+      border-radius: 1.5rem;
+      backdrop-filter: blur(8px);
+    }
+    .puzzle-cell {
+      aspect-ratio: 1;
+      border-radius: 0.5rem;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+      position: relative;
+      cursor: default;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .puzzle-cell.falling {
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+    }
+    .puzzle-cell.popping {
+      animation: pop 0.35s ease forwards;
+    }
+    .puzzle-cell.spawning {
+      animation: spawn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
+    .puzzle-cell.highlight {
+      animation: highlight-pulse 0.6s ease infinite alternate;
+    }
+    /* Power-up: Rocket */
+    .puzzle-cell.rocket {
+      border: 2px solid rgba(255,255,255,0.8);
+      box-shadow: 0 0 8px rgba(255,255,255,0.5), inset 0 0 6px rgba(255,255,255,0.3);
+      animation: powerup-idle 1.2s ease-in-out infinite alternate;
+    }
+    .puzzle-cell.rocket::after {
+      content: '';
+      width: 65%; height: 65%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none'%3E%3Crect x='4' y='13' width='24' height='6' rx='3' fill='white' opacity='0.95'/%3E%3Cpolygon points='28,16 24,10 24,22' fill='white' opacity='0.95'/%3E%3Cpolygon points='4,16 8,10 8,22' fill='white' opacity='0.95'/%3E%3Ccircle cx='16' cy='16' r='2.5' fill='white' opacity='0.7'/%3E%3C/svg%3E");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: drop-shadow(0 0 3px rgba(255,255,255,0.8));
+    }
+    .puzzle-cell.rocket-v::after {
+      transform: rotate(90deg);
+    }
+    /* Power-up: Bomb */
+    .puzzle-cell.bomb {
+      border: 2px solid rgba(255,255,255,0.8);
+      box-shadow: 0 0 10px rgba(255,255,255,0.6), inset 0 0 8px rgba(255,255,255,0.3);
+      animation: powerup-idle 0.8s ease-in-out infinite alternate;
+    }
+    .puzzle-cell.bomb::after {
+      content: '';
+      width: 70%; height: 70%;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32' fill='none'%3E%3Ccircle cx='16' cy='18' r='10' fill='white' opacity='0.95'/%3E%3Crect x='14' y='4' width='4' height='8' rx='2' fill='white' opacity='0.9'/%3E%3Ccircle cx='16' cy='4' r='3' fill='%23FFD23F' opacity='0.9'/%3E%3Ccircle cx='16' cy='18' r='4' fill='none' stroke='rgba(0,0,0,0.15)' stroke-width='1.5'/%3E%3C/svg%3E");
+      background-size: contain;
+      background-repeat: no-repeat;
+      background-position: center;
+      filter: drop-shadow(0 0 4px rgba(255,255,255,0.9));
+    }
+    @keyframes powerup-idle {
+      0% { transform: scale(1); }
+      100% { transform: scale(1.06); box-shadow: 0 0 14px rgba(255,255,255,0.7), inset 0 0 8px rgba(255,255,255,0.4); }
+    }
+    @keyframes pop {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+    @keyframes spawn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes powerup-spawn {
+      0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+      60% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    @keyframes highlight-pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 rgba(255,255,255,0); }
+      100% { transform: scale(1.08); box-shadow: 0 0 12px rgba(255,255,255,0.6); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-3px) rotate(-1deg); }
+      40% { transform: translateX(3px) rotate(1deg); }
+      60% { transform: translateX(-2px) rotate(-0.5deg); }
+      80% { transform: translateX(2px) rotate(0.5deg); }
+    }
+    @keyframes big-shake {
+      0%, 100% { transform: translate(0,0) rotate(0); }
+      15% { transform: translate(-4px, 2px) rotate(-1.5deg); }
+      30% { transform: translate(4px, -2px) rotate(1.5deg); }
+      45% { transform: translate(-3px, 1px) rotate(-1deg); }
+      60% { transform: translate(3px, -1px) rotate(1deg); }
+      75% { transform: translate(-2px, 1px) rotate(-0.5deg); }
+    }
+    .puzzle-shake { animation: shake 0.4s ease; }
+    .puzzle-big-shake { animation: big-shake 0.5s ease; }
+    .combo-badge {
+      position: absolute;
+      top: -12px;
+      right: -12px;
+      background: linear-gradient(135deg, #FF4D8D, #FFD23F);
+      color: white;
+      font-weight: 800;
+      font-size: 14px;
+      padding: 4px 10px;
+      border-radius: 999px;
+      z-index: 10;
+      animation: combo-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+    @keyframes combo-pop {
+      0% { transform: scale(0); }
+      100% { transform: scale(1); }
+    }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      pointer-events: none;
+      z-index: 20;
+    }
+    /* Rocket trail */
+    .rocket-trail {
+      position: absolute;
+      z-index: 15;
+      pointer-events: none;
+      border-radius: 4px;
+    }
+    /* Bomb blast ring */
+    .bomb-ring {
+      position: absolute;
+      border-radius: 50%;
+      border: 3px solid rgba(255,210,63,0.8);
+      pointer-events: none;
+      z-index: 15;
+    }
   </style>
 </head>
 <body class="bg-cream text-navy font-sans antialiased">
@@ -149,14 +290,12 @@
             Based in Turkey &mdash; open to remote &amp; on-site
           </p>
         </div>
-        <!-- Profile Photo / Visual -->
+        <!-- Puzzle Animation -->
         <div class="lg:col-span-5 flex justify-center lg:justify-end fade-up fade-up-delay-2">
           <div class="relative">
-            <div class="w-64 h-64 md:w-80 md:h-80 rounded-3xl photo-placeholder flex items-center justify-center overflow-hidden">
-              <img src="assets/ezgi-pp.jpg" alt="Ezgi Ekinci" class="w-full h-full object-cover">
-            </div>
+            <div id="puzzle-grid" class="puzzle-container w-64 h-64 md:w-80 md:h-80"></div>
             <!-- Open to Work badge -->
-            <div class="absolute -bottom-3 -right-3 bg-white rounded-full shadow-lg px-4 py-2 border-2 border-sage/50 flex items-center gap-2">
+            <div class="absolute -bottom-3 -right-3 bg-white rounded-full shadow-lg px-4 py-2 border-2 border-sage/50 flex items-center gap-2 z-10">
               <span class="w-2.5 h-2.5 bg-sage rounded-full animate-pulse"></span>
               <span class="text-xs font-semibold text-navy" data-i18n="hero.status">Open to Work</span>
             </div>
@@ -168,10 +307,10 @@
       <span class="text-[15px] font-mono text-slate/40 tracking-wider" data-i18n="logos.label">previously at</span>
       <div class="flex items-center gap-4">
         <a href="https://global.abb" class="grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-          <img src="assets/img/abb-logo.png" alt="ABB" class="h-10 md:h-11 object-contain">
+          <img src="assets/img/abb-logo.png" alt="ABB" class="h-14 md:h-16 object-contain">
         </a>
         <a href="https://www.itu.edu.tr" class="grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
-          <img src="assets/img/itu-logo.png" alt="Istanbul Technical University" class="h-6 md:h-7 object-contain" style="transform: translateY(-7px)">
+          <img src="assets/img/itu-logo.png" alt="Istanbul Technical University" class="h-9 md:h-10 object-contain" style="transform: translateY(-10px)">
         </a>
       </div>
     </div>
@@ -543,6 +682,530 @@
       entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
     }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
     document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+
+  <!-- Puzzle Animation -->
+  <script>
+  (function() {
+    const COLS = 6, ROWS = 6;
+    const COLORS = ['#FF4D8D', '#4DC9F6', '#FFD23F', '#D4B8FF'];
+    const MOVE_DELAY = 1800;
+    const POP_DURATION = 350;
+    const FALL_DURATION = 350;
+    const SPAWN_DURATION = 400;
+    const CHAIN_DELAY = 450;
+    const ROCKET_THRESHOLD = 5;  // 5-6 pieces → rocket
+    const BOMB_THRESHOLD = 7;    // 7+ pieces → bomb
+
+    const grid = document.getElementById('puzzle-grid');
+    if (!grid) return;
+
+    let board = [];
+    let combo = 0;
+    let animating = false;
+    let comboEl = null;
+
+    function randColor() {
+      return Math.floor(Math.random() * COLORS.length);
+    }
+
+    function createCell(row, col, colorIdx) {
+      const el = document.createElement('div');
+      el.className = 'puzzle-cell';
+      el.style.backgroundColor = COLORS[colorIdx];
+      el.style.gridRow = row + 1;
+      el.style.gridColumn = col + 1;
+      return el;
+    }
+
+    function initBoard() {
+      grid.innerHTML = '';
+      board = [];
+      for (let r = 0; r < ROWS; r++) {
+        board[r] = [];
+        for (let c = 0; c < COLS; c++) {
+          const colorIdx = randColor();
+          const el = createCell(r, c, colorIdx);
+          grid.appendChild(el);
+          board[r][c] = { color: colorIdx, el, type: 'normal' };
+        }
+      }
+    }
+
+    function floodFill(startR, startC, visited) {
+      const group = [];
+      const color = board[startR][startC].color;
+      const stack = [[startR, startC]];
+      while (stack.length) {
+        const [r, c] = stack.pop();
+        if (r < 0 || r >= ROWS || c < 0 || c >= COLS) continue;
+        if (visited[r][c] || !board[r][c] || board[r][c].color !== color) continue;
+        visited[r][c] = true;
+        group.push([r, c]);
+        stack.push([r-1,c],[r+1,c],[r,c-1],[r,c+1]);
+      }
+      return group;
+    }
+
+    function findAllGroups() {
+      const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+      const groups = [];
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (visited[r][c] || !board[r][c]) continue;
+          const group = floodFill(r, c, visited);
+          if (group.length >= 2) groups.push(group);
+        }
+      }
+      groups.sort((a, b) => b.length - a.length);
+      return groups;
+    }
+
+    function findLargestGroup() {
+      const groups = findAllGroups();
+      return groups.length > 0 ? groups[0] : null;
+    }
+
+    function getCellCenter(row, col) {
+      const pad = 12;
+      const gap = 4;
+      const totalGaps = (COLS - 1) * gap;
+      const cellSize = (grid.offsetWidth - pad * 2 - totalGaps) / COLS;
+      return {
+        x: pad + col * (cellSize + gap) + cellSize / 2,
+        y: pad + row * (cellSize + gap) + cellSize / 2,
+        size: cellSize
+      };
+    }
+
+    function spawnParticles(row, col, color, count, spread) {
+      count = count || 6;
+      spread = spread || 30;
+      const { x: cx, y: cy } = getCellCenter(row, col);
+      for (let i = 0; i < count; i++) {
+        const p = document.createElement('div');
+        p.className = 'particle';
+        const size = 4 + Math.random() * 4;
+        p.style.width = size + 'px';
+        p.style.height = size + 'px';
+        p.style.backgroundColor = color;
+        p.style.left = cx + 'px';
+        p.style.top = cy + 'px';
+        const angle = (Math.PI * 2 / count) * i + Math.random() * 0.8;
+        const dist = spread * 0.5 + Math.random() * spread;
+        const dx = Math.cos(angle) * dist;
+        const dy = Math.sin(angle) * dist;
+        p.animate([
+          { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+          { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0)`, opacity: 0 }
+        ], { duration: 400 + Math.random() * 200, easing: 'ease-out', fill: 'forwards' });
+        grid.appendChild(p);
+        setTimeout(() => p.remove(), 650);
+      }
+    }
+
+    function showRocketTrail(row, col, horizontal, color) {
+      const { x: cx, y: cy, size } = getCellCenter(row, col);
+      const trail = document.createElement('div');
+      trail.className = 'rocket-trail';
+      trail.style.backgroundColor = color;
+      trail.style.opacity = '0.6';
+      if (horizontal) {
+        trail.style.left = '0px';
+        trail.style.top = (cy - 2) + 'px';
+        trail.style.width = grid.offsetWidth + 'px';
+        trail.style.height = '4px';
+      } else {
+        trail.style.left = (cx - 2) + 'px';
+        trail.style.top = '0px';
+        trail.style.width = '4px';
+        trail.style.height = grid.offsetHeight + 'px';
+      }
+      grid.appendChild(trail);
+      trail.animate([
+        { opacity: 0.8, transform: 'scale(1)' },
+        { opacity: 0, transform: horizontal ? 'scaleY(3)' : 'scaleX(3)' }
+      ], { duration: 500, easing: 'ease-out', fill: 'forwards' });
+      setTimeout(() => trail.remove(), 500);
+
+      // Extra particles along the line
+      for (let i = 0; i < COLS; i++) {
+        const pr = horizontal ? row : i;
+        const pc = horizontal ? i : col;
+        if (board[pr] && board[pr][pc]) {
+          spawnParticles(pr, pc, color, 3, 15);
+        }
+      }
+    }
+
+    function showBombBlast(row, col, color) {
+      const { x: cx, y: cy, size } = getCellCenter(row, col);
+      // Expanding ring
+      const ring = document.createElement('div');
+      ring.className = 'bomb-ring';
+      const ringSize = size * 4;
+      ring.style.left = (cx - ringSize / 2) + 'px';
+      ring.style.top = (cy - ringSize / 2) + 'px';
+      ring.style.width = ringSize + 'px';
+      ring.style.height = ringSize + 'px';
+      ring.style.borderColor = color;
+      grid.appendChild(ring);
+      ring.animate([
+        { transform: 'scale(0)', opacity: 1, borderWidth: '4px' },
+        { transform: 'scale(1)', opacity: 0, borderWidth: '1px' }
+      ], { duration: 500, easing: 'ease-out', fill: 'forwards' });
+      setTimeout(() => ring.remove(), 500);
+
+      // Flash overlay
+      const flash = document.createElement('div');
+      flash.style.cssText = `position:absolute;inset:0;background:${color};border-radius:1.5rem;z-index:25;pointer-events:none;`;
+      grid.appendChild(flash);
+      flash.animate([
+        { opacity: 0.3 },
+        { opacity: 0 }
+      ], { duration: 300, easing: 'ease-out', fill: 'forwards' });
+      setTimeout(() => flash.remove(), 300);
+
+      // Burst particles
+      spawnParticles(row, col, color, 12, 50);
+      spawnParticles(row, col, '#FFFFFF', 6, 40);
+    }
+
+    function showCombo(count) {
+      if (comboEl) comboEl.remove();
+      if (count < 2) return;
+      comboEl = document.createElement('div');
+      comboEl.className = 'combo-badge';
+      comboEl.textContent = 'x' + count;
+      grid.appendChild(comboEl);
+      setTimeout(() => { if (comboEl) comboEl.remove(); comboEl = null; }, 1200);
+    }
+
+    function shakeGrid(big) {
+      const cls = big ? 'puzzle-big-shake' : 'puzzle-shake';
+      grid.classList.remove('puzzle-shake', 'puzzle-big-shake');
+      void grid.offsetWidth; // force reflow
+      grid.classList.add(cls);
+      setTimeout(() => grid.classList.remove(cls), big ? 500 : 400);
+    }
+
+    // Remove a single cell from the board
+    function removeCell(r, c) {
+      if (board[r][c]) {
+        board[r][c].el.remove();
+        board[r][c] = null;
+      }
+    }
+
+    // Pop a group, create power-up if big enough
+    async function popGroup(group) {
+      const groupSize = group.length;
+      const firstCell = board[group[0][0]][group[0][1]];
+      if (!firstCell) return;
+      const color = firstCell.color;
+
+      // Determine power-up to create
+      let powerUpType = null;
+      let powerUpPos = null;
+      if (groupSize >= BOMB_THRESHOLD) {
+        powerUpType = 'bomb';
+        powerUpPos = group[Math.floor(group.length / 2)];
+      } else if (groupSize >= ROCKET_THRESHOLD) {
+        powerUpType = Math.random() > 0.5 ? 'rocket' : 'rocket-v';
+        powerUpPos = group[Math.floor(group.length / 2)];
+      }
+
+      // Collect power-ups that exist in this group (to activate after)
+      const existingPowerUps = [];
+      group.forEach(([r, c]) => {
+        if (board[r][c] && board[r][c].type !== 'normal') {
+          existingPowerUps.push({ row: r, col: c, type: board[r][c].type, color: board[r][c].color });
+        }
+      });
+
+      // Exclude power-up spawn position from removal
+      const spawnKey = powerUpPos ? `${powerUpPos[0]},${powerUpPos[1]}` : null;
+
+      // Pop animation for all cells
+      group.forEach(([r, c]) => {
+        const cell = board[r][c];
+        if (!cell) return;
+        if (spawnKey && `${r},${c}` === spawnKey) return; // don't pop the spawn position yet
+        cell.el.classList.add('popping');
+        spawnParticles(r, c, COLORS[cell.color], 5, 25);
+      });
+
+      await sleep(POP_DURATION);
+
+      // Remove popped cells
+      group.forEach(([r, c]) => {
+        if (spawnKey && `${r},${c}` === spawnKey) return;
+        removeCell(r, c);
+      });
+
+      // Place power-up
+      if (powerUpType && powerUpPos) {
+        const [pr, pc] = powerUpPos;
+        // Remove existing cell at spawn position
+        removeCell(pr, pc);
+        const el = createCell(pr, pc, color);
+        const isVertical = powerUpType === 'rocket-v';
+        const actualType = isVertical ? 'rocket' : powerUpType;
+        el.classList.add(actualType);
+        if (isVertical) el.classList.add('rocket-v');
+        el.style.animation = 'powerup-spawn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+        grid.appendChild(el);
+        board[pr][pc] = { color, el, type: powerUpType };
+        spawnParticles(pr, pc, '#FFFFFF', 8, 35);
+        await sleep(SPAWN_DURATION);
+        el.style.animation = '';
+      }
+
+      return existingPowerUps;
+    }
+
+    // Activate a rocket: clear its row or column with trail effect
+    async function activateRocket(row, col, rocketType) {
+      const horizontal = rocketType !== 'rocket-v';
+      const cell = board[row][col];
+      const color = cell ? COLORS[cell.color] : '#FFFFFF';
+
+      // Remove the rocket itself
+      removeCell(row, col);
+
+      // Show trail
+      showRocketTrail(row, col, horizontal, color);
+      shakeGrid(false);
+
+      // Collect cells to clear (and any chain power-ups)
+      const chainPowerUps = [];
+      const toClear = [];
+      if (horizontal) {
+        for (let c = 0; c < COLS; c++) {
+          if (board[row][c]) {
+            if (board[row][c].type !== 'normal') {
+              chainPowerUps.push({ row, col: c, type: board[row][c].type, color: board[row][c].color });
+            }
+            toClear.push([row, c]);
+          }
+        }
+      } else {
+        for (let r = 0; r < ROWS; r++) {
+          if (board[r][col]) {
+            if (board[r][col].type !== 'normal') {
+              chainPowerUps.push({ row: r, col, type: board[r][col].type, color: board[r][col].color });
+            }
+            toClear.push([r, col]);
+          }
+        }
+      }
+
+      // Animate clearing with slight delay per cell (sweep effect)
+      for (let i = 0; i < toClear.length; i++) {
+        const [r, c] = toClear[i];
+        if (board[r][c]) {
+          board[r][c].el.classList.add('popping');
+          spawnParticles(r, c, COLORS[board[r][c].color], 4, 20);
+        }
+      }
+      await sleep(POP_DURATION);
+      toClear.forEach(([r, c]) => removeCell(r, c));
+
+      // Chain-activate any power-ups hit by the rocket
+      for (const pu of chainPowerUps) {
+        if (!board[pu.row][pu.col]) continue; // already removed
+        if (pu.type === 'rocket' || pu.type === 'rocket-v') {
+          await activateRocket(pu.row, pu.col, pu.type);
+        } else if (pu.type === 'bomb') {
+          await activateBomb(pu.row, pu.col);
+        }
+      }
+    }
+
+    // Activate a bomb: clear 5x5 cross pattern (like Toon Blast)
+    async function activateBomb(row, col) {
+      const cell = board[row][col];
+      const color = cell ? COLORS[cell.color] : '#FFD23F';
+
+      // Remove bomb itself
+      removeCell(row, col);
+
+      // Show blast effect
+      showBombBlast(row, col, color);
+      shakeGrid(true);
+
+      // Blast radius: 2 cells in each direction (diamond/cross shape)
+      const RADIUS = 2;
+      const toClear = [];
+      const chainPowerUps = [];
+      for (let dr = -RADIUS; dr <= RADIUS; dr++) {
+        for (let dc = -RADIUS; dc <= RADIUS; dc++) {
+          if (Math.abs(dr) + Math.abs(dc) > RADIUS) continue; // diamond shape
+          const r = row + dr, c = col + dc;
+          if (r < 0 || r >= ROWS || c < 0 || c >= COLS) continue;
+          if (!board[r][c]) continue;
+          if (board[r][c].type !== 'normal') {
+            chainPowerUps.push({ row: r, col: c, type: board[r][c].type, color: board[r][c].color });
+          }
+          toClear.push([r, c]);
+        }
+      }
+
+      toClear.forEach(([r, c]) => {
+        if (board[r][c]) {
+          board[r][c].el.classList.add('popping');
+          spawnParticles(r, c, COLORS[board[r][c].color], 4, 20);
+        }
+      });
+      await sleep(POP_DURATION);
+      toClear.forEach(([r, c]) => removeCell(r, c));
+
+      // Chain-activate power-ups
+      for (const pu of chainPowerUps) {
+        if (!board[pu.row][pu.col]) continue;
+        if (pu.type === 'rocket' || pu.type === 'rocket-v') {
+          await activateRocket(pu.row, pu.col, pu.type);
+        } else if (pu.type === 'bomb') {
+          await activateBomb(pu.row, pu.col);
+        }
+      }
+    }
+
+    // Gravity
+    async function applyGravity() {
+      let moved = false;
+      for (let c = 0; c < COLS; c++) {
+        let writeRow = ROWS - 1;
+        for (let r = ROWS - 1; r >= 0; r--) {
+          if (board[r][c]) {
+            if (r !== writeRow) {
+              board[writeRow][c] = board[r][c];
+              board[r][c] = null;
+              board[writeRow][c].el.style.gridRow = writeRow + 1;
+              board[writeRow][c].el.classList.add('falling');
+              moved = true;
+            }
+            writeRow--;
+          }
+        }
+        for (let r = writeRow; r >= 0; r--) {
+          const colorIdx = randColor();
+          const el = createCell(r, c, colorIdx);
+          el.classList.add('spawning');
+          grid.appendChild(el);
+          board[r][c] = { color: colorIdx, el, type: 'normal' };
+          moved = true;
+        }
+      }
+      if (moved) {
+        await sleep(FALL_DURATION);
+        for (let r = 0; r < ROWS; r++) {
+          for (let c = 0; c < COLS; c++) {
+            if (board[r][c]) {
+              board[r][c].el.classList.remove('falling', 'spawning');
+            }
+          }
+        }
+      }
+      return moved;
+    }
+
+    // Main turn
+    async function playTurn() {
+      if (animating) return;
+      animating = true;
+      combo = 0;
+
+      let group = findLargestGroup();
+      if (!group) {
+        initBoard();
+        animating = false;
+        return;
+      }
+
+      while (group) {
+        combo++;
+        if (combo > 1) {
+          showCombo(combo);
+          shakeGrid(false);
+        }
+
+        // Highlight
+        group.forEach(([r, c]) => {
+          if (board[r][c]) board[r][c].el.classList.add('highlight');
+        });
+        await sleep(350);
+        group.forEach(([r, c]) => {
+          if (board[r][c]) board[r][c].el.classList.remove('highlight');
+        });
+
+        // Pop the group and get any existing power-ups that were in it
+        const triggeredPowerUps = await popGroup(group);
+
+        // Activate triggered power-ups
+        if (triggeredPowerUps) {
+          for (const pu of triggeredPowerUps) {
+            // Power-up cell was already removed by popGroup, activate its effect
+            if (pu.type === 'rocket' || pu.type === 'rocket-v') {
+              showRocketTrail(pu.row, pu.col, pu.type !== 'rocket-v', COLORS[pu.color]);
+              shakeGrid(false);
+              const horizontal = pu.type !== 'rocket-v';
+              const toClear = [];
+              if (horizontal) {
+                for (let c = 0; c < COLS; c++) { if (board[pu.row][c]) toClear.push([pu.row, c]); }
+              } else {
+                for (let r = 0; r < ROWS; r++) { if (board[r][pu.col]) toClear.push([r, pu.col]); }
+              }
+              toClear.forEach(([r, c]) => {
+                if (board[r][c]) {
+                  board[r][c].el.classList.add('popping');
+                  spawnParticles(r, c, COLORS[board[r][c].color], 4, 20);
+                }
+              });
+              await sleep(POP_DURATION);
+              toClear.forEach(([r, c]) => removeCell(r, c));
+            } else if (pu.type === 'bomb') {
+              showBombBlast(pu.row, pu.col, COLORS[pu.color]);
+              shakeGrid(true);
+              const RADIUS = 2;
+              const toClear = [];
+              for (let dr = -RADIUS; dr <= RADIUS; dr++) {
+                for (let dc = -RADIUS; dc <= RADIUS; dc++) {
+                  if (Math.abs(dr) + Math.abs(dc) > RADIUS) continue;
+                  const r = pu.row + dr, c = pu.col + dc;
+                  if (r >= 0 && r < ROWS && c >= 0 && c < COLS && board[r][c]) toClear.push([r, c]);
+                }
+              }
+              toClear.forEach(([r, c]) => {
+                if (board[r][c]) {
+                  board[r][c].el.classList.add('popping');
+                  spawnParticles(r, c, COLORS[board[r][c].color], 4, 20);
+                }
+              });
+              await sleep(POP_DURATION);
+              toClear.forEach(([r, c]) => removeCell(r, c));
+            }
+          }
+        }
+
+        await applyGravity();
+        await sleep(CHAIN_DELAY);
+        group = findLargestGroup();
+      }
+
+      animating = false;
+    }
+
+    function sleep(ms) {
+      return new Promise(resolve => setTimeout(resolve, ms));
+    }
+
+    initBoard();
+    setTimeout(() => {
+      playTurn();
+      setInterval(() => { if (!animating) playTurn(); }, MOVE_DELAY);
+    }, 1000);
+  })();
   </script>
 </body>
 </html>
