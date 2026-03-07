@@ -1450,12 +1450,75 @@
       return null;
     }
 
+    // Snapshot which cells have groups BEFORE a pop, so we can detect new ones after gravity
+    function snapshotGroups() {
+      const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+      const set = new Set();
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (visited[r][c] || !board[r][c] || board[r][c].color < 0) continue;
+          const group = [];
+          const color = board[r][c].color;
+          const stack = [[r, c]];
+          while (stack.length) {
+            const [cr, cc] = stack.pop();
+            if (cr < 0 || cr >= ROWS || cc < 0 || cc >= COLS) continue;
+            if (visited[cr][cc] || !board[cr][cc] || board[cr][cc].color !== color) continue;
+            visited[cr][cc] = true;
+            group.push([cr, cc]);
+            stack.push([cr-1,cc],[cr+1,cc],[cr,cc-1],[cr,cc+1]);
+          }
+          if (group.length >= 2) group.forEach(([gr, gc]) => set.add(`${gr},${gc}`));
+        }
+      }
+      return set;
+    }
+
     // Pop groups + activate power-ups in a loop until board is stable
     async function popChains() {
+      // Pop only the first group (the "tap") — not a combo
       let group = findLargestGroup();
+      if (!group) return;
+
+      group.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.add('highlight'); });
+      await sleep(350);
+      group.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.remove('highlight'); });
+
+      // Snapshot existing groups before pop so we can detect genuinely new ones
+      const beforePop = snapshotGroups();
+      await popGroup(group);
+      // Remove popped cells from snapshot
+      group.forEach(([r, c]) => beforePop.delete(`${r},${c}`));
+
+      await applyGravity();
+      await sleep(CHAIN_DELAY);
+
+      // Activate any power-ups
+      let pu = findPowerUp();
+      while (pu) {
+        const [r, c] = pu;
+        const el = board[r][c].el;
+        await sleep(300);
+        el.classList.add('highlight');
+        await sleep(250);
+        if (board[r][c]) el.classList.remove('highlight');
+        if (board[r][c] && board[r][c].type !== 'normal') {
+          await activatePowerUp(r, c);
+          await applyGravity();
+          await sleep(CHAIN_DELAY);
+        }
+        pu = findPowerUp();
+      }
+
+      // Now chain: only groups that are genuinely NEW (created by gravity) count as combos
+      group = findLargestGroup();
       while (group) {
-        combo++;
-        if (combo > 2) showCombo(combo);
+        // Check if this group is new (has cells not in the pre-pop snapshot)
+        const isNew = group.some(([r, c]) => !beforePop.has(`${r},${c}`));
+        if (isNew) {
+          combo++;
+          if (combo > 1) showCombo(combo + 1); // +1 so first chain shows x3
+        }
 
         group.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.add('highlight'); });
         await sleep(350);
@@ -1465,8 +1528,8 @@
         await applyGravity();
         await sleep(CHAIN_DELAY);
 
-        // Power-up spawn olduysa HEMEN aktive et
-        let pu = findPowerUp();
+        // Activate any power-ups from this chain step
+        pu = findPowerUp();
         while (pu) {
           const [r, c] = pu;
           const el = board[r][c].el;
