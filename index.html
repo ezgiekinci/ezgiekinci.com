@@ -10,7 +10,7 @@
   <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -119,79 +119,103 @@
     /* === Power-up: Rocket === */
     .puzzle-cell.rocket,
     .puzzle-cell.rocket-v {
-      border-radius: 0.5rem;
-      overflow: hidden;
-      background: linear-gradient(145deg, #3a3a5c, #2a2a42) !important;
-      border: 2px solid rgba(255,255,255,0.5);
-      box-shadow: 0 0 10px rgba(255,165,0,0.4), 0 2px 4px rgba(0,0,0,0.3);
+      background: transparent !important;
+      border: none;
+      box-shadow: none;
+      overflow: visible;
       animation: rocket-idle 1s ease-in-out infinite alternate;
     }
     .puzzle-cell.rocket::before,
-    .puzzle-cell.rocket-v::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.15) 0%, transparent 50%, rgba(0,0,0,0.15) 100%);
-      z-index: 1;
-    }
+    .puzzle-cell.rocket-v::before { content: none; }
     .puzzle-cell.rocket::after {
       content: '';
       position: absolute;
-      width: 80%; height: 80%;
+      width: 90%; height: 90%;
       z-index: 2;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='rh' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23E0E0E0'/%3E%3Cstop offset='50%25' stop-color='%23FFFFFF'/%3E%3Cstop offset='100%25' stop-color='%23C0C0C0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='20' cy='20' rx='15' ry='7' fill='url(%23rh)'/%3E%3Cpolygon points='36,20 28,12 28,28' fill='%23FF4D4D'/%3E%3Cpolygon points='4,20 12,12 12,28' fill='%23FF4D4D'/%3E%3Cellipse cx='7' cy='20' rx='5' ry='6' fill='%23FF6B35' opacity='0.9'/%3E%3Cellipse cx='5' cy='20' rx='3' ry='4' fill='%23FFD23F'/%3E%3Cellipse cx='20' cy='18' rx='6' ry='2' fill='white' opacity='0.4'/%3E%3C/svg%3E");
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
-      filter: drop-shadow(0 0 4px rgba(255,165,0,0.5));
+      filter: drop-shadow(0 0 6px rgba(255,165,0,0.6));
     }
     .puzzle-cell.rocket-v::after {
       content: '';
       position: absolute;
-      width: 80%; height: 80%;
+      width: 90%; height: 90%;
       z-index: 2;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='rv' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0%25' stop-color='%23E0E0E0'/%3E%3Cstop offset='50%25' stop-color='%23FFFFFF'/%3E%3Cstop offset='100%25' stop-color='%23C0C0C0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='20' cy='20' rx='7' ry='15' fill='url(%23rv)'/%3E%3Cpolygon points='20,4 12,12 28,12' fill='%23FF4D4D'/%3E%3Cpolygon points='20,36 12,28 28,28' fill='%23FF4D4D'/%3E%3Cellipse cx='20' cy='33' rx='6' ry='5' fill='%23FF6B35' opacity='0.9'/%3E%3Cellipse cx='20' cy='35' rx='4' ry='3' fill='%23FFD23F'/%3E%3Cellipse cx='18' cy='20' rx='2' ry='6' fill='white' opacity='0.4'/%3E%3C/svg%3E");
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
-      filter: drop-shadow(0 0 4px rgba(255,165,0,0.5));
+      filter: drop-shadow(0 0 6px rgba(255,165,0,0.6));
     }
     @keyframes rocket-idle {
-      0% { transform: scale(1) translateX(0); box-shadow: 0 0 8px rgba(255,165,0,0.3), 0 2px 4px rgba(0,0,0,0.3); }
-      50% { transform: scale(1.04) translateX(0.5px); }
-      100% { transform: scale(1) translateX(-0.5px); box-shadow: 0 0 14px rgba(255,165,0,0.6), 0 2px 4px rgba(0,0,0,0.3); }
+      0% { transform: scale(1) translateX(0); }
+      50% { transform: scale(1.06) translateX(0.5px); }
+      100% { transform: scale(1) translateX(-0.5px); }
     }
 
     /* === Power-up: Bomb === */
     .puzzle-cell.bomb {
-      border-radius: 0.5rem;
-      overflow: hidden;
-      background: linear-gradient(145deg, #4a2040, #2e1228) !important;
-      border: 2px solid rgba(255,210,63,0.6);
-      box-shadow: 0 0 12px rgba(255,210,63,0.4), 0 2px 4px rgba(0,0,0,0.3);
+      background: transparent !important;
+      border: none;
+      box-shadow: none;
+      overflow: visible;
       animation: bomb-idle 0.8s ease-in-out infinite alternate;
     }
-    .puzzle-cell.bomb::before {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(255,255,255,0.1) 0%, transparent 40%, rgba(0,0,0,0.15) 100%);
-      z-index: 1;
-    }
+    .puzzle-cell.bomb::before { content: none; }
     .puzzle-cell.bomb::after {
       content: '';
       position: absolute;
-      width: 85%; height: 85%;
+      width: 95%; height: 95%;
       z-index: 2;
       background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3CradialGradient id='bg' cx='40%25' cy='35%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23333'/%3E%3Cstop offset='100%25' stop-color='%23111'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='20' cy='22' r='12' fill='url(%23bg)' stroke='%23666' stroke-width='0.5'/%3E%3Ccircle cx='16' cy='18' r='3.5' fill='%23555' opacity='0.6'/%3E%3Crect x='18' y='7' width='4' height='7' rx='2' fill='%23888'/%3E%3Ccircle cx='20' cy='6' r='3.5' fill='%23FFD23F'/%3E%3Ccircle cx='20' cy='5' r='2.5' fill='%23FF6B35'/%3E%3Cpath d='M18 4 Q16 0 19 -1 Q22 0 22 4' fill='%23FF4D4D' opacity='0.9'/%3E%3Cpath d='M22 3 Q24 1 23 -1' stroke='%23FFD23F' stroke-width='1.2' fill='none'/%3E%3Cpath d='M17 3 Q15 1 16 -1' stroke='%23FF6B35' stroke-width='0.8' fill='none' opacity='0.7'/%3E%3C/svg%3E");
       background-size: contain;
       background-repeat: no-repeat;
       background-position: center;
-      filter: drop-shadow(0 0 5px rgba(255,210,63,0.4));
+      filter: drop-shadow(0 0 6px rgba(255,210,63,0.5));
     }
     @keyframes bomb-idle {
-      0% { transform: scale(1); box-shadow: 0 0 8px rgba(255,210,63,0.3), 0 2px 4px rgba(0,0,0,0.3); }
-      100% { transform: scale(1.06); box-shadow: 0 0 18px rgba(255,210,63,0.7), 0 0 8px rgba(255,77,77,0.4), 0 2px 4px rgba(0,0,0,0.3); }
+      0% { transform: scale(1); }
+      100% { transform: scale(1.08); }
+    }
+
+    /* === Power-up: Disco Ball === */
+    .puzzle-cell.disco {
+      background: transparent !important;
+      border: none;
+      box-shadow: none;
+      overflow: visible;
+      animation: disco-idle 1.5s linear infinite;
+    }
+    .puzzle-cell.disco::before { content: none; }
+    .puzzle-cell.disco::after {
+      content: '';
+      position: absolute;
+      width: 90%; height: 90%;
+      border-radius: 50%;
+      z-index: 2;
+      background: conic-gradient(from 0deg, #FF4D8D, #FFD23F, #4DC9F6, #D4B8FF, #FF4D8D);
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
+      animation: disco-sparkle 2s linear infinite;
+    }
+    @keyframes disco-idle {
+      0% { filter: drop-shadow(0 0 6px rgba(255,77,141,0.5)); }
+      33% { filter: drop-shadow(0 0 6px rgba(255,210,63,0.5)); }
+      66% { filter: drop-shadow(0 0 6px rgba(77,201,246,0.5)); }
+      100% { filter: drop-shadow(0 0 6px rgba(255,77,141,0.5)); }
+    }
+    @keyframes disco-sparkle {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    .disco-beam {
+      position: absolute;
+      pointer-events: none;
+      z-index: 18;
+      height: 2px;
+      transform-origin: left center;
+      border-radius: 1px;
     }
 
     @keyframes pop {
@@ -229,6 +253,16 @@
       60% { transform: translate(3px, -1px) rotate(1deg); }
       70% { transform: translate(-2px, 1px) rotate(-0.5deg); }
     }
+    @keyframes land-bounce {
+      0% { transform: scaleX(1) scaleY(1); }
+      40% { transform: scaleX(1.15) scaleY(0.85); }
+      60% { transform: scaleX(0.92) scaleY(1.08); }
+      80% { transform: scaleX(1.04) scaleY(0.96); }
+      100% { transform: scaleX(1) scaleY(1); }
+    }
+    .puzzle-cell.landing {
+      animation: land-bounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    }
     .puzzle-shake { animation: shake 0.4s ease; }
     .puzzle-big-shake { animation: big-shake 0.6s ease; }
     .combo-badge {
@@ -254,6 +288,16 @@
       border-radius: 50%;
       pointer-events: none;
       z-index: 20;
+    }
+    /* Board reset cascade */
+    @keyframes cascade-out {
+      0% { transform: scale(1) translateY(0); opacity: 1; }
+      100% { transform: scale(0.5) translateY(30px); opacity: 0; }
+    }
+    @keyframes wave-spawn {
+      0% { transform: scale(0) translateY(-20px); opacity: 0; }
+      60% { transform: scale(1.1) translateY(2px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
     }
     /* Rocket trail */
     .rocket-trail {
@@ -335,11 +379,20 @@
         <!-- Puzzle Animation -->
         <div class="lg:col-span-5 flex justify-center lg:justify-end fade-up fade-up-delay-2">
           <div class="relative">
+            <!-- How it Works hand-drawn annotation -->
+            <div class="absolute -top-24 left-16 z-20 pointer-events-none" style="transform: rotate(-3deg);">
+              <span class="text-2xl" style="font-family: 'Caveat', cursive; font-weight: 700; color: rgba(200,120,135,0.75);" data-i18n="hero.seeGameMechanics">see game mechanics</span>
+            </div>
+            <svg id="annotation-arrow" class="absolute z-20 pointer-events-none overflow-visible" style="top: -63px; left: 60px; width: 70px; height: 52px;"></svg>
+            <a href="how-it-works.html" class="absolute -top-3 -left-3 bg-white rounded-full shadow-lg px-3 py-1.5 border-2 border-sage/40 flex items-center gap-2 z-10 hover:border-coral/60 transition-colors group">
+              <svg class="w-3.5 h-3.5 text-sage group-hover:text-coral transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+              <span class="text-xs font-semibold text-navy" data-i18n="hero.howItWorks">How it Works</span>
+            </a>
             <div id="puzzle-grid" class="puzzle-container w-64 h-64 md:w-80 md:h-80"></div>
-            <!-- Open to Work badge -->
-            <div class="absolute -bottom-3 -right-3 bg-white rounded-full shadow-lg px-4 py-2 border-2 border-sage/50 flex items-center gap-2 z-10">
-              <span class="w-2.5 h-2.5 bg-sage rounded-full animate-pulse"></span>
-              <span class="text-xs font-semibold text-navy" data-i18n="hero.status">Open to Work</span>
+            <!-- Auto-play badge -->
+            <div class="absolute -bottom-3 -right-3 bg-white rounded-full shadow-lg px-4 py-2 border-2 border-coral/40 flex items-center gap-2 z-10">
+              <span class="w-2.5 h-2.5 bg-coral rounded-full animate-pulse"></span>
+              <span class="text-xs font-semibold text-navy" data-i18n="hero.status">Live &middot; Every round unique</span>
             </div>
           </div>
         </div>
@@ -574,7 +627,9 @@
         'hero.cta1': 'See My Work',
         'hero.cta2': 'Get in Touch',
         'hero.location': 'Based in Turkey \u2014 open to remote & on-site',
-        'hero.status': 'Open to Work',
+        'hero.status': 'Live \u00B7 Every round unique',
+        'hero.howItWorks': 'How it Works',
+        'hero.seeGameMechanics': 'see game mechanics',
         'logos.label': 'previously at',
         'work.label': 'Featured Work',
         'work.heading': 'Case Studies',
@@ -616,7 +671,9 @@
         'hero.cta1': '\u00C7al\u0131\u015Fmam\u0131 \u0130ncele',
         'hero.cta2': '\u0130leti\u015Fime Ge\u00E7',
         'hero.location': 'T\u00FCrkiye merkezli \u2014 uzaktan ve ofisten \u00E7al\u0131\u015Fmaya a\u00E7\u0131k',
-        'hero.status': '\u0130\u015Fe A\u00E7\u0131k',
+        'hero.status': 'Canl\u0131 \u00B7 Her raund benzersiz',
+        'hero.howItWorks': 'Nas\u0131l \u00C7al\u0131\u015F\u0131r',
+        'hero.seeGameMechanics': 'oyun mekaniklerini g\u00F6r',
         'logos.label': 'previously at',
         'work.label': '\u00D6ne \u00C7\u0131kan \u00C7al\u0131\u015Fma',
         'work.heading': 'Case Studies',
@@ -736,8 +793,9 @@
     const FALL_DURATION = 350;
     const SPAWN_DURATION = 400;
     const CHAIN_DELAY = 450;
-    const ROCKET_THRESHOLD = 4;
+    const ROCKET_THRESHOLD = 5;
     const BOMB_THRESHOLD = 6;
+    const DISCO_THRESHOLD = 8;
 
     const grid = document.getElementById('puzzle-grid');
     if (!grid) return;
@@ -766,9 +824,13 @@
       el.className = 'puzzle-cell';
       el.style.gridRow = row + 1;
       el.style.gridColumn = col + 1;
-      const isVertical = type === 'rocket-v';
-      el.classList.add(isVertical ? 'rocket' : type);
-      if (isVertical) el.classList.add('rocket-v');
+      if (type === 'disco') {
+        el.classList.add('disco');
+      } else {
+        const isVertical = type === 'rocket-v';
+        el.classList.add(isVertical ? 'rocket' : type);
+        if (isVertical) el.classList.add('rocket-v');
+      }
       return el;
     }
 
@@ -923,20 +985,22 @@
       const firstCell = board[group[0][0]][group[0][1]];
       if (!firstCell) return;
 
-      // Determine power-up
+      // Determine power-up (disco > bomb > rocket)
       let puType = null, puPos = null;
-      if (groupSize >= BOMB_THRESHOLD) { puType = 'bomb'; puPos = group[Math.floor(group.length / 2)]; }
+      if (groupSize >= DISCO_THRESHOLD) { puType = 'disco'; puPos = group[Math.floor(group.length / 2)]; }
+      else if (groupSize >= BOMB_THRESHOLD) { puType = 'bomb'; puPos = group[Math.floor(group.length / 2)]; }
       else if (groupSize >= ROCKET_THRESHOLD) { puType = Math.random() > 0.5 ? 'rocket' : 'rocket-v'; puPos = group[Math.floor(group.length / 2)]; }
 
       const spawnKey = puPos ? `${puPos[0]},${puPos[1]}` : null;
 
-      // Pop animation
+      // Pop animation — scale particles by group size
+      const intensity = Math.min(groupSize / 3, 3);
       group.forEach(([r, c]) => {
         const cell = board[r][c];
         if (!cell) return;
         if (spawnKey && `${r},${c}` === spawnKey) return;
         cell.el.classList.add('popping');
-        spawnParticles(r, c, COLORS[cell.color], 5, 25);
+        spawnParticles(r, c, COLORS[cell.color], Math.round(5 * intensity), Math.round(25 * intensity));
       });
       await sleep(POP_DURATION);
 
@@ -946,7 +1010,7 @@
         removeCell(r, c);
       });
 
-      // Spawn power-up
+      // Spawn power-up (activation handled by playTurn loop)
       if (puType && puPos) {
         const [pr, pc] = puPos;
         removeCell(pr, pc);
@@ -1026,13 +1090,303 @@
       }
     }
 
-    // Generic power-up activator
+    // Activate a disco ball — clears all cells of the most common color
+    async function activateDisco(row, col) {
+      removeCell(row, col);
+
+      // Find the most common color on the board
+      const counts = [0, 0, 0, 0];
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (board[r][c] && board[r][c].color >= 0) counts[board[r][c].color]++;
+      const targetColor = counts.indexOf(Math.max(...counts));
+
+      // Collect target cells
+      const targets = [];
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (board[r][c] && board[r][c].color === targetColor) targets.push([r, c]);
+
+      // Flash at disco origin
+      const { x: ox, y: oy, size } = getCellCenter(row, col);
+      const flash = document.createElement('div');
+      flash.style.cssText = `position:absolute;border-radius:50%;pointer-events:none;z-index:25;background:conic-gradient(from 0deg, #FF4D8D, #FFD23F, #4DC9F6, #D4B8FF, #FF4D8D)`;
+      const fs = size * 3;
+      flash.style.left = (ox - fs / 2) + 'px'; flash.style.top = (oy - fs / 2) + 'px';
+      flash.style.width = fs + 'px'; flash.style.height = fs + 'px';
+      grid.appendChild(flash);
+      flash.animate([{ transform: 'scale(0)', opacity: 1 }, { transform: 'scale(1.5)', opacity: 0 }],
+        { duration: 500, easing: 'ease-out', fill: 'forwards' });
+      setTimeout(() => flash.remove(), 500);
+
+      // Shoot beams to each target with stagger
+      targets.forEach(([r, c], i) => {
+        setTimeout(() => {
+          const { x: tx, y: ty } = getCellCenter(r, c);
+          const dx = tx - ox, dy = ty - oy;
+          const dist = Math.sqrt(dx * dx + dy * dy);
+          const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+          const beam = document.createElement('div');
+          beam.className = 'disco-beam';
+          beam.style.left = ox + 'px'; beam.style.top = oy + 'px';
+          beam.style.width = dist + 'px';
+          beam.style.transform = `rotate(${angle}deg)`;
+          beam.style.background = `linear-gradient(90deg, rgba(255,255,255,0.8), ${COLORS[targetColor]})`;
+          beam.style.boxShadow = `0 0 6px ${COLORS[targetColor]}`;
+          grid.appendChild(beam);
+          beam.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 350, easing: 'ease-out', fill: 'forwards' });
+          setTimeout(() => beam.remove(), 350);
+        }, i * 30);
+      });
+
+      // Wait for beams to reach targets
+      await sleep(Math.min(targets.length * 30 + 400, 800));
+
+      // Pop all targets simultaneously
+      shakeGrid(true);
+      const chainPUs = [];
+      targets.forEach(([r, c]) => {
+        if (!board[r][c]) return;
+        if (board[r][c].type !== 'normal') { chainPUs.push({ row: r, col: c, type: board[r][c].type }); return; }
+        board[r][c].el.classList.add('popping');
+        spawnParticles(r, c, COLORS[targetColor], 4, 20);
+      });
+      await sleep(POP_DURATION);
+      targets.forEach(([r, c]) => {
+        if (board[r][c] && board[r][c].type === 'normal') removeCell(r, c);
+      });
+
+      // Chain-activate any power-ups that were in the blast
+      for (const pu of chainPUs) {
+        if (!board[pu.row][pu.col]) continue;
+        await activatePowerUp(pu.row, pu.col);
+      }
+    }
+
+    // === Power-Up Combo Functions ===
+
+    // Rocket + Rocket: clear row AND column (cross pattern)
+    async function comboRocketRocket(r1, c1, r2, c2) {
+      removeCell(r1, c1); removeCell(r2, c2);
+      showRocketTrail(r1, c1, true, '#FFA500');
+      showRocketTrail(r1, c1, false, '#FFA500');
+      shakeGrid(true);
+
+      const toClear = new Set(), chainPUs = [];
+      for (let c = 0; c < COLS; c++) { toClear.add(`${r1},${c}`); }
+      for (let r = 0; r < ROWS; r++) { toClear.add(`${r},${c1}`); }
+      toClear.delete(`${r1},${c1}`); toClear.delete(`${r2},${c2}`);
+      toClear.forEach(key => {
+        const [r, c] = key.split(',').map(Number);
+        if (!board[r][c]) return;
+        if (board[r][c].type !== 'normal') chainPUs.push({ row: r, col: c });
+        else { board[r][c].el.classList.add('popping'); spawnParticles(r, c, cellColor(board[r][c]), 4, 20); }
+      });
+      await sleep(POP_DURATION);
+      toClear.forEach(key => {
+        const [r, c] = key.split(',').map(Number);
+        if (board[r][c] && board[r][c].type === 'normal') removeCell(r, c);
+      });
+      for (const pu of chainPUs) { if (board[pu.row][pu.col]) await activatePowerUp(pu.row, pu.col); }
+    }
+
+    // Bomb + Bomb: 5x5 area (instead of normal 3x3)
+    async function comboBombBomb(r1, c1, r2, c2) {
+      const cr = r1, cc = c1;
+      removeCell(r1, c1); removeCell(r2, c2);
+      showBombBlast(cr, cc, '#FF4D4D');
+      shakeGrid(true);
+
+      const RADIUS = 3;
+      const chainPUs = [], toClear = [];
+      for (let dr = -RADIUS; dr <= RADIUS; dr++) {
+        for (let dc = -RADIUS; dc <= RADIUS; dc++) {
+          if (Math.abs(dr) + Math.abs(dc) > RADIUS + 1) continue;
+          const r = cr + dr, c = cc + dc;
+          if (r < 0 || r >= ROWS || c < 0 || c >= COLS || !board[r][c]) continue;
+          if (board[r][c].type !== 'normal') chainPUs.push({ row: r, col: c });
+          else toClear.push([r, c]);
+        }
+      }
+      toClear.forEach(([r, c]) => {
+        if (!board[r][c]) return;
+        board[r][c].el.classList.add('popping');
+        spawnParticles(r, c, cellColor(board[r][c]), 6, 30);
+      });
+      await sleep(POP_DURATION);
+      toClear.forEach(([r, c]) => removeCell(r, c));
+      for (const pu of chainPUs) { if (board[pu.row][pu.col]) await activatePowerUp(pu.row, pu.col); }
+    }
+
+    // Rocket + Bomb: clear 3 rows + 3 columns centered on position
+    async function comboRocketBomb(r1, c1, r2, c2) {
+      const cr = r1, cc = c1;
+      removeCell(r1, c1); removeCell(r2, c2);
+      // Show 3 horizontal + 3 vertical trails
+      for (let d = -1; d <= 1; d++) {
+        if (cr + d >= 0 && cr + d < ROWS) showRocketTrail(cr + d, cc, true, '#FF6B35');
+        if (cc + d >= 0 && cc + d < COLS) showRocketTrail(cr, cc + d, false, '#FF6B35');
+      }
+      showBombBlast(cr, cc, '#FF6B35');
+      shakeGrid(true);
+
+      const toClear = new Set(), chainPUs = [];
+      for (let d = -1; d <= 1; d++) {
+        for (let c = 0; c < COLS; c++) { const r = cr + d; if (r >= 0 && r < ROWS) toClear.add(`${r},${c}`); }
+        for (let r = 0; r < ROWS; r++) { const c = cc + d; if (c >= 0 && c < COLS) toClear.add(`${r},${c}`); }
+      }
+      toClear.delete(`${r1},${c1}`); toClear.delete(`${r2},${c2}`);
+      toClear.forEach(key => {
+        const [r, c] = key.split(',').map(Number);
+        if (!board[r][c]) return;
+        if (board[r][c].type !== 'normal') chainPUs.push({ row: r, col: c });
+        else { board[r][c].el.classList.add('popping'); spawnParticles(r, c, cellColor(board[r][c]), 4, 20); }
+      });
+      await sleep(POP_DURATION);
+      toClear.forEach(key => {
+        const [r, c] = key.split(',').map(Number);
+        if (board[r][c] && board[r][c].type === 'normal') removeCell(r, c);
+      });
+      for (const pu of chainPUs) { if (board[pu.row][pu.col]) await activatePowerUp(pu.row, pu.col); }
+    }
+
+    // Disco + Rocket: all cells of one color become rockets and fire
+    async function comboDiscoRocket(dr, dc, rr, rc) {
+      removeCell(dr, dc); removeCell(rr, rc);
+      // Find most common color
+      const counts = [0, 0, 0, 0];
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (board[r][c] && board[r][c].color >= 0) counts[board[r][c].color]++;
+      const targetColor = counts.indexOf(Math.max(...counts));
+
+      // Flash
+      const { x: ox, y: oy, size } = getCellCenter(dr, dc);
+      spawnParticles(dr, dc, '#FFFFFF', 12, 45);
+
+      // Convert all matching color cells to rockets
+      const rocketCells = [];
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (board[r][c] && board[r][c].color === targetColor) {
+            rocketCells.push([r, c]);
+            removeCell(r, c);
+            const type = Math.random() > 0.5 ? 'rocket' : 'rocket-v';
+            const el = createPowerUpCell(r, c, type);
+            el.style.animation = 'powerup-spawn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+            grid.appendChild(el);
+            board[r][c] = { color: -1, el, type, bornAt: turnCount };
+          }
+      await sleep(500);
+      // Fire all rockets
+      for (const [r, c] of rocketCells) {
+        if (board[r][c] && board[r][c].type !== 'normal') {
+          await activateRocket(r, c, board[r][c].type);
+          await applyGravity();
+        }
+      }
+    }
+
+    // Disco + Bomb: all cells of one color become bombs and explode
+    async function comboDiscoBomb(dr, dc, br, bc) {
+      removeCell(dr, dc); removeCell(br, bc);
+      const counts = [0, 0, 0, 0];
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (board[r][c] && board[r][c].color >= 0) counts[board[r][c].color]++;
+      const targetColor = counts.indexOf(Math.max(...counts));
+
+      spawnParticles(dr, dc, '#FFFFFF', 12, 45);
+
+      const bombCells = [];
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (board[r][c] && board[r][c].color === targetColor) {
+            bombCells.push([r, c]);
+            removeCell(r, c);
+            const el = createPowerUpCell(r, c, 'bomb');
+            el.style.animation = 'powerup-spawn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+            grid.appendChild(el);
+            board[r][c] = { color: -1, el, type: 'bomb', bornAt: turnCount };
+          }
+      await sleep(500);
+      for (const [r, c] of bombCells) {
+        if (board[r][c] && board[r][c].type === 'bomb') {
+          await activateBomb(r, c);
+          await applyGravity();
+        }
+      }
+    }
+
+    // Disco + Disco: clear the ENTIRE board
+    async function comboDiscoDisco(r1, c1, r2, c2) {
+      removeCell(r1, c1); removeCell(r2, c2);
+
+      // Epic rainbow flash
+      const sf = document.createElement('div');
+      sf.style.cssText = 'position:absolute;inset:0;border-radius:1.5rem;z-index:26;pointer-events:none;background:conic-gradient(from 0deg, #FF4D8D, #FFD23F, #4DC9F6, #D4B8FF, #FF4D8D)';
+      grid.appendChild(sf);
+      sf.animate([{ opacity: 0.7 }, { opacity: 0 }], { duration: 600, easing: 'ease-out', fill: 'forwards' });
+      setTimeout(() => sf.remove(), 600);
+      shakeGrid(true);
+
+      // Pop every cell on the board
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++) {
+          if (!board[r][c]) continue;
+          board[r][c].el.classList.add('popping');
+          spawnParticles(r, c, cellColor(board[r][c]), 6, 30);
+        }
+      await sleep(POP_DURATION);
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          removeCell(r, c);
+    }
+
+    // Helper: classify a power-up type into a category for combo matching
+    function puCategory(type) {
+      if (type === 'rocket' || type === 'rocket-v') return 'rocket';
+      return type; // 'bomb' or 'disco'
+    }
+
+    // Generic power-up activator — checks neighbors for combos first
     async function activatePowerUp(row, col) {
       const cell = board[row][col];
       if (!cell || cell.type === 'normal') return;
       const type = cell.type;
+      const cat = puCategory(type);
+
+      // Check 4 neighbors for another power-up to combo with
+      const dirs = [[0,1],[0,-1],[1,0],[-1,0]];
+      for (const [dr, dc] of dirs) {
+        const nr = row + dr, nc = col + dc;
+        if (nr < 0 || nr >= ROWS || nc < 0 || nc >= COLS) continue;
+        const neighbor = board[nr][nc];
+        if (!neighbor || neighbor.type === 'normal') continue;
+        const ncat = puCategory(neighbor.type);
+
+        // Determine combo
+        const pair = [cat, ncat].sort().join('+');
+        if (pair === 'disco+disco') { await comboDiscoDisco(row, col, nr, nc); return; }
+        if (pair === 'disco+rocket') {
+          const [dr2, dc2] = cat === 'disco' ? [row, col] : [nr, nc];
+          const [rr, rc] = cat === 'rocket' ? [row, col] : [nr, nc];
+          await comboDiscoRocket(dr2, dc2, rr, rc); return;
+        }
+        if (pair === 'bomb+disco') {
+          const [dr2, dc2] = cat === 'disco' ? [row, col] : [nr, nc];
+          const [br, bc] = cat === 'bomb' ? [row, col] : [nr, nc];
+          await comboDiscoBomb(dr2, dc2, br, bc); return;
+        }
+        if (pair === 'rocket+rocket') { await comboRocketRocket(row, col, nr, nc); return; }
+        if (pair === 'bomb+bomb') { await comboBombBomb(row, col, nr, nc); return; }
+        if (pair === 'bomb+rocket') { await comboRocketBomb(row, col, nr, nc); return; }
+      }
+
+      // No combo — activate normally
       if (type === 'rocket' || type === 'rocket-v') await activateRocket(row, col, type);
       else if (type === 'bomb') await activateBomb(row, col);
+      else if (type === 'disco') await activateDisco(row, col);
     }
 
     // Gravity
@@ -1047,6 +1401,8 @@
               board[r][c] = null;
               board[wr][c].el.style.gridRow = wr + 1;
               board[wr][c].el.classList.add('falling');
+              // Bounce starts exactly when fall ends — CSS handles timing
+              board[wr][c].el.style.animation = `land-bounce 0.35s ${FALL_DURATION}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
               moved = true;
             }
             wr--;
@@ -1055,7 +1411,8 @@
         for (let r = wr; r >= 0; r--) {
           const ci = randColor();
           const el = createCell(r, c, ci);
-          el.classList.add('spawning');
+          // Combined spawn + bounce: bounce starts exactly when spawn ends
+          el.style.animation = `spawn ${SPAWN_DURATION}ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards, land-bounce 0.35s ${SPAWN_DURATION}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
           grid.appendChild(el);
           board[r][c] = { color: ci, el, type: 'normal', bornAt: -1 };
           moved = true;
@@ -1065,16 +1422,92 @@
         await sleep(FALL_DURATION);
         for (let r = 0; r < ROWS; r++)
           for (let c = 0; c < COLS; c++)
-            if (board[r][c]) board[r][c].el.classList.remove('falling', 'spawning');
+            if (board[r][c]) {
+              board[r][c].el.classList.remove('falling');
+              // Clear inline animation after bounce completes
+              const el = board[r][c].el;
+              setTimeout(() => { el.style.animation = ''; }, 400);
+            }
       }
     }
 
-    // Pop groups in a loop until no more chain reactions
+    // Find first power-up on the board
+    function findPowerUp() {
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (board[r][c] && board[r][c].type !== 'normal') return [r, c];
+      return null;
+    }
+
+    // Snapshot which cells have groups BEFORE a pop, so we can detect new ones after gravity
+    function snapshotGroups() {
+      const visited = Array.from({ length: ROWS }, () => Array(COLS).fill(false));
+      const set = new Set();
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          if (visited[r][c] || !board[r][c] || board[r][c].color < 0) continue;
+          const group = [];
+          const color = board[r][c].color;
+          const stack = [[r, c]];
+          while (stack.length) {
+            const [cr, cc] = stack.pop();
+            if (cr < 0 || cr >= ROWS || cc < 0 || cc >= COLS) continue;
+            if (visited[cr][cc] || !board[cr][cc] || board[cr][cc].color !== color) continue;
+            visited[cr][cc] = true;
+            group.push([cr, cc]);
+            stack.push([cr-1,cc],[cr+1,cc],[cr,cc-1],[cr,cc+1]);
+          }
+          if (group.length >= 2) group.forEach(([gr, gc]) => set.add(`${gr},${gc}`));
+        }
+      }
+      return set;
+    }
+
+    // Pop groups + activate power-ups in a loop until board is stable
     async function popChains() {
+      // Pop only the first group (the "tap") — not a combo
       let group = findLargestGroup();
+      if (!group) return;
+
+      group.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.add('highlight'); });
+      await sleep(350);
+      group.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.remove('highlight'); });
+
+      // Snapshot existing groups before pop so we can detect genuinely new ones
+      const beforePop = snapshotGroups();
+      await popGroup(group);
+      // Remove popped cells from snapshot
+      group.forEach(([r, c]) => beforePop.delete(`${r},${c}`));
+
+      await applyGravity();
+      await sleep(CHAIN_DELAY);
+
+      // Activate any power-ups
+      let pu = findPowerUp();
+      while (pu) {
+        const [r, c] = pu;
+        const el = board[r][c].el;
+        await sleep(300);
+        el.classList.add('highlight');
+        await sleep(250);
+        if (board[r][c]) el.classList.remove('highlight');
+        if (board[r][c] && board[r][c].type !== 'normal') {
+          await activatePowerUp(r, c);
+          await applyGravity();
+          await sleep(CHAIN_DELAY);
+        }
+        pu = findPowerUp();
+      }
+
+      // Now chain: only groups that are genuinely NEW (created by gravity) count as combos
+      group = findLargestGroup();
       while (group) {
-        combo++;
-        if (combo > 1) showCombo(combo);
+        // Check if this group is new (has cells not in the pre-pop snapshot)
+        const isNew = group.some(([r, c]) => !beforePop.has(`${r},${c}`));
+        if (isNew) {
+          combo++;
+          if (combo > 1) showCombo(combo + 1); // +1 so first chain shows x3
+        }
 
         group.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.add('highlight'); });
         await sleep(350);
@@ -1083,11 +1516,30 @@
         await popGroup(group);
         await applyGravity();
         await sleep(CHAIN_DELAY);
+
+        // Activate any power-ups from this chain step
+        pu = findPowerUp();
+        while (pu) {
+          const [r, c] = pu;
+          const el = board[r][c].el;
+          await sleep(300);
+          el.classList.add('highlight');
+          await sleep(250);
+          if (board[r][c]) el.classList.remove('highlight');
+          if (board[r][c] && board[r][c].type !== 'normal') {
+            await activatePowerUp(r, c);
+            await applyGravity();
+            await sleep(CHAIN_DELAY);
+          }
+          pu = findPowerUp();
+        }
+
         group = findLargestGroup();
       }
     }
 
-    const SHOWCASE_INTERVAL = 5; // showcase a power-up every N turns
+    const SHOWCASE_INTERVAL = 5;
+    const COMBO_SHOWCASE_INTERVAL = 10;
 
     // Spawn a power-up, show it briefly, then activate it — all in one go
     async function showcasePowerUp() {
@@ -1098,7 +1550,8 @@
       if (!normals.length) return;
       const [r, c] = normals[Math.floor(Math.random() * normals.length)];
       removeCell(r, c);
-      const type = Math.random() > 0.4 ? (Math.random() > 0.5 ? 'rocket' : 'rocket-v') : 'bomb';
+      const rand = Math.random();
+      const type = rand < 0.4 ? (Math.random() > 0.5 ? 'rocket' : 'rocket-v') : rand < 0.7 ? 'bomb' : 'disco';
       const el = createPowerUpCell(r, c, type);
       el.style.animation = 'powerup-spawn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
       grid.appendChild(el);
@@ -1118,6 +1571,99 @@
       }
     }
 
+    // Spawn two adjacent power-ups and let combo system handle them
+    async function showcaseCombo() {
+      // Find two adjacent normal cells
+      const pairs = [];
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS - 1; c++)
+          if (board[r][c] && board[r][c].type === 'normal' && board[r][c + 1] && board[r][c + 1].type === 'normal')
+            pairs.push([[r, c], [r, c + 1]]);
+      for (let r = 0; r < ROWS - 1; r++)
+        for (let c = 0; c < COLS; c++)
+          if (board[r][c] && board[r][c].type === 'normal' && board[r + 1][c] && board[r + 1][c].type === 'normal')
+            pairs.push([[r, c], [r + 1, c]]);
+      if (!pairs.length) return;
+
+      const [[r1, c1], [r2, c2]] = pairs[Math.floor(Math.random() * pairs.length)];
+      // Pick a random combo pair
+      const comboPairs = [
+        ['rocket', 'rocket'], ['bomb', 'bomb'], ['rocket', 'bomb'],
+        ['disco', 'rocket'], ['disco', 'bomb'], ['disco', 'disco']
+      ];
+      const [t1, t2] = comboPairs[Math.floor(Math.random() * comboPairs.length)];
+      const type1 = t1 === 'rocket' ? (Math.random() > 0.5 ? 'rocket' : 'rocket-v') : t1;
+      const type2 = t2 === 'rocket' ? (Math.random() > 0.5 ? 'rocket' : 'rocket-v') : t2;
+
+      // Spawn first
+      removeCell(r1, c1);
+      const el1 = createPowerUpCell(r1, c1, type1);
+      el1.style.animation = 'powerup-spawn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+      grid.appendChild(el1);
+      board[r1][c1] = { color: -1, el: el1, type: type1, bornAt: turnCount };
+      spawnParticles(r1, c1, '#FFFFFF', 8, 35);
+
+      // Spawn second
+      removeCell(r2, c2);
+      const el2 = createPowerUpCell(r2, c2, type2);
+      el2.style.animation = 'powerup-spawn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+      grid.appendChild(el2);
+      board[r2][c2] = { color: -1, el: el2, type: type2, bornAt: turnCount };
+      spawnParticles(r2, c2, '#FFFFFF', 8, 35);
+
+      await sleep(1200);
+      el1.style.animation = ''; el2.style.animation = '';
+      el1.classList.add('highlight'); el2.classList.add('highlight');
+      await sleep(500);
+      if (board[r1][c1]) el1.classList.remove('highlight');
+      if (board[r2][c2]) el2.classList.remove('highlight');
+
+      // Activate — combo detection happens inside activatePowerUp
+      if (board[r1][c1] && board[r1][c1].type !== 'normal') {
+        await activatePowerUp(r1, c1);
+        await applyGravity();
+        await sleep(CHAIN_DELAY);
+        await popChains();
+      }
+    }
+
+    // Board reset with cascade-out and wave-spawn finale
+    async function boardResetFinale() {
+      // Cascade out column by column
+      for (let c = 0; c < COLS; c++) {
+        for (let r = 0; r < ROWS; r++) {
+          if (!board[r][c]) continue;
+          const el = board[r][c].el;
+          el.style.animation = `cascade-out 0.3s ${r * 30}ms ease-in forwards`;
+        }
+        await sleep(60);
+      }
+      await sleep(ROWS * 30 + 300);
+
+      // Clear the board
+      grid.innerHTML = '';
+      board = [];
+
+      // Wave spawn new cells
+      for (let r = 0; r < ROWS; r++) {
+        board[r] = [];
+        for (let c = 0; c < COLS; c++) {
+          const ci = randColor();
+          const el = createCell(r, c, ci);
+          const delay = (c + r) * 40;
+          el.style.opacity = '0';
+          el.style.animation = `wave-spawn 0.4s ${delay}ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards`;
+          grid.appendChild(el);
+          board[r][c] = { color: ci, el, type: 'normal', bornAt: -1 };
+        }
+      }
+      await sleep((COLS + ROWS) * 40 + 400);
+      // Clean up animation styles
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (board[r][c]) board[r][c].el.style.animation = '';
+    }
+
     // Main turn
     async function playTurn() {
       if (animating) return;
@@ -1126,15 +1672,20 @@
       turnCount++;
 
       try {
-        // Every N turns, showcase a power-up (spawn + immediately activate)
+        // Every COMBO_SHOWCASE_INTERVAL turns, showcase a combo
+        if (turnCount % COMBO_SHOWCASE_INTERVAL === 0) {
+          await showcaseCombo();
+          return;
+        }
+        // Every SHOWCASE_INTERVAL turns, showcase a single power-up
         if (turnCount % SHOWCASE_INTERVAL === 0) {
           await showcasePowerUp();
           return;
         }
 
-        // Normal: pop largest group + chain reactions
+        // Normal: pop largest group + chain reactions + auto-activate power-ups
         const group = findLargestGroup();
-        if (!group) { initBoard(); return; }
+        if (!group) { await boardResetFinale(); return; }
         await popChains();
       } finally {
         animating = false;
@@ -1146,6 +1697,22 @@
       playTurn();
       setInterval(() => { if (!animating) playTurn(); }, MOVE_DELAY);
     }, 1000);
+  })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/roughjs@4.6.6/bundled/rough.min.js"></script>
+  <script>
+  (function() {
+    const svg = document.getElementById('annotation-arrow');
+    if (!svg) return;
+    const rc = rough.svg(svg);
+    const col = 'rgba(200,120,135,0.65)';
+    const opts = { stroke: col, strokeWidth: 2.2, roughness: 1.6, bowing: 1.5, disableMultiStroke: true, seed: 202 };
+    // Gentle curve from right down-left to badge
+    const path = rc.path('M 58,4 C 42,12 28,26 20,44', opts);
+    svg.appendChild(path);
+    // Arrowhead (single connected path)
+    const ah = rc.path('M 14,36 L 20,44 L 28,40', { ...opts, roughness: 1.2, seed: 42 });
+    svg.appendChild(ah);
   })();
   </script>
 </body>
