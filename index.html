@@ -738,7 +738,6 @@
     const CHAIN_DELAY = 450;
     const ROCKET_THRESHOLD = 4;
     const BOMB_THRESHOLD = 6;
-    const POWERUP_LIFESPAN = 2; // auto-activate after this many turns
 
     const grid = document.getElementById('puzzle-grid');
     if (!grid) return;
@@ -1070,19 +1069,6 @@
       }
     }
 
-    // Find a power-up that's been on the board long enough
-    function findMaturePowerUp() {
-      for (let r = 0; r < ROWS; r++) {
-        for (let c = 0; c < COLS; c++) {
-          const cell = board[r][c];
-          if (cell && cell.type !== 'normal' && cell.bornAt >= 0 && (turnCount - cell.bornAt) >= POWERUP_LIFESPAN) {
-            return { row: r, col: c };
-          }
-        }
-      }
-      return null;
-    }
-
     // Pop groups in a loop until no more chain reactions
     async function popChains() {
       let group = findLargestGroup();
@@ -1101,8 +1087,10 @@
       }
     }
 
-    // Force-spawn a power-up on a random normal cell
-    function forceSpawnPowerUp() {
+    const SHOWCASE_INTERVAL = 5; // showcase a power-up every N turns
+
+    // Spawn a power-up, show it briefly, then activate it — all in one go
+    async function showcasePowerUp() {
       const normals = [];
       for (let r = 0; r < ROWS; r++)
         for (let c = 0; c < COLS; c++)
@@ -1116,10 +1104,19 @@
       grid.appendChild(el);
       board[r][c] = { color: -1, el, type, bornAt: turnCount };
       spawnParticles(r, c, '#FFFFFF', 8, 35);
-      setTimeout(() => { el.style.animation = ''; }, 500);
+      await sleep(1200); // let the user see it
+      el.style.animation = '';
+      // Highlight then activate
+      el.classList.add('highlight');
+      await sleep(500);
+      if (board[r][c]) el.classList.remove('highlight');
+      if (board[r][c] && board[r][c].type !== 'normal') {
+        await activatePowerUp(r, c);
+        await applyGravity();
+        await sleep(CHAIN_DELAY);
+        await popChains();
+      }
     }
-
-    const FORCE_SPAWN_INTERVAL = 4; // force a power-up every N turns if none exist
 
     // Main turn
     async function playTurn() {
@@ -1128,44 +1125,20 @@
       combo = 0;
       turnCount++;
 
-      // 0) Force-spawn a power-up periodically so rockets/bombs are always showcased
-      const hasPowerUp = board.some(row => row.some(cell => cell && cell.type !== 'normal'));
-      if (!hasPowerUp && turnCount % FORCE_SPAWN_INTERVAL === 0) {
-        forceSpawnPowerUp();
-      }
-
-      // 1) Check for mature power-ups first
-      const pu = findMaturePowerUp();
-      if (pu) {
-        const cell = board[pu.row][pu.col];
-        if (cell) {
-          cell.el.classList.add('highlight');
-          await sleep(500);
-          cell.el.classList.remove('highlight');
+      try {
+        // Every N turns, showcase a power-up (spawn + immediately activate)
+        if (turnCount % SHOWCASE_INTERVAL === 0) {
+          await showcasePowerUp();
+          return;
         }
-        // Cell might still be there — activate it
-        if (board[pu.row][pu.col] && board[pu.row][pu.col].type !== 'normal') {
-          await activatePowerUp(pu.row, pu.col);
-          await applyGravity();
-          await sleep(CHAIN_DELAY);
-          await popChains();
-        }
-        animating = false;
-        return;
-      }
 
-      // 2) Normal: pop largest group + chain reactions
-      const group = findLargestGroup();
-      if (!group) {
-        // Don't reset if power-ups are waiting to mature!
-        const hasPowerUp = board.some(row => row.some(cell => cell && cell.type !== 'normal'));
-        if (!hasPowerUp) initBoard();
+        // Normal: pop largest group + chain reactions
+        const group = findLargestGroup();
+        if (!group) { initBoard(); return; }
+        await popChains();
+      } finally {
         animating = false;
-        return;
       }
-
-      await popChains();
-      animating = false;
     }
 
     initBoard();
