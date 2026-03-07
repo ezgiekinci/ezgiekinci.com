@@ -704,6 +704,7 @@
     let combo = 0;
     let animating = false;
     let comboEl = null;
+    let turnCount = 0;
 
     function randColor() {
       return Math.floor(Math.random() * COLORS.length);
@@ -727,7 +728,7 @@
           const colorIdx = randColor();
           const el = createCell(r, c, colorIdx);
           grid.appendChild(el);
-          board[r][c] = { color: colorIdx, el, type: 'normal' };
+          board[r][c] = { color: colorIdx, el, type: 'normal', bornAt: -1 };
         }
       }
     }
@@ -955,7 +956,7 @@
         if (isVertical) el.classList.add('rocket-v');
         el.style.animation = 'powerup-spawn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
         grid.appendChild(el);
-        board[pr][pc] = { color, el, type: powerUpType };
+        board[pr][pc] = { color, el, type: powerUpType, bornAt: turnCount };
         spawnParticles(pr, pc, '#FFFFFF', 8, 35);
         await sleep(SPAWN_DURATION);
         el.style.animation = '';
@@ -1093,7 +1094,7 @@
           const el = createCell(r, c, colorIdx);
           el.classList.add('spawning');
           grid.appendChild(el);
-          board[r][c] = { color: colorIdx, el, type: 'normal' };
+          board[r][c] = { color: colorIdx, el, type: 'normal', bornAt: -1 };
           moved = true;
         }
       }
@@ -1110,12 +1111,62 @@
       return moved;
     }
 
+    // Find mature power-ups (2+ turns old) to auto-activate
+    function findMaturePowerUp() {
+      for (let r = 0; r < ROWS; r++) {
+        for (let c = 0; c < COLS; c++) {
+          const cell = board[r][c];
+          if (cell && cell.type !== 'normal' && cell.bornAt >= 0 && (turnCount - cell.bornAt) >= 2) {
+            return { row: r, col: c, type: cell.type, color: cell.color };
+          }
+        }
+      }
+      return null;
+    }
+
     // Main turn
     async function playTurn() {
       if (animating) return;
       animating = true;
       combo = 0;
+      turnCount++;
 
+      // Check if there's a mature power-up to activate first
+      const maturePU = findMaturePowerUp();
+      if (maturePU) {
+        // Highlight the power-up before activation
+        const cell = board[maturePU.row][maturePU.col];
+        if (cell) cell.el.classList.add('highlight');
+        await sleep(400);
+        if (cell) cell.el.classList.remove('highlight');
+
+        if (maturePU.type === 'rocket' || maturePU.type === 'rocket-v') {
+          await activateRocket(maturePU.row, maturePU.col, maturePU.type);
+        } else if (maturePU.type === 'bomb') {
+          await activateBomb(maturePU.row, maturePU.col);
+        }
+        await applyGravity();
+
+        // After power-up activation, continue with chain reactions
+        await sleep(CHAIN_DELAY);
+        let chainGroup = findLargestGroup();
+        while (chainGroup) {
+          combo++;
+          if (combo > 1) { showCombo(combo); shakeGrid(false); }
+          chainGroup.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.add('highlight'); });
+          await sleep(350);
+          chainGroup.forEach(([r, c]) => { if (board[r][c]) board[r][c].el.classList.remove('highlight'); });
+          await popGroup(chainGroup);
+          await applyGravity();
+          await sleep(CHAIN_DELAY);
+          chainGroup = findLargestGroup();
+        }
+
+        animating = false;
+        return;
+      }
+
+      // Normal turn: find and pop largest group
       let group = findLargestGroup();
       if (!group) {
         initBoard();
@@ -1142,10 +1193,10 @@
         // Pop the group and get any existing power-ups that were in it
         const triggeredPowerUps = await popGroup(group);
 
-        // Activate triggered power-ups
-        if (triggeredPowerUps) {
+        // Activate triggered power-ups (ones that were already on the board and got caught in the group)
+        if (triggeredPowerUps && triggeredPowerUps.length > 0) {
           for (const pu of triggeredPowerUps) {
-            // Power-up cell was already removed by popGroup, activate its effect
+            // These were already removed by popGroup, fire their effect from saved position
             if (pu.type === 'rocket' || pu.type === 'rocket-v') {
               showRocketTrail(pu.row, pu.col, pu.type !== 'rocket-v', COLORS[pu.color]);
               shakeGrid(false);
