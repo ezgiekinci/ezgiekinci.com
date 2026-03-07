@@ -3,7 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ezgi Ekinci — Product-Minded Engineer</title>
+  <title>Ezgi Ekinci</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='2' y='24' font-family='system-ui,sans-serif' font-weight='800' font-size='22' fill='%231A0A2E'>EE</text><text x='22' y='24' font-family='system-ui,sans-serif' font-weight='800' font-size='22' fill='%23FF4D8D'>.</text></svg>">
   <meta name="description" content="Control & Automation Engineer turning systems thinking into product strategy. Portfolio featuring puzzle game analysis and A/B test case study.">
   <meta property="og:title" content="Ezgi Ekinci — Product-Minded Engineer">
   <meta property="og:description" content="Control & Automation Engineer turning systems thinking into product strategy.">
@@ -44,6 +45,8 @@
     .fade-up-delay-2 { transition-delay: 0.2s; }
     .fade-up-delay-3 { transition-delay: 0.3s; }
     .nav-blur { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .logo-collapse { display: inline-block; max-width: 200px; opacity: 1; overflow: hidden; vertical-align: bottom; transition: max-width 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease; }
+    .logo-collapsed .logo-collapse { max-width: 0; opacity: 0; }
     .hero-gradient { background: linear-gradient(135deg, #F0E6FF 0%, #E8D5FF 50%, #D4B8FF 100%); }
     .hero-pattern { background-image: radial-gradient(circle, rgba(212,184,255,0.5) 1px, transparent 1px); background-size: 24px 24px; }
     .accent-line { width: 48px; height: 3px; background: linear-gradient(90deg, #FF4D8D, #FFD23F); border-radius: 2px; }
@@ -71,6 +74,11 @@
       transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .game-tile:hover { transform: translateY(-6px); box-shadow: 0 10px 0 rgba(212,184,255,0.4), 0 0 30px rgba(255,77,141,0.12); }
+    .game-tile:active { transform: translateY(6px); box-shadow: 0 0 0 rgba(212,184,255,0.4); }
+    .game-tile.pink { background: #FF4D8D; color: white; border-color: #CC3D71; box-shadow: 0 6px 0 rgba(204,61,113,0.5); }
+    .game-tile.pink:hover { box-shadow: 0 10px 0 rgba(204,61,113,0.5), 0 0 30px rgba(255,77,141,0.2); }
+    .game-tile.pink:active { box-shadow: 0 0 0 rgba(204,61,113,0.5); }
+
     .game-card {
       border: 3px solid rgba(212,184,255,0.3);
       border-radius: 1.5rem;
@@ -320,7 +328,7 @@
   <!-- Navigation -->
   <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
     <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
-      <a href="#" class="text-lg font-extrabold tracking-tight">EE<span class="text-coral">.</span></a>
+      <a href="#" id="nav-logo" class="text-lg font-extrabold tracking-tight whitespace-nowrap">E<span class="logo-collapse">zgi</span>E<span class="logo-collapse">kinci</span><span class="text-coral">.</span></a>
       <div class="hidden md:flex items-center gap-8">
         <a href="#about" class="text-sm text-slate hover:text-navy transition-colors duration-300" data-i18n="nav.about">About</a>
         <a href="#work" class="text-sm text-slate hover:text-navy transition-colors duration-300" data-i18n="nav.work">Work</a>
@@ -366,16 +374,17 @@
             <span class="gradient-text">into products people love.</span>
           </h1>
           <div class="mt-10 flex flex-wrap gap-4 fade-up fade-up-delay-2">
-            <a href="#work" class="game-btn group inline-flex items-center gap-2 px-7 py-3.5 font-semibold rounded-xl">
+            <a href="#work" class="game-tile pink inline-flex items-center gap-2.5 px-6 py-3.5 font-semibold text-sm">
               <span data-i18n="hero.cta1">See My Work</span>
-              <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
             </a>
-            <a href="#contact" class="game-btn-outline inline-flex items-center px-7 py-3.5 text-navy font-semibold rounded-xl">
+            <a href="#contact" class="game-tile inline-flex items-center gap-2.5 px-6 py-3.5 text-navy font-semibold text-sm">
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
               <span data-i18n="hero.cta2">Get in Touch</span>
             </a>
           </div>
           <p class="mt-8 text-xs text-slate/70 font-mono fade-up fade-up-delay-3" data-i18n="hero.location">
-            Based in Turkey &mdash; open to remote &amp; on-site
+            Based in Istanbul &mdash; open to remote &amp; on-site
           </p>
         </div>
         <!-- Puzzle Animation -->
@@ -414,7 +423,7 @@
   </section>
 
   <!-- About Section -->
-  <section id="about" class="py-24 relative overflow-hidden">
+  <section id="about" class="pt-16 pb-12 relative overflow-hidden">
     <div class="absolute top-0 left-0 w-80 h-80 bg-sage/5 rounded-full blur-3xl"></div>
     <div class="max-w-6xl mx-auto px-6 relative">
       <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
@@ -451,7 +460,7 @@
   </section>
 
   <!-- Case Studies Section -->
-  <section id="work" class="py-28 relative overflow-hidden">
+  <section id="work" class="pt-28 pb-14 relative overflow-hidden">
     <div class="absolute top-0 right-0 w-96 h-96 bg-coral/5 rounded-full blur-3xl"></div>
     <div class="absolute bottom-0 left-0 w-72 h-72 bg-sage/5 rounded-full blur-3xl"></div>
 
@@ -666,7 +675,7 @@
         'hero.headline': 'I turn complex systems<br><span class="gradient-text">into products people love.</span>',
         'hero.cta1': 'See My Work',
         'hero.cta2': 'Get in Touch',
-        'hero.location': 'Based in Turkey — open to remote & on-site',
+        'hero.location': 'Based in Istanbul — open to remote & on-site',
         'hero.stat1': 'Games Analyzed',
         'hero.stat2': 'Levels Played',
         'hero.status': 'Live · Every round unique',
@@ -717,7 +726,7 @@
         'hero.headline': 'Karma\u015F\u0131k sistemleri<br><span class="gradient-text">basit hissettiren \u00FCr\u00FCnler in\u015Fa ediyorum.</span>',
         'hero.cta1': '\u00C7al\u0131\u015Fmam\u0131 \u0130ncele',
         'hero.cta2': '\u0130leti\u015Fime Ge\u00E7',
-        'hero.location': 'Türkiye merkezli — uzaktan ve ofisten çalışmaya açık',
+        'hero.location': 'İstanbul merkezli — uzaktan ve ofisten çalışmaya açık',
         'hero.stat1': 'Oyun Analiz Edildi',
         'hero.stat2': 'Seviye Oynandı',
         'hero.status': 'Canlı · Her raund benzersiz',
@@ -796,13 +805,16 @@
 
     // Navbar scroll
     const navbar = document.getElementById('navbar');
+    const navLogo = document.getElementById('nav-logo');
     window.addEventListener('scroll', () => {
       if (window.scrollY > 40) {
         navbar.classList.add('bg-cream/90', 'nav-blur', 'shadow-sm', 'py-3');
         navbar.classList.remove('py-5');
+        navLogo.classList.add('logo-collapsed');
       } else {
         navbar.classList.remove('bg-cream/90', 'nav-blur', 'shadow-sm', 'py-3');
         navbar.classList.add('py-5');
+        navLogo.classList.remove('logo-collapsed');
       }
     });
 
