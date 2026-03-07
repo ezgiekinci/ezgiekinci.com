@@ -736,7 +736,7 @@
     const FALL_DURATION = 350;
     const SPAWN_DURATION = 400;
     const CHAIN_DELAY = 450;
-    const ROCKET_THRESHOLD = 4;
+    const ROCKET_THRESHOLD = 5;
     const BOMB_THRESHOLD = 6;
 
     const grid = document.getElementById('puzzle-grid');
@@ -946,7 +946,7 @@
         removeCell(r, c);
       });
 
-      // Spawn power-up
+      // Spawn power-up (activation handled by playTurn loop)
       if (puType && puPos) {
         const [pr, pc] = puPos;
         removeCell(pr, pc);
@@ -1069,7 +1069,15 @@
       }
     }
 
-    // Pop groups in a loop until no more chain reactions
+    // Find first power-up on the board
+    function findPowerUp() {
+      for (let r = 0; r < ROWS; r++)
+        for (let c = 0; c < COLS; c++)
+          if (board[r][c] && board[r][c].type !== 'normal') return [r, c];
+      return null;
+    }
+
+    // Pop groups + activate power-ups in a loop until board is stable
     async function popChains() {
       let group = findLargestGroup();
       while (group) {
@@ -1083,6 +1091,24 @@
         await popGroup(group);
         await applyGravity();
         await sleep(CHAIN_DELAY);
+
+        // Power-up spawn olduysa HEMEN aktive et
+        let pu = findPowerUp();
+        while (pu) {
+          const [r, c] = pu;
+          const el = board[r][c].el;
+          await sleep(600);
+          el.classList.add('highlight');
+          await sleep(500);
+          if (board[r][c]) el.classList.remove('highlight');
+          if (board[r][c] && board[r][c].type !== 'normal') {
+            await activatePowerUp(r, c);
+            await applyGravity();
+            await sleep(CHAIN_DELAY);
+          }
+          pu = findPowerUp();
+        }
+
         group = findLargestGroup();
       }
     }
@@ -1132,7 +1158,7 @@
           return;
         }
 
-        // Normal: pop largest group + chain reactions
+        // Normal: pop largest group + chain reactions + auto-activate power-ups
         const group = findLargestGroup();
         if (!group) { initBoard(); return; }
         await popChains();
