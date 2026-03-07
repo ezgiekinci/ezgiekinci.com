@@ -970,10 +970,6 @@
       comboEl = document.createElement('div');
       comboEl.className = 'combo-badge';
       comboEl.textContent = 'x' + n;
-      // Scale badge by combo count
-      const scale = 1 + (n - 2) * 0.2;
-      comboEl.style.transform = `scale(${Math.min(scale, 2)})`;
-      comboEl.style.fontSize = (14 + (n - 2) * 3) + 'px';
       grid.appendChild(comboEl);
       setTimeout(() => { if (comboEl) comboEl.remove(); comboEl = null; }, 1200);
     }
