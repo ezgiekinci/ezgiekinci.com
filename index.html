@@ -322,6 +322,7 @@
     <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
       <a href="#" class="text-lg font-extrabold tracking-tight">EE<span class="text-coral">.</span></a>
       <div class="hidden md:flex items-center gap-8">
+        <a href="#about" class="text-sm text-slate hover:text-navy transition-colors duration-300" data-i18n="nav.about">About</a>
         <a href="#work" class="text-sm text-slate hover:text-navy transition-colors duration-300" data-i18n="nav.work">Work</a>
         <a href="#contact" class="text-sm text-slate hover:text-navy transition-colors duration-300" data-i18n="nav.contact">Contact</a>
         <div class="flex items-center gap-1.5 text-xs font-mono border border-border rounded-full px-3 py-1.5">
@@ -338,6 +339,7 @@
     </div>
     <div id="mobile-menu" class="hidden md:hidden bg-white/95 nav-blur border-t border-border">
       <div class="px-6 py-6 flex flex-col gap-5">
+        <a href="#about" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.about">About</a>
         <a href="#work" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.work">Work</a>
         <a href="#contact" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.contact">Contact</a>
         <div class="flex items-center gap-1.5 text-xs font-mono">
@@ -407,6 +409,43 @@
         <a href="https://www.itu.edu.tr" class="grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
           <img src="assets/img/itu-logo.png" alt="Istanbul Technical University" class="h-9 md:h-10 object-contain" style="transform: translateY(-10px)">
         </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="py-24 relative overflow-hidden">
+    <div class="absolute top-0 left-0 w-80 h-80 bg-sage/5 rounded-full blur-3xl"></div>
+    <div class="max-w-6xl mx-auto px-6 relative">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+        <!-- Photo -->
+        <div class="lg:col-span-4 flex justify-center fade-up">
+          <div class="relative">
+            <div class="w-56 h-56 md:w-64 md:h-64 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white">
+              <img src="assets/ezgi-pp.jpg" alt="Ezgi Ekinci" class="w-full h-full object-cover">
+            </div>
+            <div class="absolute -bottom-3 -right-3 bg-coral/10 w-56 h-56 md:w-64 md:h-64 rounded-2xl -z-10"></div>
+          </div>
+        </div>
+        <!-- Text -->
+        <div class="lg:col-span-8 fade-up">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="accent-line"></div>
+            <span class="text-sm font-mono text-coral font-medium uppercase tracking-wider" data-i18n="about.label">About</span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold leading-snug text-navy" data-i18n="about.heading">
+            Control & Automation Engineer with a passion for product.
+          </h2>
+          <p class="mt-5 text-base text-slate leading-relaxed" data-i18n="about.desc">
+            I studied Control & Automation Engineering at Istanbul Technical University. I love understanding how complex systems work under the hood — then figuring out how to turn that understanding into products people actually enjoy using. Right now, I'm focused on mobile gaming: analyzing what makes players stay, pay, and come back.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <span class="px-3 py-1.5 bg-cream border border-border rounded-lg text-xs font-medium text-navy">Product Thinking</span>
+            <span class="px-3 py-1.5 bg-cream border border-border rounded-lg text-xs font-medium text-navy">Game Analysis</span>
+            <span class="px-3 py-1.5 bg-cream border border-border rounded-lg text-xs font-medium text-navy">Data-Driven</span>
+            <span class="px-3 py-1.5 bg-cream border border-border rounded-lg text-xs font-medium text-navy" data-i18n="about.tag4">Systems Thinking</span>
+          </div>
+        </div>
       </div>
     </div>
   </section>
@@ -620,17 +659,24 @@
     // Translations
     const translations = {
       en: {
+        'nav.about': 'About',
         'nav.work': 'Work',
         'nav.contact': 'Contact',
         'hero.tagline': 'Product-Minded Engineer',
         'hero.headline': 'I turn complex systems<br><span class="gradient-text">into products people love.</span>',
         'hero.cta1': 'See My Work',
         'hero.cta2': 'Get in Touch',
-        'hero.location': 'Based in Turkey \u2014 open to remote & on-site',
-        'hero.status': 'Live \u00B7 Every round unique',
+        'hero.location': 'Based in Turkey — open to remote & on-site',
+        'hero.stat1': 'Games Analyzed',
+        'hero.stat2': 'Levels Played',
+        'hero.status': 'Live · Every round unique',
         'hero.howItWorks': 'How it Works',
         'hero.seeGameMechanics': 'see game mechanics',
         'logos.label': 'previously at',
+        'about.label': 'About',
+        'about.heading': 'Control & Automation Engineer with a passion for product.',
+        'about.desc': 'I studied Control & Automation Engineering at Istanbul Technical University. I love understanding how complex systems work under the hood — then figuring out how to turn that understanding into products people actually enjoy using. Right now, I’m focused on mobile gaming: analyzing what makes players stay, pay, and come back.',
+        'about.tag4': 'Systems Thinking',
         'work.label': 'Featured Work',
         'work.heading': 'Case Studies',
         'work.card1.title': 'Puzzle Game Analysis',
@@ -664,17 +710,24 @@
         'footer.top': 'Back to top \u2191',
       },
       tr: {
+        'nav.about': 'Hakk\u0131mda',
         'nav.work': '\u00C7al\u0131\u015Fma',
         'nav.contact': '\u0130leti\u015Fim',
         'hero.tagline': 'Product-Minded Engineer',
         'hero.headline': 'Karma\u015F\u0131k sistemleri<br><span class="gradient-text">basit hissettiren \u00FCr\u00FCnler in\u015Fa ediyorum.</span>',
         'hero.cta1': '\u00C7al\u0131\u015Fmam\u0131 \u0130ncele',
         'hero.cta2': '\u0130leti\u015Fime Ge\u00E7',
-        'hero.location': 'T\u00FCrkiye merkezli \u2014 uzaktan ve ofisten \u00E7al\u0131\u015Fmaya a\u00E7\u0131k',
-        'hero.status': 'Canl\u0131 \u00B7 Her raund benzersiz',
-        'hero.howItWorks': 'Nas\u0131l \u00C7al\u0131\u015F\u0131r',
-        'hero.seeGameMechanics': 'oyun mekaniklerini g\u00F6r',
+        'hero.location': 'Türkiye merkezli — uzaktan ve ofisten çalışmaya açık',
+        'hero.stat1': 'Oyun Analiz Edildi',
+        'hero.stat2': 'Seviye Oynandı',
+        'hero.status': 'Canlı · Her raund benzersiz',
+        'hero.howItWorks': 'Nasıl Çalışır',
+        'hero.seeGameMechanics': 'oyun mekaniklerini gör',
         'logos.label': 'previously at',
+        'about.label': 'Hakkımda',
+        'about.heading': 'Kontrol & Otomasyon Mühendisi, ürün tutkusu ile.',
+        'about.desc': 'İstanbul Teknik Üniversitesi’nde Kontrol ve Otomasyon Mühendisliği okudum. Karmaşık sistemlerin arka planda nasıl çalıştığını anlamayı — sonra bu anlayışı insanların gerçekten keyif alacağı ürünlere dönüştürmeyi seviyorum. Şu an mobil oyunlara odaklanıyorum: oyuncuları ne tutar, ne ödetir, ne geri getirir.',
+        'about.tag4': 'Sistem Düşüncesi',
         'work.label': '\u00D6ne \u00C7\u0131kan \u00C7al\u0131\u015Fma',
         'work.heading': 'Case Studies',
         'work.card1.title': 'Puzzle Oyun Analizi',
