@@ -736,8 +736,8 @@
     const FALL_DURATION = 350;
     const SPAWN_DURATION = 400;
     const CHAIN_DELAY = 450;
-    const ROCKET_THRESHOLD = 4;
-    const BOMB_THRESHOLD = 6;
+    const ROCKET_THRESHOLD = 3;
+    const BOMB_THRESHOLD = 5;
     const POWERUP_LIFESPAN = 2; // auto-activate after this many turns
 
     const grid = document.getElementById('puzzle-grid');
@@ -1130,7 +1130,13 @@
 
       // 2) Normal: pop largest group + chain reactions
       const group = findLargestGroup();
-      if (!group) { initBoard(); animating = false; return; }
+      if (!group) {
+        // Don't reset if power-ups are waiting to mature!
+        const hasPowerUp = board.some(row => row.some(cell => cell && cell.type !== 'normal'));
+        if (!hasPowerUp) initBoard();
+        animating = false;
+        return;
+      }
 
       await popChains();
       animating = false;
