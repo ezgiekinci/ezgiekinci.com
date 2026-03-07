@@ -95,6 +95,7 @@
     <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
       <a href="#" class="text-lg font-extrabold tracking-tight">EE<span class="text-coral">.</span></a>
       <div class="hidden md:flex items-center gap-8">
+        <a href="#about" class="text-sm text-slate hover:text-navy transition-colors duration-300" data-i18n="nav.about">About</a>
         <a href="#work" class="text-sm text-slate hover:text-navy transition-colors duration-300" data-i18n="nav.work">Work</a>
         <a href="#contact" class="text-sm text-slate hover:text-navy transition-colors duration-300" data-i18n="nav.contact">Contact</a>
         <div class="flex items-center gap-1.5 text-xs font-mono border border-border rounded-full px-3 py-1.5">
@@ -111,6 +112,7 @@
     </div>
     <div id="mobile-menu" class="hidden md:hidden bg-white/95 nav-blur border-t border-border">
       <div class="px-6 py-6 flex flex-col gap-5">
+        <a href="#about" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.about">About</a>
         <a href="#work" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.work">Work</a>
         <a href="#contact" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.contact">Contact</a>
         <div class="flex items-center gap-1.5 text-xs font-mono">
@@ -168,6 +170,43 @@
               <p class="text-2xl font-extrabold text-coral stat-number">60+</p>
               <p class="text-[11px] text-slate font-medium" data-i18n="hero.stat2">Levels Played</p>
             </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- About Section -->
+  <section id="about" class="py-24 relative overflow-hidden">
+    <div class="absolute top-0 left-0 w-80 h-80 bg-sage/5 rounded-full blur-3xl"></div>
+    <div class="max-w-6xl mx-auto px-6 relative">
+      <div class="grid grid-cols-1 lg:grid-cols-12 gap-16 items-center">
+        <!-- Photo -->
+        <div class="lg:col-span-4 flex justify-center fade-up">
+          <div class="relative">
+            <div class="w-56 h-56 md:w-64 md:h-64 rounded-2xl overflow-hidden shadow-xl ring-4 ring-white">
+              <img src="assets/ezgi-pp.jpg" alt="Ezgi Ekinci" class="w-full h-full object-cover">
+            </div>
+            <div class="absolute -bottom-3 -right-3 bg-coral/10 w-56 h-56 md:w-64 md:h-64 rounded-2xl -z-10"></div>
+          </div>
+        </div>
+        <!-- Text -->
+        <div class="lg:col-span-8 fade-up">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="accent-line"></div>
+            <span class="text-sm font-mono text-coral font-medium uppercase tracking-wider" data-i18n="about.label">About</span>
+          </div>
+          <h2 class="text-2xl md:text-3xl font-extrabold leading-snug text-navy" data-i18n="about.heading">
+            Control & Automation Engineer with a passion for product.
+          </h2>
+          <p class="mt-5 text-base text-slate leading-relaxed" data-i18n="about.desc">
+            I studied Control & Automation Engineering at Istanbul Technical University. I love understanding how complex systems work under the hood — then figuring out how to turn that understanding into products people actually enjoy using. Right now, I'm focused on mobile gaming: analyzing what makes players stay, pay, and come back.
+          </p>
+          <div class="mt-8 flex flex-wrap gap-3">
+            <span class="px-3 py-1.5 bg-cream border border-border rounded-lg text-xs font-medium text-navy">Product Thinking</span>
+            <span class="px-3 py-1.5 bg-cream border border-border rounded-lg text-xs font-medium text-navy">Game Analysis</span>
+            <span class="px-3 py-1.5 bg-cream border border-border rounded-lg text-xs font-medium text-navy">Data-Driven</span>
+            <span class="px-3 py-1.5 bg-cream border border-border rounded-lg text-xs font-medium text-navy" data-i18n="about.tag4">Systems Thinking</span>
           </div>
         </div>
       </div>
@@ -383,6 +422,7 @@
     // Translations
     const translations = {
       en: {
+        'nav.about': 'About',
         'nav.work': 'Work',
         'nav.contact': 'Contact',
         'hero.tagline': 'Product-Minded Engineer',
@@ -392,6 +432,10 @@
         'hero.location': 'Based in Turkey \u2014 open to remote & relocation',
         'hero.stat1': 'Games Analyzed',
         'hero.stat2': 'Levels Played',
+        'about.label': 'About',
+        'about.heading': 'Control & Automation Engineer with a passion for product.',
+        'about.desc': 'I studied Control & Automation Engineering at Istanbul Technical University. I love understanding how complex systems work under the hood \u2014 then figuring out how to turn that understanding into products people actually enjoy using. Right now, I\u2019m focused on mobile gaming: analyzing what makes players stay, pay, and come back.',
+        'about.tag4': 'Systems Thinking',
         'work.label': 'Featured Work',
         'work.heading': 'From problem to product insight.',
         'work.card1.title': 'Puzzle Game Analysis',
@@ -425,6 +469,7 @@
         'footer.top': 'Back to top \u2191',
       },
       tr: {
+        'nav.about': 'Hakk\u0131mda',
         'nav.work': '\u00C7al\u0131\u015Fma',
         'nav.contact': '\u0130leti\u015Fim',
         'hero.tagline': 'Product-Minded Engineer',
@@ -434,6 +479,10 @@
         'hero.location': 'T\u00FCrkiye merkezli \u2014 uzaktan \u00E7al\u0131\u015Fmaya ve ta\u015F\u0131nmaya a\u00E7\u0131k',
         'hero.stat1': 'Oyun Analiz Edildi',
         'hero.stat2': 'Seviye Oynand\u0131',
+        'about.label': 'Hakk\u0131mda',
+        'about.heading': 'Kontrol & Otomasyon M\u00FChendisi, \u00FCr\u00FCn tutkusu ile.',
+        'about.desc': '\u0130stanbul Teknik \u00DCniversitesi\u2019nde Kontrol ve Otomasyon M\u00FChendisli\u011Fi okudum. Karma\u015F\u0131k sistemlerin arka planda nas\u0131l \u00E7al\u0131\u015Ft\u0131\u011F\u0131n\u0131 anlamay\u0131 \u2014 sonra bu anlay\u0131\u015F\u0131 insanlar\u0131n ger\u00E7ekten keyif alaca\u011F\u0131 \u00FCr\u00FCnlere d\u00F6n\u00FC\u015Ft\u00FCrmeyi seviyorum. \u015Eu an mobil oyunlara odaklan\u0131yorum: oyuncular\u0131 ne tutar, ne \u00F6detir, ne geri getirir.',
+        'about.tag4': 'Sistem D\u00FC\u015F\u00FCncesi',
         'work.label': '\u00D6ne \u00C7\u0131kan \u00C7al\u0131\u015Fma',
         'work.heading': 'Problemden \u00FCr\u00FCn i\u00E7g\u00F6r\u00FCs\u00FCne.',
         'work.card1.title': 'Puzzle Oyun Analizi',
