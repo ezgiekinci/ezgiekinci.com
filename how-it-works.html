@@ -66,6 +66,18 @@
     .nav-dark .lang-sep { color: rgba(255,255,255,0.3); }
     .accent-line { width: 48px; height: 3px; background: linear-gradient(90deg, #FF4D8D, #FFD23F); border-radius: 2px; }
     .gradient-text { background: linear-gradient(135deg, #FF4D8D, #FFD23F, #4DC9F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .game-tile {
+      background: white;
+      border: 3px solid #D4B8FF;
+      border-radius: 1.25rem;
+      box-shadow: 0 6px 0 rgba(212,184,255,0.4);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .game-tile:hover { transform: translateY(-6px); box-shadow: 0 10px 0 rgba(212,184,255,0.4), 0 0 30px rgba(255,77,141,0.12); }
+    .game-tile:active { transform: translateY(6px); box-shadow: 0 0 0 rgba(212,184,255,0.4); }
+    .game-tile.pink { background: #FF4D8D; color: white; border-color: #CC3D71; box-shadow: 0 6px 0 rgba(204,61,113,0.5); }
+    .game-tile.pink:hover { box-shadow: 0 10px 0 rgba(204,61,113,0.5), 0 0 30px rgba(255,77,141,0.2); }
+    .game-tile.pink:active { box-shadow: 0 0 0 rgba(204,61,113,0.5); }
     .game-btn {
       background: linear-gradient(180deg, #FF6DA0 0%, #FF4D8D 100%);
       color: white;
@@ -524,12 +536,11 @@
       <h2 class="text-2xl md:text-3xl font-extrabold" data-i18n="hiw.cta.title">See it all in action</h2>
       <p class="mt-4 text-slate" data-i18n="hiw.cta.desc">The puzzle demo on the home page runs all these mechanics live, generating a unique sequence every time.</p>
       <div class="mt-8 flex flex-wrap justify-center gap-4">
-        <a href="index.html" class="game-btn group inline-flex items-center gap-2 px-7 py-3.5 font-semibold rounded-xl">
-          <span data-i18n="hiw.cta.home">Back to Home</span>
-          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
-        </a>
-        <a href="case-study.html" class="game-btn-outline inline-flex items-center px-7 py-3.5 text-navy font-semibold rounded-xl">
+        <a href="case-study.html" class="game-tile pink inline-flex items-center gap-2.5 px-6 py-3.5 font-semibold text-sm">
           <span data-i18n="hiw.cta.case">Read Case Study</span>
+        </a>
+        <a href="index.html" class="game-tile inline-flex items-center gap-2.5 px-6 py-3.5 text-navy font-semibold text-sm">
+          <span data-i18n="hiw.cta.home">Back to Home</span>
         </a>
       </div>
     </div>
