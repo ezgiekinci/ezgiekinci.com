@@ -1431,31 +1431,33 @@
       }
       while (true) {
         if (!d._ok(rid)) return;
+        // Find first bomb on board → start ripple from it
         let start = null;
         for (let r=0;r<d.rows&&!start;r++) for (let c=0;c<d.cols&&!start;c++)
           if (d.board[r][c]&&d.board[r][c].type==='bomb') start={r,c};
         if (!start) break;
-        const queued = new Set();
-        const queue = [start];
-        queued.add(`${start.r},${start.c}`);
-        while (queue.length) {
-          const {r,c} = queue.shift();
-          // Find bombs in blast radius → queue them before firing
-          for (let dr=-RADIUS;dr<=RADIUS;dr++) for (let dc=-RADIUS;dc<=RADIUS;dc++) {
-            if (Math.abs(dr)+Math.abs(dc)>RADIUS) continue;
-            const br=r+dr, bc=c+dc, k=`${br},${bc}`;
-            if (br<0||br>=d.rows||bc<0||bc>=d.cols) continue;
-            if (!queued.has(k)&&d.board[br][bc]&&d.board[br][bc].type==='bomb') { queue.push({r:br,c:bc}); queued.add(k); }
-          }
-          await fireBombAt(r, c);
+        const exploded = new Set();
+        let wave = [start];
+        exploded.add(`${start.r},${start.c}`);
+        while (wave.length) {
+          // Fire this wave's bombs in parallel
+          await Promise.all(wave.map(({r,c}) => fireBombAt(r, c)));
           if (!d._ok(rid)) return;
+          // Find bombs triggered by this wave (in blast radius)
+          const nextWave = [];
+          for (const {r,c} of wave) {
+            for (let dr=-RADIUS;dr<=RADIUS;dr++) for (let dc=-RADIUS;dc<=RADIUS;dc++) {
+              if (Math.abs(dr)+Math.abs(dc)>RADIUS) continue;
+              const br=r+dr, bc=c+dc, k=`${br},${bc}`;
+              if (br<0||br>=d.rows||bc<0||bc>=d.cols) continue;
+              if (!exploded.has(k)&&d.board[br][bc]&&d.board[br][bc].type==='bomb') { nextWave.push({r:br,c:bc}); exploded.add(k); }
+            }
+          }
           await d.applyGravity();
           if (!d._ok(rid)) return;
-          await sleep(80);
+          await sleep(120);
+          wave = nextWave;
         }
-        await d.applyGravity();
-        if (!d._ok(rid)) return;
-        await sleep(100);
       }
     }
 
