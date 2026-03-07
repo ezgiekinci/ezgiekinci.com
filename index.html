@@ -975,8 +975,6 @@
       comboEl.style.transform = `scale(${Math.min(scale, 2)})`;
       comboEl.style.fontSize = (14 + (n - 2) * 3) + 'px';
       grid.appendChild(comboEl);
-      // Shake grid on combo > 2
-      if (n > 2) shakeGrid(n > 4);
       setTimeout(() => { if (comboEl) comboEl.remove(); comboEl = null; }, 1200);
     }
 
