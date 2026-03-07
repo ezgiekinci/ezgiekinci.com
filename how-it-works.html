@@ -1,0 +1,1581 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>How it Works — Puzzle Mechanics | Ezgi Ekinci</title>
+  <meta name="description" content="Interactive guide to the puzzle game mechanics: color matching, gravity, rockets, bombs, disco balls, combos, and chain reactions.">
+  <meta property="og:title" content="How it Works — Puzzle Mechanics | Ezgi Ekinci">
+  <meta property="og:description" content="See every mechanic in action with live mini demos.">
+  <meta property="og:type" content="article">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#F0E6FF',
+            navy: '#1A0A2E',
+            'navy-light': '#2D1B4E',
+            slate: '#7C6F9B',
+            coral: '#FF4D8D',
+            'coral-dark': '#CC3D71',
+            lavender: '#D4B8FF',
+            sage: '#4DC9F6',
+            gold: '#FFD23F',
+            border: '#D4B8FF',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .nav-blur { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .accent-line { width: 48px; height: 3px; background: linear-gradient(90deg, #FF4D8D, #FFD23F); border-radius: 2px; }
+    .gradient-text { background: linear-gradient(135deg, #FF4D8D, #FFD23F, #4DC9F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .game-btn {
+      background: linear-gradient(180deg, #FF6DA0 0%, #FF4D8D 100%);
+      color: white;
+      box-shadow: 0 4px 0 #CC3D71, 0 6px 16px rgba(255,77,141,0.3);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .game-btn:hover { transform: translateY(-2px); box-shadow: 0 6px 0 #CC3D71, 0 8px 20px rgba(255,77,141,0.4); }
+    .game-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #CC3D71; }
+    .game-btn-outline {
+      border: 3px solid #D4B8FF;
+      box-shadow: 0 4px 0 rgba(212,184,255,0.6);
+      transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .game-btn-outline:hover { transform: translateY(-2px); box-shadow: 0 6px 0 rgba(212,184,255,0.6); border-color: #FF4D8D; }
+    .game-btn-outline:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(212,184,255,0.6); }
+
+    /* Mini Demo Grid */
+    .mini-grid {
+      position: relative;
+      display: grid;
+      gap: 4px;
+      padding: 12px;
+      background: rgba(255,255,255,0.6);
+      border: 3px solid #D4B8FF;
+      border-radius: 1.5rem;
+      backdrop-filter: blur(8px);
+      aspect-ratio: 1;
+      max-width: 320px;
+      margin: 0 auto;
+    }
+    .mini-cell {
+      aspect-ratio: 1;
+      border-radius: 0.5rem;
+      transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.25s ease;
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mini-cell.falling {
+      transition: transform 0.35s cubic-bezier(0.22, 1, 0.36, 1), opacity 0.25s ease;
+    }
+    .mini-cell.popping { animation: pop 0.35s ease forwards; }
+    .mini-cell.spawning { animation: spawn 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+    .mini-cell.highlight { animation: highlight-pulse 0.6s ease infinite alternate; }
+    .mini-cell.landing { animation: land-bounce 0.35s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+    /* Power-ups in mini demos */
+    .mini-cell.rocket,
+    .mini-cell.rocket-v {
+      background: transparent !important;
+      border: none; box-shadow: none; overflow: visible;
+      animation: rocket-idle 1s ease-in-out infinite alternate;
+    }
+    .mini-cell.rocket::before, .mini-cell.rocket-v::before { content: none; }
+    .mini-cell.rocket::after {
+      content: '';
+      position: absolute; width: 90%; height: 90%; z-index: 2;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='rh' x1='0' y1='0' x2='0' y2='1'%3E%3Cstop offset='0%25' stop-color='%23E0E0E0'/%3E%3Cstop offset='50%25' stop-color='%23FFFFFF'/%3E%3Cstop offset='100%25' stop-color='%23C0C0C0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='20' cy='20' rx='15' ry='7' fill='url(%23rh)'/%3E%3Cpolygon points='36,20 28,12 28,28' fill='%23FF4D4D'/%3E%3Cpolygon points='4,20 12,12 12,28' fill='%23FF4D4D'/%3E%3Cellipse cx='7' cy='20' rx='5' ry='6' fill='%23FF6B35' opacity='0.9'/%3E%3Cellipse cx='5' cy='20' rx='3' ry='4' fill='%23FFD23F'/%3E%3Cellipse cx='20' cy='18' rx='6' ry='2' fill='white' opacity='0.4'/%3E%3C/svg%3E");
+      background-size: contain; background-repeat: no-repeat; background-position: center;
+      filter: drop-shadow(0 0 6px rgba(255,165,0,0.6));
+    }
+    .mini-cell.rocket-v::after {
+      content: '';
+      position: absolute; width: 90%; height: 90%; z-index: 2;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3ClinearGradient id='rv' x1='0' y1='0' x2='1' y2='0'%3E%3Cstop offset='0%25' stop-color='%23E0E0E0'/%3E%3Cstop offset='50%25' stop-color='%23FFFFFF'/%3E%3Cstop offset='100%25' stop-color='%23C0C0C0'/%3E%3C/linearGradient%3E%3C/defs%3E%3Cellipse cx='20' cy='20' rx='7' ry='15' fill='url(%23rv)'/%3E%3Cpolygon points='20,4 12,12 28,12' fill='%23FF4D4D'/%3E%3Cpolygon points='20,36 12,28 28,28' fill='%23FF4D4D'/%3E%3Cellipse cx='20' cy='33' rx='6' ry='5' fill='%23FF6B35' opacity='0.9'/%3E%3Cellipse cx='20' cy='35' rx='4' ry='3' fill='%23FFD23F'/%3E%3Cellipse cx='18' cy='20' rx='2' ry='6' fill='white' opacity='0.4'/%3E%3C/svg%3E");
+      background-size: contain; background-repeat: no-repeat; background-position: center;
+      filter: drop-shadow(0 0 6px rgba(255,165,0,0.6));
+    }
+    @keyframes rocket-idle { 0% { transform: scale(1) translateX(0); } 50% { transform: scale(1.06) translateX(0.5px); } 100% { transform: scale(1) translateX(-0.5px); } }
+
+    .mini-cell.bomb {
+      background: transparent !important;
+      border: none; box-shadow: none; overflow: visible;
+      animation: bomb-idle 0.8s ease-in-out infinite alternate;
+    }
+    .mini-cell.bomb::before { content: none; }
+    .mini-cell.bomb::after {
+      content: '';
+      position: absolute; width: 95%; height: 95%; z-index: 2;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 40 40'%3E%3Cdefs%3E%3CradialGradient id='bg' cx='40%25' cy='35%25' r='50%25'%3E%3Cstop offset='0%25' stop-color='%23555'/%3E%3Cstop offset='60%25' stop-color='%23333'/%3E%3Cstop offset='100%25' stop-color='%23111'/%3E%3C/radialGradient%3E%3C/defs%3E%3Ccircle cx='20' cy='22' r='12' fill='url(%23bg)' stroke='%23666' stroke-width='0.5'/%3E%3Ccircle cx='16' cy='18' r='3.5' fill='%23555' opacity='0.6'/%3E%3Crect x='18' y='7' width='4' height='7' rx='2' fill='%23888'/%3E%3Ccircle cx='20' cy='6' r='3.5' fill='%23FFD23F'/%3E%3Ccircle cx='20' cy='5' r='2.5' fill='%23FF6B35'/%3E%3Cpath d='M18 4 Q16 0 19 -1 Q22 0 22 4' fill='%23FF4D4D' opacity='0.9'/%3E%3Cpath d='M22 3 Q24 1 23 -1' stroke='%23FFD23F' stroke-width='1.2' fill='none'/%3E%3Cpath d='M17 3 Q15 1 16 -1' stroke='%23FF6B35' stroke-width='0.8' fill='none' opacity='0.7'/%3E%3C/svg%3E");
+      background-size: contain; background-repeat: no-repeat; background-position: center;
+      filter: drop-shadow(0 0 6px rgba(255,210,63,0.5));
+    }
+    @keyframes bomb-idle { 0% { transform: scale(1); } 100% { transform: scale(1.08); } }
+
+    .mini-cell.disco {
+      background: transparent !important;
+      border: none; box-shadow: none; overflow: visible;
+      animation: disco-idle 1.5s linear infinite;
+    }
+    .mini-cell.disco::before { content: none; }
+    .mini-cell.disco::after {
+      content: '';
+      position: absolute; width: 90%; height: 90%; border-radius: 50%; z-index: 2;
+      background: conic-gradient(from 0deg, #FF4D8D, #FFD23F, #4DC9F6, #D4B8FF, #FF4D8D);
+      filter: drop-shadow(0 0 8px rgba(255,255,255,0.6));
+      animation: disco-sparkle 2s linear infinite;
+    }
+    @keyframes disco-idle {
+      0% { filter: drop-shadow(0 0 6px rgba(255,77,141,0.5)); }
+      33% { filter: drop-shadow(0 0 6px rgba(255,210,63,0.5)); }
+      66% { filter: drop-shadow(0 0 6px rgba(77,201,246,0.5)); }
+      100% { filter: drop-shadow(0 0 6px rgba(255,77,141,0.5)); }
+    }
+    @keyframes disco-sparkle { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+    .disco-beam {
+      position: absolute; pointer-events: none; z-index: 18;
+      height: 2px; transform-origin: left center; border-radius: 1px;
+    }
+
+    @keyframes pop {
+      0% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.3); opacity: 0.6; }
+      100% { transform: scale(0); opacity: 0; }
+    }
+    @keyframes spawn {
+      0% { transform: scale(0); opacity: 0; }
+      100% { transform: scale(1); opacity: 1; }
+    }
+    @keyframes powerup-spawn {
+      0% { transform: scale(0) rotate(-180deg); opacity: 0; }
+      60% { transform: scale(1.3) rotate(10deg); opacity: 1; }
+      100% { transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    @keyframes highlight-pulse {
+      0% { transform: scale(1); box-shadow: 0 0 0 rgba(255,255,255,0); }
+      100% { transform: scale(1.08); box-shadow: 0 0 12px rgba(255,255,255,0.6); }
+    }
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20% { transform: translateX(-3px) rotate(-1deg); }
+      40% { transform: translateX(3px) rotate(1deg); }
+      60% { transform: translateX(-2px) rotate(-0.5deg); }
+      80% { transform: translateX(2px) rotate(0.5deg); }
+    }
+    @keyframes big-shake {
+      0%, 100% { transform: translate(0,0) rotate(0); }
+      10% { transform: translate(-5px, 3px) rotate(-2deg); }
+      20% { transform: translate(5px, -3px) rotate(2deg); }
+      30% { transform: translate(-4px, 2px) rotate(-1.5deg); }
+      40% { transform: translate(4px, -2px) rotate(1.5deg); }
+      50% { transform: translate(-3px, 1px) rotate(-1deg); }
+      60% { transform: translate(3px, -1px) rotate(1deg); }
+      70% { transform: translate(-2px, 1px) rotate(-0.5deg); }
+    }
+    @keyframes land-bounce {
+      0% { transform: scaleX(1) scaleY(1); }
+      40% { transform: scaleX(1.15) scaleY(0.85); }
+      60% { transform: scaleX(0.92) scaleY(1.08); }
+      80% { transform: scaleX(1.04) scaleY(0.96); }
+      100% { transform: scaleX(1) scaleY(1); }
+    }
+    .mini-shake { animation: shake 0.4s ease; }
+    .mini-big-shake { animation: big-shake 0.6s ease; }
+    .combo-badge {
+      position: absolute; top: -12px; right: -12px;
+      background: linear-gradient(135deg, #FF4D8D, #FFD23F);
+      color: white; font-weight: 800; font-size: 14px;
+      padding: 4px 10px; border-radius: 999px; z-index: 10;
+      animation: combo-pop 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+      pointer-events: none;
+    }
+    @keyframes combo-pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+    .particle {
+      position: absolute; border-radius: 50%;
+      pointer-events: none; z-index: 20;
+    }
+    .rocket-trail { position: absolute; z-index: 15; pointer-events: none; border-radius: 4px; }
+    .bomb-ring { position: absolute; border-radius: 50%; pointer-events: none; z-index: 15; }
+    @keyframes cascade-out {
+      0% { transform: scale(1) translateY(0); opacity: 1; }
+      100% { transform: scale(0.5) translateY(30px); opacity: 0; }
+    }
+    @keyframes wave-spawn {
+      0% { transform: scale(0) translateY(-20px); opacity: 0; }
+      60% { transform: scale(1.1) translateY(2px); opacity: 1; }
+      100% { transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    /* Combo Tabs */
+    .combo-tab {
+      padding: 0.5rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      border-radius: 9999px;
+      border: 2px solid #D4B8FF;
+      color: #7C6F9B;
+      background: white;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+    .combo-tab:hover { border-color: #FF4D8D; color: #1A0A2E; }
+    .combo-tab.active {
+      background: linear-gradient(135deg, #FF4D8D, #FFD23F);
+      color: white;
+      border-color: transparent;
+    }
+
+  </style>
+</head>
+<body class="bg-cream text-navy font-sans antialiased">
+
+  <!-- Navigation -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <a href="index.html" class="text-lg font-extrabold tracking-tight">EE<span class="text-coral">.</span></a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="index.html#work" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.work">Work</a>
+        <a href="index.html#contact" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.contact">Contact</a>
+        <div class="flex items-center gap-1.5 text-xs font-mono border border-border rounded-full px-3 py-1.5">
+          <button onclick="setLang('en')" data-lang-toggle="en" class="font-medium text-navy transition-colors">EN</button>
+          <span class="text-lavender">|</span>
+          <button onclick="setLang('tr')" data-lang-toggle="tr" class="text-slate hover:text-navy transition-colors">TR</button>
+        </div>
+      </div>
+      <button id="menu-btn" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Menu">
+        <span class="block w-6 h-0.5 bg-navy transition-all duration-300" id="bar1"></span>
+        <span class="block w-6 h-0.5 bg-navy transition-all duration-300" id="bar2"></span>
+        <span class="block w-6 h-0.5 bg-navy transition-all duration-300" id="bar3"></span>
+      </button>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden bg-white/95 nav-blur border-t border-border">
+      <div class="px-6 py-6 flex flex-col gap-5">
+        <a href="index.html#work" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.work">Work</a>
+        <a href="index.html#contact" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.contact">Contact</a>
+        <div class="flex items-center gap-1.5 text-xs font-mono">
+          <button onclick="setLang('en')" data-lang-toggle="en" class="font-medium text-navy transition-colors">EN</button>
+          <span class="text-lavender">|</span>
+          <button onclick="setLang('tr')" data-lang-toggle="tr" class="text-slate hover:text-navy transition-colors">TR</button>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="pt-32 pb-20 md:pt-40 md:pb-28 bg-navy text-white relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-coral/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-72 h-72 bg-sage/10 rounded-full blur-3xl"></div>
+    <div class="max-w-5xl mx-auto px-6 relative">
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors mb-10 fade-up" data-i18n="hiw.back">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to Home
+      </a>
+      <div class="flex items-center gap-3 mb-6 fade-up">
+        <div class="w-12 h-0.5 bg-sage rounded"></div>
+        <span class="text-sm font-mono text-sage font-medium" data-i18n="hiw.label">Interactive Guide</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-extrabold leading-[1.1] tracking-tight fade-up" data-i18n="hiw.title">
+        How it Works
+      </h1>
+      <p class="mt-6 text-white/60 leading-relaxed max-w-2xl fade-up" data-i18n="hiw.desc">
+        Every mechanic of the puzzle demo, explained with live mini demos. Tap any replay button to watch again.
+      </p>
+      <div class="mt-10 flex flex-wrap gap-8 md:gap-16 fade-up">
+        <div>
+          <p class="text-3xl font-extrabold text-sage">7</p>
+          <p class="text-xs text-white/40 font-mono mt-1" data-i18n="hiw.stat1">Mechanics</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-coral">6</p>
+          <p class="text-xs text-white/40 font-mono mt-1" data-i18n="hiw.stat2">Combo Types</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-lavender">3</p>
+          <p class="text-xs text-white/40 font-mono mt-1" data-i18n="hiw.stat3">Power-ups</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <article class="py-20">
+    <div class="max-w-5xl mx-auto px-6">
+      <div class="space-y-28">
+
+        <!-- 01: Color Matching -->
+        <section class="fade-up" data-demo="color-matching">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div>
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">01</span>
+                <h2 class="text-2xl font-extrabold" data-i18n="hiw.s01.title">Color Matching</h2>
+              </div>
+              <p class="text-slate leading-relaxed" data-i18n="hiw.s01.desc">
+                The core mechanic: groups of 2 or more same-colored blocks that are connected horizontally or vertically get highlighted and then pop with a satisfying particle burst.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s01.tag1">Min 2 blocks</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s01.tag2">BFS search</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s01.tag3">Particle burst</span>
+              </div>
+            </div>
+            <div class="relative">
+              <div id="demo-01" class="mini-grid" style="grid-template-columns: repeat(4, 1fr);"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 02: Gravity & Bounce -->
+        <section class="fade-up" data-demo="gravity">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div class="md:order-2">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">02</span>
+                <h2 class="text-2xl font-extrabold" data-i18n="hiw.s02.title">Gravity &amp; Bounce</h2>
+              </div>
+              <p class="text-slate leading-relaxed" data-i18n="hiw.s02.desc">
+                After blocks pop, remaining blocks fall down with smooth gravity animation. When they land, a satisfying squash-and-stretch bounce plays. New blocks spawn from the top to fill empty spaces.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s02.tag1">Fall animation</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s02.tag2">Land bounce</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s02.tag3">Spawn refill</span>
+              </div>
+            </div>
+            <div class="relative md:order-1">
+              <div id="demo-02" class="mini-grid" style="grid-template-columns: repeat(4, 1fr);"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 03: Rocket -->
+        <section class="fade-up" data-demo="rocket">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div>
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">03</span>
+                <h2 class="text-2xl font-extrabold" data-i18n="hiw.s03.title">Rocket</h2>
+              </div>
+              <p class="text-slate leading-relaxed" data-i18n="hiw.s03.desc">
+                Match 5+ blocks to create a Rocket. When activated, it clears an entire row or column with a blazing trail, sparks, and screen shake. Horizontal rockets clear rows, vertical rockets clear columns.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s03.tag1">5+ blocks</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s03.tag2">Row / Column</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s03.tag3">Trail + Sparks</span>
+              </div>
+            </div>
+            <div class="relative">
+              <div id="demo-03" class="mini-grid" style="grid-template-columns: repeat(5, 1fr);"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 04: Bomb -->
+        <section class="fade-up" data-demo="bomb">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div class="md:order-2">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">04</span>
+                <h2 class="text-2xl font-extrabold" data-i18n="hiw.s04.title">Bomb</h2>
+              </div>
+              <p class="text-slate leading-relaxed" data-i18n="hiw.s04.desc">
+                Match 6+ blocks to create a Bomb. Detonation clears a diamond-shaped 3x3 area with an explosive blast ring, screen flash, and heavy shake. Much more destructive than a single rocket.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s04.tag1">6+ blocks</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s04.tag2">3x3 area</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s04.tag3">Blast + Flash</span>
+              </div>
+            </div>
+            <div class="relative md:order-1">
+              <div id="demo-04" class="mini-grid" style="grid-template-columns: repeat(5, 1fr);"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 05: Disco Ball -->
+        <section class="fade-up" data-demo="disco">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div>
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">05</span>
+                <h2 class="text-2xl font-extrabold" data-i18n="hiw.s05.title">Disco Ball</h2>
+              </div>
+              <p class="text-slate leading-relaxed" data-i18n="hiw.s05.desc">
+                The rarest power-up, requiring 8+ blocks. The Disco Ball shoots colorful beams to every block of the most common color on the board, clearing them all at once. A board-wide spectacle.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s05.tag1">8+ blocks</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s05.tag2">Color clear</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s05.tag3">Rainbow beams</span>
+              </div>
+            </div>
+            <div class="relative">
+              <div id="demo-05" class="mini-grid" style="grid-template-columns: repeat(5, 1fr);"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 06: Combos -->
+        <section class="fade-up" data-demo="combos">
+          <div class="flex items-center gap-3 mb-4">
+            <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">06</span>
+            <h2 class="text-2xl font-extrabold" data-i18n="hiw.s06.title">Combos</h2>
+          </div>
+          <p class="text-slate leading-relaxed max-w-2xl mb-6" data-i18n="hiw.s06.desc">
+            When two power-ups are adjacent and one activates, they combine for an even more powerful effect. 3 power-ups &times; 3 power-ups = 6 unique combo types, each with its own spectacular animation.
+          </p>
+          <!-- Combo Tabs -->
+          <div class="flex flex-wrap gap-2 mb-8" id="combo-tabs">
+            <button class="combo-tab active" data-combo="rr" data-i18n="hiw.s06.rr">Rocket + Rocket</button>
+            <button class="combo-tab" data-combo="bb" data-i18n="hiw.s06.bb">Bomb + Bomb</button>
+            <button class="combo-tab" data-combo="rb" data-i18n="hiw.s06.rb">Rocket + Bomb</button>
+            <button class="combo-tab" data-combo="dr" data-i18n="hiw.s06.dr">Disco + Rocket</button>
+            <button class="combo-tab" data-combo="db" data-i18n="hiw.s06.db">Disco + Bomb</button>
+            <button class="combo-tab" data-combo="dd" data-i18n="hiw.s06.dd">Disco + Disco</button>
+          </div>
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div id="combo-description">
+              <p class="text-slate leading-relaxed" id="combo-desc-text" data-i18n="hiw.s06.rr.desc">
+                Two rockets combine to clear both a full row AND a full column simultaneously, creating a cross-shaped blast pattern.
+              </p>
+            </div>
+            <div class="relative">
+              <div id="demo-06" class="mini-grid" style="grid-template-columns: repeat(5, 1fr);"></div>
+            </div>
+          </div>
+        </section>
+
+        <!-- 07: Chain Reactions -->
+        <section class="fade-up" data-demo="chain">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-10 items-center">
+            <div class="md:order-2">
+              <div class="flex items-center gap-3 mb-4">
+                <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">07</span>
+                <h2 class="text-2xl font-extrabold" data-i18n="hiw.s07.title">Chain Reactions</h2>
+              </div>
+              <p class="text-slate leading-relaxed" data-i18n="hiw.s07.desc">
+                The magic happens when gravity creates new matching groups after a pop. Each chain step increases the combo counter, shown as a flashy badge. Chains can cascade multiple times, creating satisfying multi-step sequences.
+              </p>
+              <div class="mt-4 flex flex-wrap gap-2">
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s07.tag1">Gravity chains</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s07.tag2">Combo counter</span>
+                <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="hiw.s07.tag3">Multi-step</span>
+              </div>
+            </div>
+            <div class="relative md:order-1">
+              <div id="demo-07" class="mini-grid" style="grid-template-columns: repeat(5, 1fr);"></div>
+            </div>
+          </div>
+        </section>
+
+      </div>
+    </div>
+  </article>
+
+  <!-- CTA -->
+  <section class="py-20 bg-white">
+    <div class="max-w-3xl mx-auto px-6 text-center fade-up">
+      <h2 class="text-2xl md:text-3xl font-extrabold" data-i18n="hiw.cta.title">See it all in action</h2>
+      <p class="mt-4 text-slate" data-i18n="hiw.cta.desc">The puzzle demo on the home page runs all these mechanics live, generating a unique sequence every time.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="index.html" class="game-btn group inline-flex items-center gap-2 px-7 py-3.5 font-semibold rounded-xl">
+          <span data-i18n="hiw.cta.home">Back to Home</span>
+          <svg class="w-4 h-4 group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 8l4 4m0 0l-4 4m4-4H3"/></svg>
+        </a>
+        <a href="case-study.html" class="game-btn-outline inline-flex items-center px-7 py-3.5 text-navy font-semibold rounded-xl">
+          <span data-i18n="hiw.cta.case">Read Case Study</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-border py-8">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-slate font-mono" data-i18n="footer.credit">Designed &amp; built by Ezgi Ekinci</p>
+      <a href="#" class="text-xs text-slate hover:text-navy transition-colors font-mono" data-i18n="footer.top">Back to top &uarr;</a>
+    </div>
+  </footer>
+
+  <!-- Translations -->
+  <script>
+    const translations = {
+      en: {
+        'nav.work': 'Work',
+        'nav.contact': 'Contact',
+        'hiw.back': '\u2190 Back to Home',
+        'hiw.label': 'Interactive Guide',
+        'hiw.title': 'How it Works',
+        'hiw.desc': 'Every mechanic of the puzzle demo, explained with live mini demos. Tap any replay button to watch again.',
+        'hiw.stat1': 'Mechanics',
+        'hiw.stat2': 'Combo Types',
+        'hiw.stat3': 'Power-ups',
+        'hiw.s01.title': 'Color Matching',
+        'hiw.s01.desc': 'The core mechanic: groups of 2 or more same-colored blocks that are connected horizontally or vertically get highlighted and then pop with a satisfying particle burst.',
+        'hiw.s01.tag1': 'Min 2 blocks',
+        'hiw.s01.tag2': 'BFS search',
+        'hiw.s01.tag3': 'Particle burst',
+        'hiw.s02.title': 'Gravity & Bounce',
+        'hiw.s02.desc': 'After blocks pop, remaining blocks fall down with smooth gravity animation. When they land, a satisfying squash-and-stretch bounce plays. New blocks spawn from the top to fill empty spaces.',
+        'hiw.s02.tag1': 'Fall animation',
+        'hiw.s02.tag2': 'Land bounce',
+        'hiw.s02.tag3': 'Spawn refill',
+        'hiw.s03.title': 'Rocket',
+        'hiw.s03.desc': 'Match 5+ blocks to create a Rocket. When activated, it clears an entire row or column with a blazing trail, sparks, and screen shake. Horizontal rockets clear rows, vertical rockets clear columns.',
+        'hiw.s03.tag1': '5+ blocks',
+        'hiw.s03.tag2': 'Row / Column',
+        'hiw.s03.tag3': 'Trail + Sparks',
+        'hiw.s04.title': 'Bomb',
+        'hiw.s04.desc': 'Match 6+ blocks to create a Bomb. Detonation clears a diamond-shaped 3x3 area with an explosive blast ring, screen flash, and heavy shake. Much more destructive than a single rocket.',
+        'hiw.s04.tag1': '6+ blocks',
+        'hiw.s04.tag2': '3x3 area',
+        'hiw.s04.tag3': 'Blast + Flash',
+        'hiw.s05.title': 'Disco Ball',
+        'hiw.s05.desc': 'The rarest power-up, requiring 8+ blocks. The Disco Ball shoots colorful beams to every block of the most common color on the board, clearing them all at once. A board-wide spectacle.',
+        'hiw.s05.tag1': '8+ blocks',
+        'hiw.s05.tag2': 'Color clear',
+        'hiw.s05.tag3': 'Rainbow beams',
+        'hiw.s06.title': 'Combos',
+        'hiw.s06.desc': 'When two power-ups are adjacent and one activates, they combine for an even more powerful effect. 3 power-ups \u00D7 3 power-ups = 6 unique combo types, each with its own spectacular animation.',
+        'hiw.s06.rr': 'Rocket + Rocket',
+        'hiw.s06.bb': 'Bomb + Bomb',
+        'hiw.s06.rb': 'Rocket + Bomb',
+        'hiw.s06.dr': 'Disco + Rocket',
+        'hiw.s06.db': 'Disco + Bomb',
+        'hiw.s06.dd': 'Disco + Disco',
+        'hiw.s06.rr.desc': 'Two rockets combine to clear both a full row AND a full column simultaneously, creating a cross-shaped blast pattern.',
+        'hiw.s06.bb.desc': 'Two bombs merge into a mega-bomb with a 5x5 blast radius \u2014 nearly half the board gone in one detonation.',
+        'hiw.s06.rb.desc': 'Rocket meets bomb: clears 3 full rows AND 3 full columns centered on the combo position. Massive destruction.',
+        'hiw.s06.dr.desc': 'Disco Ball converts every block of the most common color into rockets, then fires them all. Cascading row/column clears.',
+        'hiw.s06.db.desc': 'Disco Ball converts every block of the most common color into bombs, then detonates them all. Chain explosions everywhere.',
+        'hiw.s06.dd.desc': 'Two Disco Balls together clear the ENTIRE board in a rainbow flash. The ultimate combo.',
+        'hiw.s07.title': 'Chain Reactions',
+        'hiw.s07.desc': 'The magic happens when gravity creates new matching groups after a pop. Each chain step increases the combo counter, shown as a flashy badge. Chains can cascade multiple times, creating satisfying multi-step sequences.',
+        'hiw.s07.tag1': 'Gravity chains',
+        'hiw.s07.tag2': 'Combo counter',
+        'hiw.s07.tag3': 'Multi-step',
+        'hiw.cta.title': 'See it all in action',
+        'hiw.cta.desc': 'The puzzle demo on the home page runs all these mechanics live, generating a unique sequence every time.',
+        'hiw.cta.home': 'Back to Home',
+        'hiw.cta.case': 'Read Case Study',
+        'footer.credit': 'Designed & built by Ezgi Ekinci',
+        'footer.top': 'Back to top \u2191',
+      },
+      tr: {
+        'nav.work': '\u00C7al\u0131\u015Fma',
+        'nav.contact': '\u0130leti\u015Fim',
+        'hiw.back': '\u2190 Ana Sayfaya D\u00F6n',
+        'hiw.label': '\u0130nteraktif Rehber',
+        'hiw.title': 'Nas\u0131l \u00C7al\u0131\u015F\u0131r',
+        'hiw.desc': 'Puzzle demonun t\u00FCm mekanikleri, canl\u0131 mini demolarla a\u00E7\u0131kland\u0131. Tekrar izlemek i\u00E7in replay butonuna bas\u0131n.',
+        'hiw.stat1': 'Mekanik',
+        'hiw.stat2': 'Kombo T\u00FCr\u00FC',
+        'hiw.stat3': 'G\u00FC\u00E7 Par\u00E7as\u0131',
+        'hiw.s01.title': 'Renk E\u015Fle\u015Ftirme',
+        'hiw.s01.desc': 'Temel mekanik: yatay veya dikey ba\u011Flant\u0131l\u0131 2 veya daha fazla ayn\u0131 renkteki blok vurgulan\u0131r ve tatmin edici bir par\u00E7ac\u0131k patlamas\u0131yla patlar.',
+        'hiw.s01.tag1': 'Min 2 blok',
+        'hiw.s01.tag2': 'BFS arama',
+        'hiw.s01.tag3': 'Par\u00E7ac\u0131k patlamas\u0131',
+        'hiw.s02.title': 'Yer\u00E7ekimi ve Z\u0131plama',
+        'hiw.s02.desc': 'Bloklar patlad\u0131ktan sonra kalan bloklar d\u00FC\u015Fer. Yere inince tatmin edici bir s\u0131k\u0131\u015Fma-gerilme animasyonu oynar. Bo\u015F alanlar\u0131 doldurmak i\u00E7in \u00FCstten yeni bloklar do\u011Far.',
+        'hiw.s02.tag1': 'D\u00FC\u015Fme animasyonu',
+        'hiw.s02.tag2': '\u0130ni\u015F z\u0131plamas\u0131',
+        'hiw.s02.tag3': 'Yeniden doldurma',
+        'hiw.s03.title': 'Roket',
+        'hiw.s03.desc': '5+ blok e\u015Fle\u015Ftirerek Roket olu\u015Fturun. Etkinle\u015Fti\u011Finde, alevli bir iz, k\u0131v\u0131lc\u0131mlar ve ekran sars\u0131nt\u0131s\u0131yla t\u00FCm sat\u0131r\u0131 veya s\u00FCtunu temizler.',
+        'hiw.s03.tag1': '5+ blok',
+        'hiw.s03.tag2': 'Sat\u0131r / S\u00FCtun',
+        'hiw.s03.tag3': '\u0130z + K\u0131v\u0131lc\u0131m',
+        'hiw.s04.title': 'Bomba',
+        'hiw.s04.desc': '6+ blok e\u015Fle\u015Ftirerek Bomba olu\u015Fturun. Patlama, patlay\u0131c\u0131 bir halka, ekran fla\u015F\u0131 ve a\u011F\u0131r sars\u0131nt\u0131yla elmas \u015Feklinde 3x3 alan\u0131 temizler.',
+        'hiw.s04.tag1': '6+ blok',
+        'hiw.s04.tag2': '3x3 alan',
+        'hiw.s04.tag3': 'Patlama + Fla\u015F',
+        'hiw.s05.title': 'Disko Topu',
+        'hiw.s05.desc': 'En nadir g\u00FC\u00E7 par\u00E7as\u0131, 8+ blok gerektirir. Disko Topu, tahtadaki en yayg\u0131n renkteki her blo\u011Fa renkli \u0131\u015F\u0131nlar atar ve hepsini tek seferde temizler.',
+        'hiw.s05.tag1': '8+ blok',
+        'hiw.s05.tag2': 'Renk temizleme',
+        'hiw.s05.tag3': 'G\u00F6kku\u015Fa\u011F\u0131 \u0131\u015F\u0131nlar\u0131',
+        'hiw.s06.title': 'Kombolar',
+        'hiw.s06.desc': '\u0130ki g\u00FC\u00E7 par\u00E7as\u0131 yan yana oldu\u011Funda ve biri etkinle\u015Fti\u011Finde, daha g\u00FC\u00E7l\u00FC bir etki i\u00E7in birle\u015Firler. 3 g\u00FC\u00E7 par\u00E7as\u0131 \u00D7 3 g\u00FC\u00E7 par\u00E7as\u0131 = 6 benzersiz kombo t\u00FCr\u00FC.',
+        'hiw.s06.rr': 'Roket + Roket',
+        'hiw.s06.bb': 'Bomba + Bomba',
+        'hiw.s06.rb': 'Roket + Bomba',
+        'hiw.s06.dr': 'Disko + Roket',
+        'hiw.s06.db': 'Disko + Bomba',
+        'hiw.s06.dd': 'Disko + Disko',
+        'hiw.s06.rr.desc': '\u0130ki roket birle\u015Ferek ayn\u0131 anda hem bir sat\u0131r\u0131 hem de bir s\u00FCtunu temizler, \u00E7arp\u0131 \u015Feklinde patlama olu\u015Fturur.',
+        'hiw.s06.bb.desc': '\u0130ki bomba birle\u015Ferek 5x5 patlama yar\u0131\u00E7ap\u0131na sahip mega-bomba olu\u015Fturur \u2014 tahtan\u0131n neredeyse yar\u0131s\u0131 tek patlamada gider.',
+        'hiw.s06.rb.desc': 'Roket bombaya kar\u015F\u0131: kombo pozisyonundan 3 sat\u0131r VE 3 s\u00FCtun temizler. Muazzam y\u0131k\u0131m.',
+        'hiw.s06.dr.desc': 'Disko Topu, en yayg\u0131n renkteki t\u00FCm bloklar\u0131 rokete d\u00F6n\u00FC\u015Ft\u00FCr\u00FCr, sonra hepsini ate\u015Fler. Zincirleme sat\u0131r/s\u00FCtun temizli\u011Fi.',
+        'hiw.s06.db.desc': 'Disko Topu, en yayg\u0131n renkteki t\u00FCm bloklar\u0131 bombaya d\u00F6n\u00FC\u015Ft\u00FCr\u00FCr, sonra hepsini patlat\u0131r. Her yerde zincirleme patlamalar.',
+        'hiw.s06.dd.desc': '\u0130ki Disko Topu birlikte t\u00FCm tahtay\u0131 g\u00F6kku\u015Fa\u011F\u0131 fla\u015F\u0131yla temizler. Nihai kombo.',
+        'hiw.s07.title': 'Zincir Reaksiyonlar',
+        'hiw.s07.desc': 'Sihir, yer\u00E7ekimi patlamadan sonra yeni e\u015Fle\u015Fen gruplar olu\u015Fturdu\u011Funda ger\u00E7ekle\u015Fir. Her zincir ad\u0131m\u0131 kombo sayac\u0131n\u0131 art\u0131r\u0131r. Zincirler birden fazla kez basamaklanarak tatmin edici \u00E7ok ad\u0131ml\u0131 diziler olu\u015Fturur.',
+        'hiw.s07.tag1': 'Yer\u00E7ekimi zincirleri',
+        'hiw.s07.tag2': 'Kombo sayac\u0131',
+        'hiw.s07.tag3': '\u00C7ok ad\u0131ml\u0131',
+        'hiw.cta.title': 'Hepsini canl\u0131 g\u00F6r\u00FCn',
+        'hiw.cta.desc': 'Ana sayfadaki puzzle demo t\u00FCm bu mekanikleri canl\u0131 \u00E7al\u0131\u015Ft\u0131r\u0131r, her seferinde benzersiz bir dizi \u00FCretir.',
+        'hiw.cta.home': 'Ana Sayfaya D\u00F6n',
+        'hiw.cta.case': 'Case Study\'yi Oku',
+        'footer.credit': 'Ezgi Ekinci taraf\u0131ndan tasarland\u0131 ve geli\u015Ftirildi',
+        'footer.top': 'Ba\u015Fa d\u00F6n \u2191',
+      }
+    };
+
+    function setLang(lang) {
+      const t = translations[lang];
+      if (!t) return;
+      document.documentElement.lang = lang;
+      localStorage.setItem('lang', lang);
+      document.querySelectorAll('[data-i18n]').forEach(el => {
+        const key = el.getAttribute('data-i18n');
+        if (t[key] !== undefined) el.textContent = t[key];
+      });
+      document.querySelectorAll('[data-i18n-html]').forEach(el => {
+        const key = el.getAttribute('data-i18n-html');
+        if (t[key] !== undefined) el.innerHTML = t[key];
+      });
+      document.querySelectorAll('[data-lang-toggle]').forEach(btn => {
+        if (btn.getAttribute('data-lang-toggle') === lang) {
+          btn.classList.add('font-medium', 'text-navy');
+          btn.classList.remove('text-slate');
+        } else {
+          btn.classList.remove('font-medium', 'text-navy');
+          btn.classList.add('text-slate');
+        }
+      });
+      // Update combo description if on combo section
+      const activeTab = document.querySelector('.combo-tab.active');
+      if (activeTab) {
+        const key = 'hiw.s06.' + activeTab.dataset.combo + '.desc';
+        const descEl = document.getElementById('combo-desc-text');
+        if (descEl && t[key]) descEl.textContent = t[key];
+      }
+    }
+    const savedLang = localStorage.getItem('lang') || 'en';
+    setLang(savedLang);
+  </script>
+
+  <!-- Nav & UI Scripts -->
+  <script>
+    const navbar = document.getElementById('navbar');
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 40) {
+        navbar.classList.add('bg-cream/90', 'nav-blur', 'shadow-sm');
+      } else {
+        navbar.classList.remove('bg-cream/90', 'nav-blur', 'shadow-sm');
+      }
+    });
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    const bar3 = document.getElementById('bar3');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      bar1.classList.toggle('rotate-45');
+      bar1.classList.toggle('translate-y-2');
+      bar2.classList.toggle('opacity-0');
+      bar3.classList.toggle('-rotate-45');
+      bar3.classList.toggle('-translate-y-2');
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        bar1.classList.remove('rotate-45', 'translate-y-2');
+        bar2.classList.remove('opacity-0');
+        bar3.classList.remove('-rotate-45', '-translate-y-2');
+      });
+    });
+
+    // Fade-up observer
+    const fadeObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
+    }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
+    document.querySelectorAll('.fade-up').forEach(el => fadeObserver.observe(el));
+  </script>
+
+  <!-- MiniDemo Engine + All Demos -->
+  <script>
+  (function() {
+    const COLORS = ['#FF4D8D', '#4DC9F6', '#FFD23F', '#D4B8FF'];
+    const POP_DURATION = 350;
+    const FALL_DURATION = 350;
+    const SPAWN_DURATION = 400;
+    const CHAIN_DELAY = 450;
+    const AUTO_PLAY_DELAY = 1400;
+
+    function sleep(ms) { return new Promise(r => setTimeout(r, ms)); }
+    function randColor() { return Math.floor(Math.random() * COLORS.length); }
+
+    // ========================
+    // MiniDemo Class
+    // ========================
+    class MiniDemo {
+      constructor(containerId, rows, cols) {
+        this.grid = document.getElementById(containerId);
+        this.rows = rows;
+        this.cols = cols;
+        this.board = [];
+        this.playing = false;
+        this.comboEl = null;
+        this.runId = 0; // for cancellation
+      }
+
+      // Cancel any running loop
+      cancel() { this.runId++; this.playing = false; }
+
+      // Check if still valid
+      _ok(id) { return this.runId === id; }
+
+      setBoard(matrix) {
+        this.grid.innerHTML = '';
+        this.board = [];
+        for (let r = 0; r < this.rows; r++) {
+          this.board[r] = [];
+          for (let c = 0; c < this.cols; c++) {
+            const val = matrix[r][c];
+            if (val === null) { this.board[r][c] = null; continue; }
+            if (typeof val === 'string') {
+              const el = this._createPowerUpCell(r, c, val);
+              this.grid.appendChild(el);
+              this.board[r][c] = { color: -1, el, type: val };
+            } else {
+              const el = this._createCell(r, c, val);
+              this.grid.appendChild(el);
+              this.board[r][c] = { color: val, el, type: 'normal' };
+            }
+          }
+        }
+      }
+
+      // Fill board with random colors (no nulls)
+      fillRandom() {
+        this.grid.innerHTML = '';
+        this.board = [];
+        for (let r = 0; r < this.rows; r++) {
+          this.board[r] = [];
+          for (let c = 0; c < this.cols; c++) {
+            const ci = randColor();
+            const el = this._createCell(r, c, ci);
+            this.grid.appendChild(el);
+            this.board[r][c] = { color: ci, el, type: 'normal' };
+          }
+        }
+      }
+
+      _createCell(row, col, colorIdx) {
+        const el = document.createElement('div');
+        el.className = 'mini-cell';
+        el.style.backgroundColor = COLORS[colorIdx];
+        el.style.gridRow = row + 1;
+        el.style.gridColumn = col + 1;
+        return el;
+      }
+
+      _createPowerUpCell(row, col, type) {
+        const el = document.createElement('div');
+        el.className = 'mini-cell';
+        el.style.gridRow = row + 1;
+        el.style.gridColumn = col + 1;
+        if (type === 'disco') { el.classList.add('disco'); }
+        else { el.classList.add(type === 'rocket-v' ? 'rocket' : type); if (type === 'rocket-v') el.classList.add('rocket-v'); }
+        return el;
+      }
+
+      _getCellCenter(row, col) {
+        const pad = 12, gap = 4;
+        const cellSize = (this.grid.offsetWidth - pad * 2 - (this.cols - 1) * gap) / this.cols;
+        return { x: pad + col * (cellSize + gap) + cellSize / 2, y: pad + row * (cellSize + gap) + cellSize / 2, size: cellSize };
+      }
+
+      highlightCells(cells) {
+        cells.forEach(([r, c]) => { if (this.board[r] && this.board[r][c]) this.board[r][c].el.classList.add('highlight'); });
+      }
+      unhighlightCells(cells) {
+        cells.forEach(([r, c]) => { if (this.board[r] && this.board[r][c]) this.board[r][c].el.classList.remove('highlight'); });
+      }
+
+      spawnParticles(row, col, color, count, spread) {
+        count = count || 6; spread = spread || 30;
+        const { x: cx, y: cy } = this._getCellCenter(row, col);
+        for (let i = 0; i < count; i++) {
+          const p = document.createElement('div');
+          p.className = 'particle';
+          const sz = 3 + Math.random() * 3;
+          p.style.width = sz + 'px'; p.style.height = sz + 'px';
+          p.style.backgroundColor = color;
+          p.style.left = cx + 'px'; p.style.top = cy + 'px';
+          const angle = (Math.PI * 2 / count) * i + Math.random() * 0.8;
+          const dist = spread * 0.5 + Math.random() * spread;
+          const dx = Math.cos(angle) * dist, dy = Math.sin(angle) * dist;
+          p.animate([
+            { transform: 'translate(-50%,-50%) scale(1)', opacity: 1 },
+            { transform: `translate(calc(-50% + ${dx}px), calc(-50% + ${dy}px)) scale(0)`, opacity: 0 }
+          ], { duration: 400 + Math.random() * 200, easing: 'ease-out', fill: 'forwards' });
+          this.grid.appendChild(p);
+          setTimeout(() => p.remove(), 650);
+        }
+      }
+
+      async popCells(cells) {
+        cells.forEach(([r, c]) => {
+          const cell = this.board[r][c];
+          if (!cell) return;
+          cell.el.classList.add('popping');
+          const color = cell.color >= 0 ? COLORS[cell.color] : '#FFA500';
+          this.spawnParticles(r, c, color, 5, 25);
+        });
+        await sleep(POP_DURATION);
+        cells.forEach(([r, c]) => this._removeCell(r, c));
+      }
+
+      _removeCell(r, c) {
+        if (this.board[r] && this.board[r][c]) { this.board[r][c].el.remove(); this.board[r][c] = null; }
+      }
+
+      async applyGravity() {
+        let moved = false;
+        for (let c = 0; c < this.cols; c++) {
+          let wr = this.rows - 1;
+          for (let r = this.rows - 1; r >= 0; r--) {
+            if (this.board[r][c]) {
+              if (r !== wr) {
+                this.board[wr][c] = this.board[r][c];
+                this.board[r][c] = null;
+                this.board[wr][c].el.style.gridRow = wr + 1;
+                this.board[wr][c].el.classList.add('falling');
+                this.board[wr][c].el.style.animation = `land-bounce 0.35s ${FALL_DURATION}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
+                moved = true;
+              }
+              wr--;
+            }
+          }
+          for (let r = wr; r >= 0; r--) {
+            const ci = randColor();
+            const el = this._createCell(r, c, ci);
+            el.style.animation = `spawn ${SPAWN_DURATION}ms cubic-bezier(0.34, 1.56, 0.64, 1) forwards, land-bounce 0.35s ${SPAWN_DURATION}ms cubic-bezier(0.34, 1.56, 0.64, 1)`;
+            this.grid.appendChild(el);
+            this.board[r][c] = { color: ci, el, type: 'normal' };
+            moved = true;
+          }
+        }
+        if (moved) {
+          await sleep(FALL_DURATION);
+          for (let r = 0; r < this.rows; r++)
+            for (let c = 0; c < this.cols; c++)
+              if (this.board[r][c]) {
+                this.board[r][c].el.classList.remove('falling');
+                const el = this.board[r][c].el;
+                setTimeout(() => { el.style.animation = ''; }, 400);
+              }
+        }
+      }
+
+      async spawnPowerUp(r, c, type) {
+        this._removeCell(r, c);
+        const el = this._createPowerUpCell(r, c, type);
+        el.style.animation = 'powerup-spawn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards';
+        this.grid.appendChild(el);
+        this.board[r][c] = { color: -1, el, type };
+        this.spawnParticles(r, c, '#FFFFFF', 8, 35);
+        await sleep(SPAWN_DURATION);
+        el.style.animation = '';
+      }
+
+      showRocketTrail(row, col, horizontal, color) {
+        const { x: cx, y: cy } = this._getCellCenter(row, col);
+        const beam = document.createElement('div');
+        beam.className = 'rocket-trail';
+        beam.style.background = `linear-gradient(${horizontal ? '90deg' : '180deg'}, transparent, ${color}, white, ${color}, transparent)`;
+        if (horizontal) { beam.style.left = '0'; beam.style.top = (cy - 3) + 'px'; beam.style.width = this.grid.offsetWidth + 'px'; beam.style.height = '6px'; }
+        else { beam.style.left = (cx - 3) + 'px'; beam.style.top = '0'; beam.style.width = '6px'; beam.style.height = this.grid.offsetHeight + 'px'; }
+        this.grid.appendChild(beam);
+        beam.animate([{ opacity: 1, filter: 'blur(0px)' }, { opacity: 0, filter: 'blur(6px)' }], { duration: 600, easing: 'ease-out', fill: 'forwards' });
+        setTimeout(() => beam.remove(), 600);
+        const glow = document.createElement('div');
+        glow.className = 'rocket-trail';
+        glow.style.background = color; glow.style.filter = 'blur(8px)';
+        if (horizontal) { glow.style.left = '0'; glow.style.top = (cy - 8) + 'px'; glow.style.width = this.grid.offsetWidth + 'px'; glow.style.height = '16px'; }
+        else { glow.style.left = (cx - 8) + 'px'; glow.style.top = '0'; glow.style.width = '16px'; glow.style.height = this.grid.offsetHeight + 'px'; }
+        this.grid.appendChild(glow);
+        glow.animate([{ opacity: 0.5 }, { opacity: 0 }], { duration: 500, easing: 'ease-out', fill: 'forwards' });
+        setTimeout(() => glow.remove(), 500);
+        const steps = horizontal ? this.cols : this.rows;
+        for (let i = 0; i < steps; i++) {
+          const pr = horizontal ? row : i, pc = horizontal ? i : col;
+          setTimeout(() => { this.spawnParticles(pr, pc, '#FFFFFF', 3, 15); }, i * 40);
+        }
+      }
+
+      showBombBlast(row, col, color) {
+        const { x: cx, y: cy, size } = this._getCellCenter(row, col);
+        const flash = document.createElement('div');
+        flash.style.cssText = `position:absolute;border-radius:50%;pointer-events:none;z-index:25;background:radial-gradient(circle,white 0%,${color} 40%,transparent 70%)`;
+        const fs = size * 5;
+        flash.style.left = (cx-fs/2)+'px'; flash.style.top = (cy-fs/2)+'px'; flash.style.width = fs+'px'; flash.style.height = fs+'px';
+        this.grid.appendChild(flash);
+        flash.animate([{ transform:'scale(0)', opacity:1 },{ transform:'scale(1.2)', opacity:0 }], { duration:450, easing:'ease-out', fill:'forwards' });
+        setTimeout(() => flash.remove(), 450);
+        const ring = document.createElement('div');
+        ring.className = 'bomb-ring';
+        ring.style.left = (cx-fs/2)+'px'; ring.style.top = (cy-fs/2)+'px'; ring.style.width = fs+'px'; ring.style.height = fs+'px';
+        ring.style.border = `3px solid ${color}`;
+        this.grid.appendChild(ring);
+        ring.animate([{ transform:'scale(0)', opacity:1 },{ transform:'scale(1)', opacity:0 }], { duration:500, easing:'ease-out', fill:'forwards' });
+        setTimeout(() => ring.remove(), 500);
+        const sf = document.createElement('div');
+        sf.style.cssText = 'position:absolute;inset:0;background:white;border-radius:1.5rem;z-index:26;pointer-events:none';
+        this.grid.appendChild(sf);
+        sf.animate([{ opacity:0.4 },{ opacity:0 }], { duration:200, easing:'ease-out', fill:'forwards' });
+        setTimeout(() => sf.remove(), 200);
+        this.spawnParticles(row, col, color, 10, 45);
+        this.spawnParticles(row, col, '#FFFFFF', 6, 35);
+      }
+
+      showDiscoFlash(row, col) {
+        const { x: ox, y: oy, size } = this._getCellCenter(row, col);
+        const flash = document.createElement('div');
+        flash.style.cssText = `position:absolute;border-radius:50%;pointer-events:none;z-index:25;background:conic-gradient(from 0deg, #FF4D8D, #FFD23F, #4DC9F6, #D4B8FF, #FF4D8D)`;
+        const fs = size * 3;
+        flash.style.left = (ox - fs / 2) + 'px'; flash.style.top = (oy - fs / 2) + 'px';
+        flash.style.width = fs + 'px'; flash.style.height = fs + 'px';
+        this.grid.appendChild(flash);
+        flash.animate([{ transform: 'scale(0)', opacity: 1 }, { transform: 'scale(1.5)', opacity: 0 }],
+          { duration: 500, easing: 'ease-out', fill: 'forwards' });
+        setTimeout(() => flash.remove(), 500);
+      }
+
+      shootBeam(fromRow, fromCol, toRow, toCol, color) {
+        const { x: ox, y: oy } = this._getCellCenter(fromRow, fromCol);
+        const { x: tx, y: ty } = this._getCellCenter(toRow, toCol);
+        const dx = tx - ox, dy = ty - oy;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        const angle = Math.atan2(dy, dx) * 180 / Math.PI;
+        const beam = document.createElement('div');
+        beam.className = 'disco-beam';
+        beam.style.left = ox + 'px'; beam.style.top = oy + 'px';
+        beam.style.width = dist + 'px';
+        beam.style.transform = `rotate(${angle}deg)`;
+        beam.style.background = `linear-gradient(90deg, rgba(255,255,255,0.8), ${color})`;
+        beam.style.boxShadow = `0 0 6px ${color}`;
+        this.grid.appendChild(beam);
+        beam.animate([{ opacity: 1 }, { opacity: 0 }], { duration: 350, easing: 'ease-out', fill: 'forwards' });
+        setTimeout(() => beam.remove(), 350);
+      }
+
+      shakeGrid(big) {
+        const cls = big ? 'mini-big-shake' : 'mini-shake';
+        this.grid.classList.remove('mini-shake', 'mini-big-shake');
+        void this.grid.offsetWidth;
+        this.grid.classList.add(cls);
+        setTimeout(() => this.grid.classList.remove(cls), big ? 500 : 400);
+      }
+
+      showCombo(n) {
+        if (this.comboEl) this.comboEl.remove();
+        if (n < 2) return;
+        this.comboEl = document.createElement('div');
+        this.comboEl.className = 'combo-badge';
+        this.comboEl.textContent = 'x' + n;
+        this.grid.appendChild(this.comboEl);
+        setTimeout(() => { if (this.comboEl) { this.comboEl.remove(); this.comboEl = null; } }, 1200);
+      }
+
+      async activateRocket(row, col, type) {
+        const horizontal = type !== 'rocket-v';
+        this._removeCell(row, col);
+        this.showRocketTrail(row, col, horizontal, '#FFA500');
+        this.shakeGrid(false);
+        const toClear = [];
+        if (horizontal) { for (let c = 0; c < this.cols; c++) if (this.board[row][c]) toClear.push([row, c]); }
+        else { for (let r = 0; r < this.rows; r++) if (this.board[r][col]) toClear.push([r, col]); }
+        toClear.forEach(([r, c]) => {
+          if (!this.board[r][c]) return;
+          this.board[r][c].el.classList.add('popping');
+          this.spawnParticles(r, c, this.board[r][c].color >= 0 ? COLORS[this.board[r][c].color] : '#FFA500', 3, 15);
+        });
+        await sleep(POP_DURATION);
+        toClear.forEach(([r, c]) => this._removeCell(r, c));
+      }
+
+      async activateBomb(row, col) {
+        this._removeCell(row, col);
+        this.showBombBlast(row, col, '#FFD23F');
+        this.shakeGrid(true);
+        const RADIUS = 2, toClear = [];
+        for (let dr = -RADIUS; dr <= RADIUS; dr++)
+          for (let dc = -RADIUS; dc <= RADIUS; dc++) {
+            if (Math.abs(dr) + Math.abs(dc) > RADIUS) continue;
+            const r = row + dr, c = col + dc;
+            if (r < 0 || r >= this.rows || c < 0 || c >= this.cols || !this.board[r][c]) continue;
+            toClear.push([r, c]);
+          }
+        toClear.forEach(([r, c]) => { if (!this.board[r][c]) return; this.board[r][c].el.classList.add('popping'); this.spawnParticles(r, c, '#FFD23F', 4, 20); });
+        await sleep(POP_DURATION);
+        toClear.forEach(([r, c]) => this._removeCell(r, c));
+      }
+
+      async activateDisco(row, col) {
+        this._removeCell(row, col);
+        const counts = [0, 0, 0, 0];
+        for (let r = 0; r < this.rows; r++) for (let c = 0; c < this.cols; c++) if (this.board[r][c] && this.board[r][c].color >= 0) counts[this.board[r][c].color]++;
+        const targetColor = counts.indexOf(Math.max(...counts));
+        const targets = [];
+        for (let r = 0; r < this.rows; r++) for (let c = 0; c < this.cols; c++) if (this.board[r][c] && this.board[r][c].color === targetColor) targets.push([r, c]);
+        this.showDiscoFlash(row, col);
+        targets.forEach(([r, c], i) => { setTimeout(() => { this.shootBeam(row, col, r, c, COLORS[targetColor]); }, i * 30); });
+        await sleep(Math.min(targets.length * 30 + 400, 800));
+        this.shakeGrid(true);
+        targets.forEach(([r, c]) => { if (!this.board[r][c]) return; this.board[r][c].el.classList.add('popping'); this.spawnParticles(r, c, COLORS[targetColor], 4, 20); });
+        await sleep(POP_DURATION);
+        targets.forEach(([r, c]) => { if (this.board[r][c] && this.board[r][c].type === 'normal') this._removeCell(r, c); });
+      }
+
+      // Find largest connected group of same-colored normal cells
+      findLargestGroup() {
+        const visited = Array.from({ length: this.rows }, () => Array(this.cols).fill(false));
+        let best = [];
+        for (let r = 0; r < this.rows; r++) {
+          for (let c = 0; c < this.cols; c++) {
+            if (visited[r][c] || !this.board[r][c] || this.board[r][c].color < 0) continue;
+            const group = [], color = this.board[r][c].color, stack = [[r, c]];
+            while (stack.length) {
+              const [cr, cc] = stack.pop();
+              if (cr < 0 || cr >= this.rows || cc < 0 || cc >= this.cols) continue;
+              if (visited[cr][cc] || !this.board[cr][cc] || this.board[cr][cc].color !== color) continue;
+              visited[cr][cc] = true;
+              group.push([cr, cc]);
+              stack.push([cr-1,cc],[cr+1,cc],[cr,cc-1],[cr,cc+1]);
+            }
+            if (group.length > best.length) best = group;
+          }
+        }
+        return best.length >= 2 ? best : null;
+      }
+
+      findPowerUp(type) {
+        for (let r = 0; r < this.rows; r++)
+          for (let c = 0; c < this.cols; c++)
+            if (this.board[r][c] && this.board[r][c].type === type) return [r, c];
+        return null;
+      }
+
+      // Auto-play loop: find group → highlight → pop → gravity, repeats until cancelled
+      async autoPlay(rid) {
+        while (this._ok(rid)) {
+          const group = this.findLargestGroup();
+          if (!group) { this.fillRandom(); await sleep(400); continue; }
+          this.highlightCells(group);
+          await sleep(400);
+          if (!this._ok(rid)) return;
+          this.unhighlightCells(group);
+          await this.popCells(group);
+          if (!this._ok(rid)) return;
+          await this.applyGravity();
+          if (!this._ok(rid)) return;
+          await sleep(AUTO_PLAY_DELAY);
+        }
+      }
+    }
+
+    // ========================
+    // Demo Loops (infinite)
+    // ========================
+    const demos = {};
+    const demoStarted = {};
+
+    // Loop with auto-play: scripted → auto-play turns → repeat
+    async function loopDemo(key, scriptedFn, containerId, rows, cols) {
+      if (demos[key]) demos[key].cancel();
+      const d = new MiniDemo(containerId, rows, cols);
+      demos[key] = d;
+      d.playing = true;
+      const rid = d.runId;
+
+      while (d._ok(rid)) {
+        await scriptedFn(d, rid);
+        if (!d._ok(rid)) return;
+        await d.applyGravity();
+        if (!d._ok(rid)) return;
+        await sleep(AUTO_PLAY_DELAY);
+        if (!d._ok(rid)) return;
+        // Auto-play for several turns
+        for (let i = 0; i < 4; i++) {
+          if (!d._ok(rid)) return;
+          const group = d.findLargestGroup();
+          if (!group) { d.fillRandom(); await sleep(400); continue; }
+          d.highlightCells(group);
+          await sleep(400);
+          if (!d._ok(rid)) return;
+          d.unhighlightCells(group);
+          await d.popCells(group);
+          if (!d._ok(rid)) return;
+          await d.applyGravity();
+          if (!d._ok(rid)) return;
+          await sleep(AUTO_PLAY_DELAY);
+        }
+        if (!d._ok(rid)) return;
+        await sleep(800);
+      }
+    }
+
+    // Replay-only loop: scripted → gravity fill → pause → repeat (no auto-play)
+    async function replayDemo(key, scriptedFn, containerId, rows, cols) {
+      if (demos[key]) demos[key].cancel();
+      const d = new MiniDemo(containerId, rows, cols);
+      demos[key] = d;
+      d.playing = true;
+      const rid = d.runId;
+
+      while (d._ok(rid)) {
+        await scriptedFn(d, rid);
+        if (!d._ok(rid)) return;
+        await d.applyGravity();
+        if (!d._ok(rid)) return;
+        await sleep(2000);
+      }
+    }
+
+    // ---- 01: Color Matching ----
+    async function scriptColorMatching(d, rid) {
+      d.setBoard([
+        [1, 2, 0, 3],
+        [3, 0, 0, 1],
+        [2, 3, 0, 2],
+        [1, 0, 2, 3],
+      ]);
+      await sleep(600);
+      if (!d._ok(rid)) return;
+      d.highlightCells([[0,2],[1,1],[1,2],[2,2]]);
+      await sleep(800);
+      if (!d._ok(rid)) return;
+      d.unhighlightCells([[0,2],[1,1],[1,2],[2,2]]);
+      await d.popCells([[0,2],[1,1],[1,2],[2,2]]);
+    }
+
+    // ---- 02: Gravity & Bounce ----
+    async function scriptGravity(d, rid) {
+      d.setBoard([
+        [0, 1, 2, 3],
+        [3, 2, 2, 0],
+        [1, 2, 0, 1],
+        [0, 3, 1, 2],
+      ]);
+      await sleep(600);
+      if (!d._ok(rid)) return;
+      d.highlightCells([[1,1],[1,2],[2,1]]);
+      await sleep(800);
+      if (!d._ok(rid)) return;
+      d.unhighlightCells([[1,1],[1,2],[2,1]]);
+      await d.popCells([[1,1],[1,2],[2,1]]);
+      if (!d._ok(rid)) return;
+      await d.applyGravity();
+    }
+
+    // ---- 03: Rocket ----
+    async function scriptRocket(d, rid) {
+      d.setBoard([
+        [1, 0, 2, 3, 1],
+        [3, 0, 0, 0, 2],
+        [2, 1, 0, 3, 0],
+        [0, 3, 2, 1, 3],
+        [2, 1, 3, 0, 1],
+      ]);
+      await sleep(600);
+      if (!d._ok(rid)) return;
+      const group = [[0,1],[1,1],[1,2],[1,3],[2,2]];
+      d.highlightCells(group);
+      await sleep(800);
+      if (!d._ok(rid)) return;
+      d.unhighlightCells(group);
+      await d.popCells([[0,1],[1,1],[1,3],[2,2]]);
+      if (!d._ok(rid)) return;
+      await d.spawnPowerUp(1, 2, 'rocket');
+      if (!d._ok(rid)) return;
+      await d.applyGravity();
+      if (!d._ok(rid)) return;
+      // Find where rocket ended up after gravity
+      const rPos = d.findPowerUp('rocket');
+      if (!rPos) return;
+      await sleep(600);
+      if (!d._ok(rid)) return;
+      d.highlightCells([rPos]);
+      await sleep(500);
+      if (!d._ok(rid)) return;
+      d.unhighlightCells([rPos]);
+      await d.activateRocket(rPos[0], rPos[1], 'rocket');
+    }
+
+    // ---- 04: Bomb ----
+    async function scriptBomb(d, rid) {
+      d.setBoard([
+        [1, 0, 3, 2, 1],
+        [0, 2, 2, 2, 3],
+        [3, 2, 2, 2, 0],
+        [1, 3, 0, 1, 2],
+        [2, 0, 3, 0, 1],
+      ]);
+      await sleep(600);
+      if (!d._ok(rid)) return;
+      const group = [[0,3],[1,1],[1,2],[1,3],[2,1],[2,2],[2,3]];
+      d.highlightCells(group);
+      await sleep(800);
+      if (!d._ok(rid)) return;
+      d.unhighlightCells(group);
+      await d.popCells([[0,3],[1,1],[1,3],[2,1],[2,3],[1,2]]);
+      if (!d._ok(rid)) return;
+      await d.spawnPowerUp(2, 2, 'bomb');
+      if (!d._ok(rid)) return;
+      await d.applyGravity();
+      if (!d._ok(rid)) return;
+      // Find where bomb ended up after gravity
+      const bPos = d.findPowerUp('bomb');
+      if (!bPos) return;
+      await sleep(600);
+      if (!d._ok(rid)) return;
+      d.highlightCells([bPos]);
+      await sleep(500);
+      if (!d._ok(rid)) return;
+      d.unhighlightCells([bPos]);
+      await d.activateBomb(bPos[0], bPos[1]);
+    }
+
+    // ---- 05: Disco Ball ----
+    async function scriptDisco(d, rid) {
+      d.setBoard([
+        [0, 1, 0, 2, 0],
+        [2, 3, 1, 0, 3],
+        [0, 1, 3, 2, 0],
+        [3, 0, 2, 1, 2],
+        [1, 2, 0, 3, 1],
+      ]);
+      await sleep(400);
+      if (!d._ok(rid)) return;
+      await d.spawnPowerUp(2, 2, 'disco');
+      await sleep(800);
+      if (!d._ok(rid)) return;
+      d.highlightCells([[2,2]]);
+      await sleep(500);
+      if (!d._ok(rid)) return;
+      d.unhighlightCells([[2,2]]);
+      await d.activateDisco(2, 2);
+    }
+
+    // ---- 06: Combo Scripts ----
+    async function scriptComboRR(d, rid) {
+      d.setBoard([[0,1,2,3,0],[2,3,0,1,2],[1,0,null,null,3],[3,2,1,0,1],[0,1,3,2,0]]);
+      const el1 = d._createPowerUpCell(2, 2, 'rocket'); d.grid.appendChild(el1); d.board[2][2] = { color: -1, el: el1, type: 'rocket' };
+      const el2 = d._createPowerUpCell(2, 3, 'rocket-v'); d.grid.appendChild(el2); d.board[2][3] = { color: -1, el: el2, type: 'rocket-v' };
+      await sleep(800); if (!d._ok(rid)) return;
+      d.highlightCells([[2,2],[2,3]]); await sleep(500); if (!d._ok(rid)) return; d.unhighlightCells([[2,2],[2,3]]);
+      d._removeCell(2,2); d._removeCell(2,3);
+      d.showRocketTrail(2,2,true,'#FFA500'); d.showRocketTrail(2,2,false,'#FFA500'); d.shakeGrid(true);
+      const toClear = new Set();
+      for (let c=0;c<5;c++) toClear.add(`2,${c}`); for (let r=0;r<5;r++) toClear.add(`${r},2`);
+      toClear.delete('2,2'); toClear.delete('2,3');
+      toClear.forEach(k => { const [r,c]=k.split(',').map(Number); if (!d.board[r][c]) return; d.board[r][c].el.classList.add('popping'); d.spawnParticles(r,c,d.board[r][c].color>=0?COLORS[d.board[r][c].color]:'#FFA500',3,15); });
+      await sleep(POP_DURATION);
+      toClear.forEach(k => { const [r,c]=k.split(',').map(Number); d._removeCell(r,c); });
+    }
+
+    async function scriptComboBB(d, rid) {
+      d.setBoard([[0,1,2,3,0],[2,3,0,1,2],[1,0,null,null,3],[3,2,1,0,1],[0,1,3,2,0]]);
+      const el1 = d._createPowerUpCell(2,2,'bomb'); d.grid.appendChild(el1); d.board[2][2] = { color:-1, el:el1, type:'bomb' };
+      const el2 = d._createPowerUpCell(2,3,'bomb'); d.grid.appendChild(el2); d.board[2][3] = { color:-1, el:el2, type:'bomb' };
+      await sleep(800); if (!d._ok(rid)) return;
+      d.highlightCells([[2,2],[2,3]]); await sleep(500); if (!d._ok(rid)) return; d.unhighlightCells([[2,2],[2,3]]);
+      d._removeCell(2,2); d._removeCell(2,3);
+      d.showBombBlast(2,2,'#FF4D4D'); d.shakeGrid(true);
+      const toClear = [];
+      for (let dr=-3;dr<=3;dr++) for (let dc=-3;dc<=3;dc++) { if (Math.abs(dr)+Math.abs(dc)>4) continue; const r=2+dr,c=2+dc; if (r<0||r>=5||c<0||c>=5||!d.board[r][c]) continue; toClear.push([r,c]); }
+      toClear.forEach(([r,c]) => { if (!d.board[r][c]) return; d.board[r][c].el.classList.add('popping'); d.spawnParticles(r,c,'#FF4D4D',4,20); });
+      await sleep(POP_DURATION);
+      toClear.forEach(([r,c]) => d._removeCell(r,c));
+    }
+
+    async function scriptComboRB(d, rid) {
+      d.setBoard([[0,1,2,3,0],[2,3,0,1,2],[1,0,null,null,3],[3,2,1,0,1],[0,1,3,2,0]]);
+      const el1 = d._createPowerUpCell(2,2,'rocket'); d.grid.appendChild(el1); d.board[2][2] = { color:-1, el:el1, type:'rocket' };
+      const el2 = d._createPowerUpCell(2,3,'bomb'); d.grid.appendChild(el2); d.board[2][3] = { color:-1, el:el2, type:'bomb' };
+      await sleep(800); if (!d._ok(rid)) return;
+      d.highlightCells([[2,2],[2,3]]); await sleep(500); if (!d._ok(rid)) return; d.unhighlightCells([[2,2],[2,3]]);
+      d._removeCell(2,2); d._removeCell(2,3);
+      for (let dd=-1;dd<=1;dd++) { if (2+dd>=0&&2+dd<5) d.showRocketTrail(2+dd,2,true,'#FF6B35'); if (2+dd>=0&&2+dd<5) d.showRocketTrail(2,2+dd,false,'#FF6B35'); }
+      d.showBombBlast(2,2,'#FF6B35'); d.shakeGrid(true);
+      const toClear = new Set();
+      for (let dd=-1;dd<=1;dd++) { for (let c=0;c<5;c++) { const r=2+dd; if (r>=0&&r<5) toClear.add(`${r},${c}`); } for (let r=0;r<5;r++) { const c=2+dd; if (c>=0&&c<5) toClear.add(`${r},${c}`); } }
+      toClear.delete('2,2'); toClear.delete('2,3');
+      toClear.forEach(k => { const [r,c]=k.split(',').map(Number); if (!d.board[r][c]) return; d.board[r][c].el.classList.add('popping'); d.spawnParticles(r,c,'#FF6B35',3,15); });
+      await sleep(POP_DURATION);
+      toClear.forEach(k => { const [r,c]=k.split(',').map(Number); d._removeCell(r,c); });
+    }
+
+    async function scriptComboDR(d, rid) {
+      d.setBoard([[0,1,0,2,0],[2,0,1,3,1],[0,3,null,null,0],[3,0,2,1,2],[1,2,0,3,0]]);
+      const el1 = d._createPowerUpCell(2,2,'disco'); d.grid.appendChild(el1); d.board[2][2] = { color:-1, el:el1, type:'disco' };
+      const el2 = d._createPowerUpCell(2,3,'rocket'); d.grid.appendChild(el2); d.board[2][3] = { color:-1, el:el2, type:'rocket' };
+      await sleep(800); if (!d._ok(rid)) return;
+      d.highlightCells([[2,2],[2,3]]); await sleep(500); if (!d._ok(rid)) return; d.unhighlightCells([[2,2],[2,3]]);
+      d._removeCell(2,2); d._removeCell(2,3);
+      d.spawnParticles(2,2,'#FFFFFF',10,40);
+      const pinkCells = [];
+      for (let r=0;r<5;r++) for (let c=0;c<5;c++) if (d.board[r][c]&&d.board[r][c].color===0) pinkCells.push([r,c]);
+      // Alternate directions: no same direction in same row
+      const rowDir = {};
+      pinkCells.forEach(([r,c], i) => {
+        let type = i % 2 === 0 ? 'rocket' : 'rocket-v';
+        if (rowDir[r] === type) type = type === 'rocket' ? 'rocket-v' : 'rocket';
+        rowDir[r] = type;
+        d._removeCell(r,c);
+        const el = d._createPowerUpCell(r,c,type);
+        el.style.animation='powerup-spawn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards';
+        d.grid.appendChild(el); d.board[r][c]={color:-1,el,type};
+      });
+      await sleep(500); if (!d._ok(rid)) return;
+      // Chain activation with queue: each rocket triggers rockets in its blast path
+      async function fireRocketAt(r, c, type) {
+        const horiz = type !== 'rocket-v';
+        if (d.board[r][c]) {
+          await d.activateRocket(r, c, type);
+        } else {
+          d.showRocketTrail(r, c, horiz, '#FFA500');
+          d.shakeGrid(false);
+          const toClear = [];
+          if (horiz) { for (let cc=0;cc<d.cols;cc++) if (d.board[r][cc]) toClear.push([r,cc]); }
+          else { for (let rr=0;rr<d.rows;rr++) if (d.board[rr][c]) toClear.push([rr,c]); }
+          toClear.forEach(([cr,cc]) => { if (!d.board[cr][cc]) return; d.board[cr][cc].el.classList.add('popping'); d.spawnParticles(cr,cc,d.board[cr][cc].color>=0?COLORS[d.board[cr][cc].color]:'#FFA500',3,15); });
+          await sleep(POP_DURATION);
+          toClear.forEach(([cr,cc]) => d._removeCell(cr,cc));
+        }
+      }
+      while (true) {
+        if (!d._ok(rid)) return;
+        // Find first rocket on board
+        let start = null;
+        for (let r=0;r<d.rows&&!start;r++) for (let c=0;c<d.cols&&!start;c++)
+          if (d.board[r][c]&&(d.board[r][c].type==='rocket'||d.board[r][c].type==='rocket-v')) start={r,c,type:d.board[r][c].type};
+        if (!start) break;
+        // BFS chain
+        const queued = new Set();
+        const queue = [start];
+        queued.add(`${start.r},${start.c}`);
+        while (queue.length) {
+          const {r,c,type} = queue.shift();
+          const horiz = type!=='rocket-v';
+          // Find rockets in blast path → queue them before firing
+          if (horiz) { for (let cc=0;cc<d.cols;cc++) { const k=`${r},${cc}`; if (cc!==c&&!queued.has(k)&&d.board[r][cc]&&(d.board[r][cc].type==='rocket'||d.board[r][cc].type==='rocket-v')) { queue.push({r,c:cc,type:d.board[r][cc].type}); queued.add(k); } } }
+          else { for (let rr=0;rr<d.rows;rr++) { const k=`${rr},${c}`; if (rr!==r&&!queued.has(k)&&d.board[rr][c]&&(d.board[rr][c].type==='rocket'||d.board[rr][c].type==='rocket-v')) { queue.push({r:rr,c,type:d.board[rr][c].type}); queued.add(k); } } }
+          await fireRocketAt(r, c, type);
+          if (!d._ok(rid)) return;
+          await sleep(80);
+        }
+        await d.applyGravity();
+        if (!d._ok(rid)) return;
+        await sleep(100);
+      }
+    }
+
+    async function scriptComboDB(d, rid) {
+      d.setBoard([[0,1,0,2,1],[2,0,1,3,0],[0,3,null,null,2],[3,0,2,0,1],[1,2,0,3,0]]);
+      const el1 = d._createPowerUpCell(2,2,'disco'); d.grid.appendChild(el1); d.board[2][2] = { color:-1, el:el1, type:'disco' };
+      const el2 = d._createPowerUpCell(2,3,'bomb'); d.grid.appendChild(el2); d.board[2][3] = { color:-1, el:el2, type:'bomb' };
+      await sleep(800); if (!d._ok(rid)) return;
+      d.highlightCells([[2,2],[2,3]]); await sleep(500); if (!d._ok(rid)) return; d.unhighlightCells([[2,2],[2,3]]);
+      d._removeCell(2,2); d._removeCell(2,3);
+      d.spawnParticles(2,2,'#FFFFFF',10,40);
+      const pinkCells = [];
+      for (let r=0;r<5;r++) for (let c=0;c<5;c++) if (d.board[r][c]&&d.board[r][c].color===0) pinkCells.push([r,c]);
+      pinkCells.forEach(([r,c]) => { d._removeCell(r,c); const el=d._createPowerUpCell(r,c,'bomb'); el.style.animation='powerup-spawn 0.3s cubic-bezier(0.34,1.56,0.64,1) forwards'; d.grid.appendChild(el); d.board[r][c]={color:-1,el,type:'bomb'}; });
+      await sleep(500); if (!d._ok(rid)) return;
+      // BFS chain: bomb triggers bombs in blast radius
+      const RADIUS = 2;
+      async function fireBombAt(r, c) {
+        d._removeCell(r, c);
+        d.showBombBlast(r, c, '#FFD23F');
+        d.shakeGrid(true);
+        const toClear = [];
+        for (let dr=-RADIUS;dr<=RADIUS;dr++) for (let dc=-RADIUS;dc<=RADIUS;dc++) {
+          if (Math.abs(dr)+Math.abs(dc)>RADIUS) continue;
+          const cr=r+dr, cc=c+dc;
+          if (cr<0||cr>=d.rows||cc<0||cc>=d.cols||!d.board[cr][cc]) continue;
+          if (d.board[cr][cc].type==='bomb') continue; // skip bombs — they explode on their own turn
+          toClear.push([cr,cc]);
+        }
+        toClear.forEach(([cr,cc]) => { if (!d.board[cr][cc]) return; d.board[cr][cc].el.classList.add('popping'); d.spawnParticles(cr,cc,'#FFD23F',4,20); });
+        await sleep(POP_DURATION);
+        toClear.forEach(([cr,cc]) => d._removeCell(cr,cc));
+      }
+      while (true) {
+        if (!d._ok(rid)) return;
+        // Find first bomb on board → start ripple from it
+        let start = null;
+        for (let r=0;r<d.rows&&!start;r++) for (let c=0;c<d.cols&&!start;c++)
+          if (d.board[r][c]&&d.board[r][c].type==='bomb') start={r,c};
+        if (!start) break;
+        const exploded = new Set();
+        let wave = [start];
+        exploded.add(`${start.r},${start.c}`);
+        while (wave.length) {
+          // Fire this wave's bombs in parallel
+          await Promise.all(wave.map(({r,c}) => fireBombAt(r, c)));
+          if (!d._ok(rid)) return;
+          // Find bombs triggered by this wave (in blast radius)
+          const nextWave = [];
+          for (const {r,c} of wave) {
+            for (let dr=-RADIUS;dr<=RADIUS;dr++) for (let dc=-RADIUS;dc<=RADIUS;dc++) {
+              if (Math.abs(dr)+Math.abs(dc)>RADIUS) continue;
+              const br=r+dr, bc=c+dc, k=`${br},${bc}`;
+              if (br<0||br>=d.rows||bc<0||bc>=d.cols) continue;
+              if (!exploded.has(k)&&d.board[br][bc]&&d.board[br][bc].type==='bomb') { nextWave.push({r:br,c:bc}); exploded.add(k); }
+            }
+          }
+          await d.applyGravity();
+          if (!d._ok(rid)) return;
+          await sleep(120);
+          wave = nextWave;
+        }
+      }
+    }
+
+    async function scriptComboDD(d, rid) {
+      d.setBoard([[0,1,2,3,0],[2,3,0,1,2],[1,0,null,null,3],[3,2,1,0,1],[0,1,3,2,0]]);
+      const el1 = d._createPowerUpCell(2,2,'disco'); d.grid.appendChild(el1); d.board[2][2] = { color:-1, el:el1, type:'disco' };
+      const el2 = d._createPowerUpCell(2,3,'disco'); d.grid.appendChild(el2); d.board[2][3] = { color:-1, el:el2, type:'disco' };
+      await sleep(800); if (!d._ok(rid)) return;
+      d.highlightCells([[2,2],[2,3]]); await sleep(500); if (!d._ok(rid)) return; d.unhighlightCells([[2,2],[2,3]]);
+      d._removeCell(2,2); d._removeCell(2,3);
+      const sf = document.createElement('div');
+      sf.style.cssText = 'position:absolute;inset:0;border-radius:1.5rem;z-index:26;pointer-events:none;background:conic-gradient(from 0deg, #FF4D8D, #FFD23F, #4DC9F6, #D4B8FF, #FF4D8D)';
+      d.grid.appendChild(sf);
+      sf.animate([{ opacity: 0.7 }, { opacity: 0 }], { duration: 600, easing: 'ease-out', fill: 'forwards' });
+      setTimeout(() => sf.remove(), 600);
+      d.shakeGrid(true);
+      for (let r=0;r<5;r++) for (let c=0;c<5;c++) { if (!d.board[r][c]) continue; d.board[r][c].el.classList.add('popping'); d.spawnParticles(r,c,d.board[r][c].color>=0?COLORS[d.board[r][c].color]:'#D4B8FF',4,25); }
+      await sleep(POP_DURATION);
+      for (let r=0;r<5;r++) for (let c=0;c<5;c++) d._removeCell(r,c);
+    }
+
+    // ---- 07: Chain Reactions ----
+    async function scriptChain(d, rid) {
+      d.setBoard([
+        [1, 2, 0, 3, 2],
+        [3, 0, 1, 0, 0],
+        [0, 0, 0, 1, 3],
+        [2, 1, 3, 0, 1],
+        [1, 3, 0, 0, 2],
+      ]);
+      await sleep(600); if (!d._ok(rid)) return;
+      const group1 = [[1,1],[2,0],[2,1],[2,2]];
+      d.highlightCells(group1);
+      await sleep(800); if (!d._ok(rid)) return;
+      d.unhighlightCells(group1);
+      await d.popCells(group1);
+      if (!d._ok(rid)) return;
+      await d.applyGravity();
+      if (!d._ok(rid)) return;
+      await sleep(400);
+      d.showCombo(3);
+      await sleep(200);
+      // Find and pop a chain group
+      const group2 = d.findLargestGroup();
+      if (group2) {
+        d.highlightCells(group2);
+        await sleep(600); if (!d._ok(rid)) return;
+        d.unhighlightCells(group2);
+        await d.popCells(group2);
+        if (!d._ok(rid)) return;
+        await d.applyGravity();
+      }
+    }
+
+    const comboScripts = {
+      rr: scriptComboRR, bb: scriptComboBB, rb: scriptComboRB,
+      dr: scriptComboDR, db: scriptComboDB, dd: scriptComboDD,
+    };
+
+    // ========================
+    // Demo Starters
+    // ========================
+    let currentCombo = 'rr';
+
+    function startDemo(key) {
+      if (key === 'color-matching') replayDemo(key, scriptColorMatching, 'demo-01', 4, 4);
+      else if (key === 'gravity') replayDemo(key, scriptGravity, 'demo-02', 4, 4);
+      else if (key === 'rocket') replayDemo(key, scriptRocket, 'demo-03', 5, 5);
+      else if (key === 'bomb') replayDemo(key, scriptBomb, 'demo-04', 5, 5);
+      else if (key === 'disco') replayDemo(key, scriptDisco, 'demo-05', 5, 5);
+      else if (key === 'combos') replayDemo(key, comboScripts[currentCombo], 'demo-06', 5, 5);
+      else if (key === 'chain') loopDemo(key, scriptChain, 'demo-07', 5, 5);
+    }
+
+    // ========================
+    // Auto-play on Scroll (IntersectionObserver)
+    // ========================
+    const demoObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (!entry.isIntersecting) return;
+        const section = entry.target;
+        const demoKey = section.dataset.demo;
+        if (!demoKey || demoStarted[demoKey]) return;
+        demoStarted[demoKey] = true;
+        setTimeout(() => startDemo(demoKey), 500);
+      });
+    }, { threshold: 0.5 });
+
+    document.querySelectorAll('[data-demo]').forEach(el => demoObserver.observe(el));
+
+    // ========================
+    // Combo Tabs
+    // ========================
+    const comboDescs = {
+      rr: 'hiw.s06.rr.desc', bb: 'hiw.s06.bb.desc', rb: 'hiw.s06.rb.desc',
+      dr: 'hiw.s06.dr.desc', db: 'hiw.s06.db.desc', dd: 'hiw.s06.dd.desc',
+    };
+
+    document.querySelectorAll('.combo-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const combo = tab.dataset.combo;
+        currentCombo = combo;
+        document.querySelectorAll('.combo-tab').forEach(t => t.classList.remove('active'));
+        tab.classList.add('active');
+        const descEl = document.getElementById('combo-desc-text');
+        const lang = localStorage.getItem('lang') || 'en';
+        const key = comboDescs[combo];
+        if (descEl && translations[lang][key]) {
+          descEl.textContent = translations[lang][key];
+          descEl.setAttribute('data-i18n', key);
+        }
+        // Restart combo demo with new script
+        if (demos['combos']) demos['combos'].cancel();
+        replayDemo('combos', comboScripts[combo], 'demo-06', 5, 5);
+      });
+    });
+
+  })();
+  </script>
+</body>
+</html>
