@@ -711,8 +711,25 @@
         if (descEl && t[key]) descEl.textContent = t[key];
       }
     }
-    const savedLang = localStorage.getItem('lang') || 'en';
+    // Initialize language (URL param > localStorage > default)
+    const urlLang = new URLSearchParams(window.location.search).get('lang');
+    const savedLang = urlLang || localStorage.getItem('lang') || 'en';
     setLang(savedLang);
+
+    // Preserve language across page navigation
+    document.addEventListener('click', function(e) {
+      const a = e.target.closest('a[href]');
+      if (!a) return;
+      const href = a.getAttribute('href');
+      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto:')) return;
+      const lang = document.documentElement.lang || 'en';
+      if (lang !== 'en') {
+        e.preventDefault();
+        const url = new URL(href, window.location.href);
+        url.searchParams.set('lang', lang);
+        window.location.href = url.toString();
+      }
+    });
   </script>
 
   <!-- Nav & UI Scripts -->
