@@ -41,6 +41,10 @@
     html { scroll-behavior: smooth; }
     .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
     .fade-up.visible { opacity: 1; transform: translateY(0); }
+    @media (min-width: 1024px) {
+      .lg-fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+      .lg-fade-up.visible { opacity: 1; transform: translateY(0); }
+    }
     .fade-up-delay-1 { transition-delay: 0.1s; }
     .fade-up-delay-2 { transition-delay: 0.2s; }
     .fade-up-delay-3 { transition-delay: 0.3s; }
@@ -74,10 +78,18 @@
       transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     .game-tile:hover { transform: translateY(-6px); box-shadow: 0 10px 0 rgba(212,184,255,0.4), 0 0 30px rgba(255,77,141,0.12); }
-    .game-tile:active { transform: translateY(6px); box-shadow: 0 0 0 rgba(212,184,255,0.4); }
+    .game-tile:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(212,184,255,0.4); }
     .game-tile.pink { background: #FF4D8D; color: white; border-color: #CC3D71; box-shadow: 0 6px 0 rgba(204,61,113,0.5); }
     .game-tile.pink:hover { box-shadow: 0 10px 0 rgba(204,61,113,0.5), 0 0 30px rgba(255,77,141,0.2); }
-    .game-tile.pink:active { box-shadow: 0 0 0 rgba(204,61,113,0.5); }
+    .game-tile.pink:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(204,61,113,0.5); }
+    @media (hover: none) and (pointer: coarse) {
+      .game-btn, .game-btn-outline, .game-tile, .game-tile.pink, .game-card { -webkit-tap-highlight-color: transparent; cursor: pointer; }
+      .game-btn:active { transform: translateY(2px); box-shadow: 0 2px 0 #CC3D71; }
+      .game-btn-outline:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(212,184,255,0.6); }
+      .game-tile:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(212,184,255,0.4); }
+      .game-tile.pink:active { transform: translateY(2px); box-shadow: 0 2px 0 rgba(204,61,113,0.5); }
+      .game-card:active { transform: translateY(2px); }
+    }
 
     .game-card {
       border: 3px solid rgba(212,184,255,0.3);
@@ -412,7 +424,7 @@
         </div>
       </div>
     </div>
-    <div class="lg:absolute lg:bottom-10 left-0 right-0 flex flex-col items-center gap-4 fade-up mt-6 lg:mt-0 pb-8 lg:pb-0">
+    <div class="lg:absolute lg:bottom-10 left-0 right-0 flex flex-col items-center gap-4 lg-fade-up mt-3 lg:mt-0 pb-8 lg:pb-0">
       <span class="text-[15px] font-mono text-slate/40 tracking-wider" data-i18n="logos.label">previously at</span>
       <div class="flex items-center gap-4">
         <a href="https://global.abb" class="grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
@@ -500,7 +512,7 @@
             </h3>
             <p class="mt-1 text-xs text-slate font-mono" data-i18n="work.card1.subtitle">Gardenscapes &middot; Toon Blast &middot; Candy Crush Saga</p>
             <p class="mt-4 text-sm text-slate leading-relaxed flex-1" data-i18n="work.card1.desc">
-              Comparative product analysis covering core mechanics, monetization psychology, LiveOps systems, and social features.
+              Hands-on competitive analysis — I played 100+ levels per game and broke down what makes each one retain, monetize, and engage differently.
             </p>
             <div class="mt-4 flex flex-wrap gap-2">
               <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="work.card1.tag1">Game Analysis</span>
@@ -514,7 +526,7 @@
                 <p class="text-[10px] text-slate font-mono" data-i18n="work.card1.stat1.label">Games</p>
               </div>
               <div>
-                <p class="text-2xl font-extrabold text-navy stat-number">60+</p>
+                <p class="text-2xl font-extrabold text-navy stat-number">100+</p>
                 <p class="text-[10px] text-slate font-mono" data-i18n="work.card1.stat2.label">Levels Each</p>
               </div>
               <div>
@@ -593,7 +605,7 @@
               Retention &amp; A/B Test Metrics
             </h3>
             <p class="mt-4 text-sm text-slate leading-relaxed flex-1" data-i18n="work.card2.desc">
-              Given retention data for two variants, which maximizes DAU, cumulative revenue, and handles an ARPDAU spike?
+              Built a retention model from raw data, compared two variants across DAU, cumulative revenue, and an ARPDAU spike scenario — then recommended which to ship.
             </p>
             <div class="mt-4 flex flex-wrap gap-2">
               <span class="px-3 py-1 bg-lavender/20 text-navy text-xs font-mono rounded-full" data-i18n="work.card2.tag1">A/B Testing</span>
@@ -694,7 +706,7 @@
         'work.heading': 'Case Studies',
         'work.card1.title': 'Puzzle Game Analysis',
         'work.card1.subtitle': 'Gardenscapes \u00B7 Toon Blast \u00B7 Candy Crush Saga',
-        'work.card1.desc': 'Comparative product analysis covering core mechanics, monetization psychology, LiveOps systems, and social features.',
+        'work.card1.desc': 'Hands-on competitive analysis \u2014 I played 100+ levels per game and broke down what makes each one retain, monetize, and engage differently.',
         'work.card1.tag1': 'Game Analysis',
         'work.card1.tag2': 'Monetization',
         'work.card1.tag3': 'LiveOps',
@@ -704,7 +716,7 @@
         'work.card1.stat2.label': 'Levels Each',
         'work.card1.stat3.label': 'Sections',
         'work.card2.title': 'Retention & A/B Test Metrics',
-        'work.card2.desc': 'Given retention data for two variants, which maximizes DAU, cumulative revenue, and handles an ARPDAU spike?',
+        'work.card2.desc': 'Built a retention model from raw data, compared two variants across DAU, cumulative revenue, and an ARPDAU spike scenario \u2014 then recommended which to ship.',
         'work.card2.tag1': 'A/B Testing',
         'work.card2.tag2': 'Retention',
         'work.card2.tag3': 'Revenue',
@@ -746,7 +758,7 @@
         'work.heading': 'Vaka Çalışmaları',
         'work.card1.title': 'Puzzle Oyun Analizi',
         'work.card1.subtitle': 'Gardenscapes · Toon Blast · Candy Crush Saga',
-        'work.card1.desc': 'Çekirdek mekanikler, monetizasyon psikolojisi, LiveOps sistemleri ve sosyal özellikleri kapsayan karşılaştırmalı ürün analizi.',
+        'work.card1.desc': 'Uygulamalı rekabet analizi — oyun başına 100+ seviye oynadım ve her birinin retention, monetizasyon ve etkileşimde nasıl farklılaştığını analiz ettim.',
         'work.card1.tag1': 'Oyun Analizi',
         'work.card1.tag2': 'Monetizasyon',
         'work.card1.tag3': 'LiveOps',
@@ -756,7 +768,7 @@
         'work.card1.stat2.label': 'Seviye',
         'work.card1.stat3.label': 'Bölüm',
         'work.card2.title': 'Retention & A/B Test Metrikleri',
-        'work.card2.desc': 'İki variantın retention verileri karşılaştırıldığında, hangisi DAU, kümülatif gelir ve ARPDAU performansını maksimize eder?',
+        'work.card2.desc': 'Ham veriden retention modeli kurdum, iki variantı DAU, kümülatif gelir ve ARPDAU artış senaryosu üzerinden karşılaştırdım — sonra hangisinin gönderilmesi gerektiğini önerdim.',
         'work.card2.tag1': 'A/B Testing',
         'work.card2.tag2': 'Retention',
         'work.card2.tag3': 'Gelir',
@@ -866,7 +878,7 @@
     const observer = new IntersectionObserver((entries) => {
       entries.forEach(entry => { if (entry.isIntersecting) entry.target.classList.add('visible'); });
     }, { threshold: 0.1, rootMargin: '0px 0px -60px 0px' });
-    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+    document.querySelectorAll('.fade-up, .lg-fade-up').forEach(el => observer.observe(el));
   </script>
 
   <!-- Puzzle Animation -->
