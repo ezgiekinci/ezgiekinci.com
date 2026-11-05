@@ -291,11 +291,6 @@
         <a href="index.html#about" class="text-sm nav-link transition-colors duration-500" data-i18n="nav.about">About</a>
         <a href="index.html#work" class="text-sm nav-link transition-colors duration-500" data-i18n="nav.work">Work</a>
         <a href="index.html#contact" class="text-sm nav-link transition-colors duration-500" data-i18n="nav.contact">Contact</a>
-        <div class="flex items-center gap-1.5 text-xs font-mono border lang-border rounded-full px-3 py-1.5 transition-colors duration-500">
-          <button onclick="setLang('en')" data-lang-toggle="en" class="lang-btn lang-btn-active font-medium transition-colors duration-500">EN</button>
-          <span class="lang-sep transition-colors duration-500">|</span>
-          <button onclick="setLang('tr')" data-lang-toggle="tr" class="lang-btn transition-colors duration-500">TR</button>
-        </div>
       </div>
       <button id="menu-btn" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Menu">
         <span class="block w-6 h-0.5 menu-bar bg-navy transition-all duration-300" id="bar1"></span>
@@ -308,11 +303,6 @@
         <a href="index.html#about" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.about">About</a>
         <a href="index.html#work" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.work">Work</a>
         <a href="index.html#contact" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.contact">Contact</a>
-        <div class="flex items-center gap-1.5 text-xs font-mono">
-          <button onclick="setLang('en')" data-lang-toggle="en" class="font-medium text-navy transition-colors">EN</button>
-          <span class="text-lavender">|</span>
-          <button onclick="setLang('tr')" data-lang-toggle="tr" class="text-slate hover:text-navy transition-colors">TR</button>
-        </div>
       </div>
     </div>
   </nav>
@@ -617,67 +607,6 @@
         'hiw.cta.case': 'Read Case Study',
         'footer.credit': 'Designed by Ezgi Ekinci',
         'footer.top': 'Back to top \u2191',
-      },
-      tr: {
-        'nav.work': '\u00C7al\u0131\u015Fma',
-        'nav.contact': '\u0130leti\u015Fim',
-        'hiw.back': '\u2190 Ana Sayfaya D\u00F6n',
-        'hiw.label': '\u0130nteraktif Rehber',
-        'hiw.title': 'Nas\u0131l \u00C7al\u0131\u015F\u0131r',
-        'hiw.desc': 'Puzzle demonun t\u00FCm mekanikleri, canl\u0131 mini demolarla a\u00E7\u0131kland\u0131. Tekrar izlemek i\u00E7in replay butonuna bas\u0131n.',
-        'hiw.stat1': 'Mekanik',
-        'hiw.stat2': 'Kombo T\u00FCr\u00FC',
-        'hiw.stat3': 'G\u00FC\u00E7 Par\u00E7as\u0131',
-        'hiw.s01.title': 'Renk E\u015Fle\u015Ftirme',
-        'hiw.s01.desc': 'Temel mekanik: yatay veya dikey ba\u011Flant\u0131l\u0131 2 veya daha fazla ayn\u0131 renkteki blok vurgulan\u0131r ve tatmin edici bir par\u00E7ac\u0131k patlamas\u0131yla patlar.',
-        'hiw.s01.tag1': 'Min 2 blok',
-        'hiw.s01.tag2': 'BFS arama',
-        'hiw.s01.tag3': 'Par\u00E7ac\u0131k patlamas\u0131',
-        'hiw.s02.title': 'Yer\u00E7ekimi ve Z\u0131plama',
-        'hiw.s02.desc': 'Bloklar patlad\u0131ktan sonra kalan bloklar d\u00FC\u015Fer. Yere inince tatmin edici bir s\u0131k\u0131\u015Fma-gerilme animasyonu oynar. Bo\u015F alanlar\u0131 doldurmak i\u00E7in \u00FCstten yeni bloklar do\u011Far.',
-        'hiw.s02.tag1': 'D\u00FC\u015Fme animasyonu',
-        'hiw.s02.tag2': '\u0130ni\u015F z\u0131plamas\u0131',
-        'hiw.s02.tag3': 'Yeniden doldurma',
-        'hiw.s03.title': 'Roket',
-        'hiw.s03.desc': '5+ blok e\u015Fle\u015Ftirerek Roket olu\u015Fturun. Etkinle\u015Fti\u011Finde, alevli bir iz, k\u0131v\u0131lc\u0131mlar ve ekran sars\u0131nt\u0131s\u0131yla t\u00FCm sat\u0131r\u0131 veya s\u00FCtunu temizler.',
-        'hiw.s03.tag1': '5+ blok',
-        'hiw.s03.tag2': 'Sat\u0131r / S\u00FCtun',
-        'hiw.s03.tag3': '\u0130z + K\u0131v\u0131lc\u0131m',
-        'hiw.s04.title': 'Bomba',
-        'hiw.s04.desc': '6+ blok e\u015Fle\u015Ftirerek Bomba olu\u015Fturun. Patlama, patlay\u0131c\u0131 bir halka, ekran fla\u015F\u0131 ve a\u011F\u0131r sars\u0131nt\u0131yla elmas \u015Feklinde 3x3 alan\u0131 temizler.',
-        'hiw.s04.tag1': '6+ blok',
-        'hiw.s04.tag2': '3x3 alan',
-        'hiw.s04.tag3': 'Patlama + Fla\u015F',
-        'hiw.s05.title': 'Disko Topu',
-        'hiw.s05.desc': 'En nadir g\u00FC\u00E7 par\u00E7as\u0131, 8+ blok gerektirir. Disko Topu, tahtadaki en yayg\u0131n renkteki her blo\u011Fa renkli \u0131\u015F\u0131nlar atar ve hepsini tek seferde temizler.',
-        'hiw.s05.tag1': '8+ blok',
-        'hiw.s05.tag2': 'Renk temizleme',
-        'hiw.s05.tag3': 'G\u00F6kku\u015Fa\u011F\u0131 \u0131\u015F\u0131nlar\u0131',
-        'hiw.s06.title': 'Kombolar',
-        'hiw.s06.desc': '\u0130ki g\u00FC\u00E7 par\u00E7as\u0131 yan yana oldu\u011Funda ve biri etkinle\u015Fti\u011Finde, daha g\u00FC\u00E7l\u00FC bir etki i\u00E7in birle\u015Firler. 3 g\u00FC\u00E7 par\u00E7as\u0131 \u00D7 3 g\u00FC\u00E7 par\u00E7as\u0131 = 6 benzersiz kombo t\u00FCr\u00FC.',
-        'hiw.s06.rr': 'Roket + Roket',
-        'hiw.s06.bb': 'Bomba + Bomba',
-        'hiw.s06.rb': 'Roket + Bomba',
-        'hiw.s06.dr': 'Disko + Roket',
-        'hiw.s06.db': 'Disko + Bomba',
-        'hiw.s06.dd': 'Disko + Disko',
-        'hiw.s06.rr.desc': '\u0130ki roket birle\u015Ferek ayn\u0131 anda hem bir sat\u0131r\u0131 hem de bir s\u00FCtunu temizler, \u00E7arp\u0131 \u015Feklinde patlama olu\u015Fturur.',
-        'hiw.s06.bb.desc': '\u0130ki bomba birle\u015Ferek 5x5 patlama yar\u0131\u00E7ap\u0131na sahip mega-bomba olu\u015Fturur \u2014 tahtan\u0131n neredeyse yar\u0131s\u0131 tek patlamada gider.',
-        'hiw.s06.rb.desc': 'Roket bombaya kar\u015F\u0131: kombo pozisyonundan 3 sat\u0131r VE 3 s\u00FCtun temizler. Muazzam y\u0131k\u0131m.',
-        'hiw.s06.dr.desc': 'Disko Topu, en yayg\u0131n renkteki t\u00FCm bloklar\u0131 rokete d\u00F6n\u00FC\u015Ft\u00FCr\u00FCr, sonra hepsini ate\u015Fler. Zincirleme sat\u0131r/s\u00FCtun temizli\u011Fi.',
-        'hiw.s06.db.desc': 'Disko Topu, en yayg\u0131n renkteki t\u00FCm bloklar\u0131 bombaya d\u00F6n\u00FC\u015Ft\u00FCr\u00FCr, sonra hepsini patlat\u0131r. Her yerde zincirleme patlamalar.',
-        'hiw.s06.dd.desc': '\u0130ki Disko Topu birlikte t\u00FCm tahtay\u0131 g\u00F6kku\u015Fa\u011F\u0131 fla\u015F\u0131yla temizler. Nihai kombo.',
-        'hiw.s07.title': 'Zincir Reaksiyonlar',
-        'hiw.s07.desc': 'Sihir, yer\u00E7ekimi patlamadan sonra yeni e\u015Fle\u015Fen gruplar olu\u015Fturdu\u011Funda ger\u00E7ekle\u015Fir. Her zincir ad\u0131m\u0131 kombo sayac\u0131n\u0131 art\u0131r\u0131r. Zincirler birden fazla kez basamaklanarak tatmin edici \u00E7ok ad\u0131ml\u0131 diziler olu\u015Fturur.',
-        'hiw.s07.tag1': 'Yer\u00E7ekimi zincirleri',
-        'hiw.s07.tag2': 'Kombo sayac\u0131',
-        'hiw.s07.tag3': '\u00C7ok ad\u0131ml\u0131',
-        'hiw.cta.title': 'Hepsini canl\u0131 g\u00F6r\u00FCn',
-        'hiw.cta.desc': 'Ana sayfadaki puzzle demo t\u00FCm bu mekanikleri canl\u0131 \u00E7al\u0131\u015Ft\u0131r\u0131r, her seferinde benzersiz bir dizi \u00FCretir.',
-        'hiw.cta.home': 'Ana Sayfaya D\u00F6n',
-        'hiw.cta.case': 'Case Study\'yi Oku',
-        'footer.credit': 'Ezgi Ekinci taraf\u0131ndan tasarland\u0131 ve geli\u015Ftirildi',
-        'footer.top': 'Ba\u015Fa d\u00F6n \u2191',
       }
     };
 
@@ -711,25 +640,8 @@
         if (descEl && t[key]) descEl.textContent = t[key];
       }
     }
-    // Initialize language (URL param > localStorage > default)
-    const urlLang = new URLSearchParams(window.location.search).get('lang');
-    const savedLang = urlLang || localStorage.getItem('lang') || 'en';
-    setLang(savedLang);
+    setLang('en');
 
-    // Preserve language across page navigation
-    document.addEventListener('click', function(e) {
-      const a = e.target.closest('a[href]');
-      if (!a) return;
-      const href = a.getAttribute('href');
-      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto:')) return;
-      const lang = document.documentElement.lang || 'en';
-      if (lang !== 'en') {
-        e.preventDefault();
-        const url = new URL(href, window.location.href);
-        url.searchParams.set('lang', lang);
-        window.location.href = url.toString();
-      }
-    });
   </script>
 
   <!-- Nav & UI Scripts -->

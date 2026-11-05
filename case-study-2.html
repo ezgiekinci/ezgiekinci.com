@@ -115,11 +115,6 @@
         <a href="index.html#about" class="text-sm nav-link transition-colors duration-500" data-i18n="nav.about">About</a>
         <a href="#" class="text-sm nav-link-active font-semibold transition-colors duration-500" data-i18n="nav.work">Work</a>
         <a href="index.html#contact" class="text-sm nav-link transition-colors duration-500" data-i18n="nav.contact">Contact</a>
-        <div class="flex items-center gap-1.5 text-xs font-mono border lang-border rounded-full px-3 py-1.5 transition-colors duration-500">
-          <button onclick="setLang('en')" data-lang-toggle="en" class="lang-btn lang-btn-active font-medium transition-colors duration-500">EN</button>
-          <span class="lang-sep transition-colors duration-500">|</span>
-          <button onclick="setLang('tr')" data-lang-toggle="tr" class="lang-btn transition-colors duration-500">TR</button>
-        </div>
       </div>
       <button id="menu-btn" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Menu">
         <span class="block w-6 h-0.5 menu-bar bg-navy transition-all duration-300" id="bar1"></span>
@@ -132,11 +127,6 @@
         <a href="index.html#about" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.about">About</a>
         <a href="#" class="text-sm text-navy font-semibold" data-i18n="nav.work">Work</a>
         <a href="index.html#contact" class="text-sm text-slate hover:text-navy transition-colors" data-i18n="nav.contact">Contact</a>
-        <div class="flex items-center gap-1.5 text-xs font-mono">
-          <button onclick="setLang('en')" data-lang-toggle="en" class="font-medium text-navy transition-colors">EN</button>
-          <span class="text-lavender">|</span>
-          <button onclick="setLang('tr')" data-lang-toggle="tr" class="text-slate hover:text-navy transition-colors">TR</button>
-        </div>
       </div>
     </div>
   </nav>
@@ -153,14 +143,12 @@
       </a>
       <div class="flex items-center gap-3 mb-6 fade-up">
         <div class="w-12 h-0.5 bg-gold rounded"></div>
-        <span class="text-sm font-mono text-gold font-medium">Case Study</span>
+        <span class="text-sm font-mono text-gold font-medium">Peak Games · Product Case, Part 2</span>
       </div>
       <h1 class="text-3xl md:text-5xl font-extrabold leading-[1.1] tracking-tight fade-up" data-i18n="cs2.hero.title">
         Retention &amp; A/B Test Metrics
       </h1>
-      <p class="mt-6 text-white/60 leading-relaxed max-w-2xl fade-up" data-i18n="cs2.hero.desc">
-        I modeled retention curves from raw variant data, calculated DAU and cumulative revenue for each, stress-tested an ARPDAU spike scenario, and arrived at a clear shipping recommendation.
-      </p>
+      <p class="mt-6 text-white/60 leading-relaxed max-w-2xl fade-up" data-i18n="cs2.hero.desc">Given five retention data points for two A/B variants, I fitted retention curves, calculated DAU and cumulative revenue for each, stress-tested an ARPDAU spike scenario, and showed how the winning variant depends on the goal.</p>
 
       <!-- Stats Bar -->
       <div class="mt-10 flex flex-wrap gap-8 md:gap-16 fade-up">
@@ -192,7 +180,7 @@
         <!-- 08: Setup & Data -->
         <section class="fade-up">
           <div class="flex items-center gap-3 mb-6">
-            <span class="text-xs font-mono font-medium text-gold bg-gold/10 px-3 py-1 rounded-full">08</span>
+            <span class="text-xs font-mono font-medium text-gold bg-gold/10 px-3 py-1 rounded-full">01</span>
             <h2 class="text-2xl font-extrabold" data-i18n="cs2.s08.title">Setup &amp; Data</h2>
           </div>
           <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
@@ -247,7 +235,7 @@
         <!-- 09: Results -->
         <section class="fade-up">
           <div class="flex items-center gap-3 mb-6">
-            <span class="text-xs font-mono font-medium text-gold bg-gold/10 px-3 py-1 rounded-full">09</span>
+            <span class="text-xs font-mono font-medium text-gold bg-gold/10 px-3 py-1 rounded-full">02</span>
             <h2 class="text-2xl font-extrabold" data-i18n="cs2.s09.title">Results</h2>
           </div>
 
@@ -264,7 +252,7 @@
                   <span class="text-xs text-slate">vs 63,567</span>
                 </div>
               </div>
-              <p class="mt-3 text-xs text-slate leading-relaxed" data-i18n="cs2.s09.qa.reason">Older cohorts (6&ndash;14 days) dominate the Day-15 DAU calculation, and A is superior in all of them.</p>
+              <p class="mt-3 text-xs text-slate leading-relaxed" data-i18n="cs2.s09.qa.reason">A retains more users at every cohort age past Day ~5.6, and those older cohorts (ages 6–14) outweigh B’s early lead.</p>
             </div>
 
             <!-- Question B -->
@@ -284,7 +272,7 @@
             <!-- Question C -->
             <div class="game-tile border-sage p-6">
               <p class="text-[10px] font-mono font-medium text-sage uppercase tracking-wider" data-i18n="cs2.s09.qc.label">Question C</p>
-              <p class="text-sm text-slate mt-2" data-i18n="cs2.s09.qc.q">ARPDAU spike ($0.70 &rarr; $0.50, Day 15&ndash;25)</p>
+              <p class="text-sm text-slate mt-2" data-i18n="cs2.s09.qc.q">ARPDAU spike ($0.50 → $0.70 on Day 15, easing back to $0.50 by Day 25)</p>
               <div class="mt-4 pt-4 border-t border-border">
                 <p class="text-3xl font-extrabold text-navy">Variant A</p>
                 <div class="mt-3 flex items-baseline gap-2">
@@ -292,18 +280,14 @@
                   <span class="text-xs text-slate">vs $775,751</span>
                 </div>
               </div>
-              <p class="mt-3 text-xs text-slate leading-relaxed" data-i18n="cs2.s09.qc.reason">Higher ARPDAU &times; growing DAU gap = multiplier effect. A&rsquo;s long-tail retention wins by $7,562.</p>
+              <p class="mt-3 text-xs text-slate leading-relaxed" data-i18n="cs2.s09.qc.reason">Measured through Day 25. Each post-Day-15 user is worth more, and A has more of them thanks to its long-tail retention, so A wins by $7,562.</p>
             </div>
           </div>
 
           <!-- Final Verdict -->
           <div class="mt-8 bg-navy rounded-2xl p-8 text-white">
             <h3 class="font-extrabold text-lg mb-3" data-i18n="cs2.s09.verdict.title">The Bottom Line</h3>
-            <p class="text-sm text-white/70 leading-relaxed" data-i18n-html="cs2.s09.verdict.body">
-              <strong class="text-white">Short-term campaign? Choose B.</strong> Its strong early retention generates more revenue in a 15-day window.
-              <br><br>
-              <strong class="text-coral">Long-term game? Choose A.</strong> My model shows A overtakes B at Day ~5.6 and never looks back. By Day 15, A leads by 307 DAU; by Day 30 the gap reaches thousands. Combined with $4,599 higher cumulative revenue (15d) and a $7,562 advantage under the ARPDAU spike scenario, A is the clear choice for any product built to last.
-            </p>
+            <p class="text-sm text-white/70 leading-relaxed" data-i18n-html="cs2.s09.verdict.body"><strong class="text-white">Short-term window? Choose B.</strong> Its strong early retention generates $4,599 more cumulative revenue by Day 15.<br><br><strong class="text-coral">Long-term product? Choose A.</strong> A overtakes B at Day ~5.6 and the gap keeps widening: A leads by 307 DAU on Day 15 and wins the ARPDAU spike scenario by $7,562 through Day 25. The right variant depends on the goal, which is why the goal has to be fixed before the test is read.</p>
           </div>
 
           <div class="mt-6 flex flex-col items-center gap-3">
@@ -351,7 +335,7 @@
         'nav.contact': 'Contact',
         'cs2.back': '\u2190 Back to Home',
         'cs2.hero.title': 'Retention & A/B Test Metrics',
-        'cs2.hero.desc': 'I modeled retention curves from raw variant data, calculated DAU and cumulative revenue for each, stress-tested an ARPDAU spike scenario, and arrived at a clear shipping recommendation.',
+        'cs2.hero.desc': 'Given five retention data points for two A/B variants, I fitted retention curves, calculated DAU and cumulative revenue for each, stress-tested an ARPDAU spike scenario, and showed how the winning variant depends on the goal.',
         'cs2.hero.stat1': 'Variants',
         'cs2.hero.stat2': 'Decision Scenarios',
         'cs2.hero.stat3': 'Data Points',
@@ -369,61 +353,21 @@
         'cs2.s09.title': 'Results',
         'cs2.s09.qa.label': 'Question A',
         'cs2.s09.qa.q': 'Maximize DAU on Day 15',
-        'cs2.s09.qa.reason': 'Older cohorts (6\u201314 days) dominate the Day-15 DAU calculation, and A is superior in all of them.',
+        'cs2.s09.qa.reason': 'A retains more users at every cohort age past Day ~5.6, and those older cohorts (ages 6–14) outweigh B’s early lead.',
         'cs2.s09.qb.label': 'Question B',
         'cs2.s09.qb.q': 'Maximize cumulative revenue (15d)',
         'cs2.s09.qb.reason': 'Stronger early retention creates more total \u201Cuser-days\u201D in the first 15 days, generating $4,599 more revenue.',
         'cs2.s09.qc.label': 'Question C',
-        'cs2.s09.qc.q': 'ARPDAU spike ($0.70 \u2192 $0.50, Day 15\u201325)',
-        'cs2.s09.qc.reason': 'Higher ARPDAU \u00D7 growing DAU gap = multiplier effect. A\u2019s long-tail retention wins by $7,562.',
+        'cs2.s09.qc.q': 'ARPDAU spike ($0.50 → $0.70 on Day 15, easing back to $0.50 by Day 25)',
+        'cs2.s09.qc.reason': 'Measured through Day 25. Each post-Day-15 user is worth more, and A has more of them thanks to its long-tail retention, so A wins by $7,562.',
         'cs2.s09.verdict.title': 'The Bottom Line',
-        'cs2.s09.verdict.body': '<strong class="text-white">Short-term campaign? Choose B.</strong> Its strong early retention generates more revenue in a 15-day window.<br><br><strong class="text-coral">Long-term game? Choose A.</strong> My model shows A overtakes B at Day ~5.6 and never looks back. By Day 15, A leads by 307 DAU; by Day 30 the gap reaches thousands. Combined with $4,599 higher cumulative revenue (15d) and a $7,562 advantage under the ARPDAU spike scenario, A is the clear choice for any product built to last.',
+        'cs2.s09.verdict.body': '<strong class="text-white">Short-term window? Choose B.</strong> Its strong early retention generates $4,599 more cumulative revenue by Day 15.<br><br><strong class="text-coral">Long-term product? Choose A.</strong> A overtakes B at Day ~5.6 and the gap keeps widening: A leads by 307 DAU on Day 15 and wins the ARPDAU spike scenario by $7,562 through Day 25. The right variant depends on the goal, which is why the goal has to be fixed before the test is read.',
         'cs2.cta.title': 'Interested in working together?',
         'cs2.cta.desc': 'I\u2019m looking for PM internship opportunities where I can learn fast and contribute from day one.',
         'cs2.cta.contact': 'Get in Touch',
         'cs2.cta.part1': 'Read Part 1: Game Analysis',
         'footer.credit': 'Designed by Ezgi Ekinci',
         'footer.top': 'Back to top \u2191',
-      },
-      tr: {
-        'nav.about': 'Hakk\u0131mda',
-        'nav.work': '\u00C7al\u0131\u015Fma',
-        'nav.contact': '\u0130leti\u015Fim',
-        'cs2.back': '\u2190 Ana Sayfaya D\u00F6n',
-        'cs2.hero.title': 'Retention & A/B Test Metrikleri',
-        'cs2.hero.desc': 'Ham variant verilerinden retention e\u011Frileri modelledim, her biri i\u00E7in DAU ve k\u00FCm\u00FClatif gelir hesaplad\u0131m, ARPDAU art\u0131\u015F senaryosunu stres testine tabi tuttum ve net bir g\u00F6nderim \u00F6nerisi olu\u015Fturdum.',
-        'cs2.hero.stat1': 'Variant',
-        'cs2.hero.stat2': 'Karar Senaryosu',
-        'cs2.hero.stat3': 'Veri Noktas\u0131',
-        'cs2.hero.stat4': 'Trendline Modeli',
-        'cs2.s08.title': 'Kurulum ve Veri',
-        'cs2.s08.installs': 'G\u00FCnl\u00FCk y\u00FCkleme/variant',
-        'cs2.s08.arpdau': 'ARPDAU (baz)',
-        'cs2.s08.datapoints': 'Verilen veri noktalar\u0131',
-        'cs2.s08.model': 'Trendline modeli',
-        'cs2.s08.day': 'G\u00FCn',
-        'cs2.s08.diff': 'Fark',
-        'cs2.s08.a.desc': 'Yava\u015F ba\u015Flang\u0131\u00E7, d\u00FCz d\u00FC\u015F\u00FC\u015F \u2014 \u201Cistikrarl\u0131 olan\u201D',
-        'cs2.s08.b.desc': 'Y\u00FCksek ba\u015Flang\u0131\u00E7, h\u0131zl\u0131 d\u00FC\u015F\u00FC\u015F \u2014 \u201Cg\u00F6steri\u015Fli olan\u201D',
-        'cs2.s08.insight': '<strong class="text-navy">Kesi\u015Fim noktas\u0131 ~5,6. g\u00FCn:</strong> Bu g\u00FCnden \u00F6nce B daha fazla kullan\u0131c\u0131 tutuyor. Bu g\u00FCnden sonra A \u00F6ne ge\u00E7iyor ve fark a\u00E7\u0131lmaya devam ediyor.',
-        'cs2.s09.title': 'Sonu\u00E7lar',
-        'cs2.s09.qa.label': 'Soru A',
-        'cs2.s09.qa.q': '15. G\u00FCnde DAU\u2019yu Maksimize Etme',
-        'cs2.s09.qa.reason': 'Eski kohortlar (6\u201314 g\u00FCn) 15. g\u00FCn DAU hesaplamas\u0131na h\u00E2kimdir ve A hepsinde \u00FCst\u00FCnd\u00FCr.',
-        'cs2.s09.qb.label': 'Soru B',
-        'cs2.s09.qb.q': 'K\u00FCm\u00FClatif geliri maksimize etme (15 g\u00FCn)',
-        'cs2.s09.qb.reason': 'G\u00FC\u00E7l\u00FC erken retention, ilk 15 g\u00FCnde daha fazla \u201Ckullan\u0131c\u0131-g\u00FCn\u00FC\u201D yaratarak $4.599 daha fazla gelir \u00FCretiyor.',
-        'cs2.s09.qc.label': 'Soru C',
-        'cs2.s09.qc.q': 'ARPDAU art\u0131\u015F\u0131 ($0,70 \u2192 $0,50, G\u00FCn 15\u201325)',
-        'cs2.s09.qc.reason': 'Daha y\u00FCksek ARPDAU \u00D7 b\u00FCy\u00FCyen DAU fark\u0131 = \u00E7arpan etkisi. A\u0027n\u0131n uzun kuyruk retention\u0131 $7.562 farkla kazan\u0131yor.',
-        'cs2.s09.verdict.title': 'Sonu\u00E7',
-        'cs2.s09.verdict.body': '<strong class="text-white">K\u0131sa vadeli kampanya? Variant B\u2019yi se\u00E7in.</strong> G\u00FC\u00E7l\u00FC erken retention\u0131, 15 g\u00FCnl\u00FCk pencerede daha fazla gelir \u00FCretiyor.<br><br><strong class="text-coral">Uzun vadeli oyun? Variant A\u2019y\u0131 se\u00E7in.</strong> Modelim, A\u2019n\u0131n ~5,6. g\u00FCnde B\u2019yi ge\u00E7ti\u011Fini ve bir daha geri d\u00F6nmedi\u011Fini g\u00F6steriyor. 15. g\u00FCnde A 307 DAU \u00F6nde; 30. g\u00FCnde fark binlere ula\u015F\u0131yor. $4.599 daha y\u00FCksek k\u00FCm\u00FClatif gelir (15g) ve ARPDAU art\u0131\u015F senaryosundaki $7.562 avantajla birle\u015Ftirildi\u011Finde, A uzun vadeli her \u00FCr\u00FCn i\u00E7in net tercih.',
-        'cs2.cta.title': 'Birlikte \u00E7al\u0131\u015Fmak ister misiniz?',
-        'cs2.cta.desc': 'H\u0131zl\u0131 \u00F6\u011Frenebilece\u011Fim, ilk g\u00FCnden katk\u0131 sa\u011Flayabilece\u011Fim PM staj\u0131 f\u0131rsatlar\u0131 ar\u0131yorum.',
-        'cs2.cta.contact': '\u0130leti\u015Fime Ge\u00E7',
-        'cs2.cta.part1': 'B\u00F6l\u00FCm 1\u2019i Oku: Oyun Analizi',
-        'footer.credit': 'Ezgi Ekinci taraf\u0131ndan tasarland\u0131 ve geli\u015Ftirildi',
-        'footer.top': 'Ba\u015Fa d\u00F6n \u2191',
       }
     };
 
@@ -451,25 +395,7 @@
       });
     }
 
-    // Initialize language (URL param > localStorage > default)
-    const urlLang = new URLSearchParams(window.location.search).get('lang');
-    const savedLang = urlLang || localStorage.getItem('lang') || 'en';
-    setLang(savedLang);
-
-    // Preserve language across page navigation
-    document.addEventListener('click', function(e) {
-      const a = e.target.closest('a[href]');
-      if (!a) return;
-      const href = a.getAttribute('href');
-      if (!href || href.startsWith('#') || href.startsWith('http') || href.startsWith('mailto:')) return;
-      const lang = document.documentElement.lang || 'en';
-      if (lang !== 'en') {
-        e.preventDefault();
-        const url = new URL(href, window.location.href);
-        url.searchParams.set('lang', lang);
-        window.location.href = url.toString();
-      }
-    });
+    setLang('en');
 
     const navbar = document.getElementById('navbar');
     const navLogo = document.getElementById('nav-logo');

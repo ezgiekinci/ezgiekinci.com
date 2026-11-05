@@ -1,0 +1,422 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Growth Case: LTV, Breakeven &amp; Ad Creatives | Ezgi Ekinci</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='2' y='24' font-family='system-ui,sans-serif' font-weight='800' font-size='22' fill='%231A0A2E'>EE</text><text x='22' y='24' font-family='system-ui,sans-serif' font-weight='800' font-size='22' fill='%23FF4D8D'>.</text></svg>">
+  <meta name="description" content="Agave Games growth case: power-law retention and 6-month LTV for four games, campaign breakeven, ad creative comparison and two new ad concepts.">
+  <meta property="og:title" content="Case Study — Growth Case: LTV, Breakeven & Ad Creatives | Ezgi Ekinci">
+  <meta property="og:description" content="6-month LTV and ROAS for four games, breakeven timing, and which ad creative to scale.">
+  <meta property="og:type" content="article">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#F0E6FF',
+            navy: '#1A0A2E',
+            'navy-light': '#2D1B4E',
+            slate: '#7C6F9B',
+            coral: '#FF4D8D',
+            'coral-dark': '#CC3D71',
+            lavender: '#D4B8FF',
+            sage: '#4DC9F6',
+            gold: '#FFD23F',
+            border: '#D4B8FF',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .nav-blur { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .logo-collapse { display: inline-block; max-width: 200px; opacity: 1; overflow: hidden; vertical-align: bottom; transition: max-width 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease; }
+    .logo-collapsed .logo-collapse { max-width: 0; opacity: 0; }
+    .nav-link { color: #7C6F9B; transition: color 0.5s; }
+    .nav-link:hover { color: #1A0A2E; }
+    .nav-link-active { color: #1A0A2E; }
+    .nav-logo-text { color: #1A0A2E; transition: color 0.5s; }
+    .nav-dot { transition: color 0.5s; }
+    .menu-bar { transition: background-color 0.5s; }
+    .lang-border { border-color: #D4B8FF; transition: border-color 0.5s; }
+    .lang-btn { color: #7C6F9B; transition: color 0.5s; }
+    .lang-btn-active { color: #1A0A2E; }
+    .lang-sep { color: #D4B8FF; transition: color 0.5s; }
+    .nav-dark .nav-link { color: rgba(255,255,255,0.7); }
+    .nav-dark .nav-link:hover { color: #fff; }
+    .nav-dark .nav-link-active { color: #fff; }
+    .nav-dark .nav-logo-text { color: #fff; }
+    .nav-dark .nav-dot { color: #FF4D8D; }
+    .nav-dark .menu-bar { background-color: #fff; }
+    .nav-dark .lang-border { border-color: rgba(255,255,255,0.3); }
+    .nav-dark .lang-btn { color: rgba(255,255,255,0.6); }
+    .nav-dark .lang-btn-active { color: #fff; }
+    .nav-dark .lang-sep { color: rgba(255,255,255,0.3); }
+    .accent-line { width: 48px; height: 3px; background: linear-gradient(90deg, #FF4D8D, #FFD23F); border-radius: 2px; }
+    .gradient-text { background: linear-gradient(135deg, #FF4D8D, #FFD23F, #4DC9F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .game-tile {
+      background: white;
+      border: 3px solid #D4B8FF;
+      border-radius: 1.25rem;
+      box-shadow: 0 6px 0 rgba(212,184,255,0.4);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .game-tile:hover { transform: translateY(-4px); box-shadow: 0 8px 0 rgba(212,184,255,0.4), 0 0 24px rgba(255,77,141,0.12); }
+    .game-tile.pink { background: #FF4D8D; color: white; border-color: #CC3D71; box-shadow: 0 6px 0 rgba(204,61,113,0.5); }
+    .prose-table { width: 100%; border-collapse: collapse; }
+    .prose-table th, .prose-table td { padding: 0.625rem 0.875rem; text-align: left; border-bottom: 1px solid #D4B8FF; font-size: 0.8125rem; }
+    .prose-table th { font-weight: 600; background: #F0E6FF; color: #1A0A2E; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .prose-table tr:hover td { background: #F0E6FF; }
+    .insight-card { border-left: 3px solid #4DC9F6; }
+    .stat-number { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body class="bg-cream text-navy font-sans antialiased">
+
+  <!-- Navigation -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 nav-dark">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <a href="index.html" id="nav-logo" class="text-lg font-extrabold tracking-tight whitespace-nowrap nav-logo-text transition-colors duration-500">E<span class="logo-collapse">zgi</span>E<span class="logo-collapse">kinci</span><span class="nav-dot text-coral transition-colors duration-500">.</span></a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="index.html#about" class="text-sm nav-link transition-colors duration-500" data-i18n="nav.about">About</a>
+        <a href="index.html#work" class="text-sm nav-link-active font-semibold transition-colors duration-500" data-i18n="nav.work">Work</a>
+        <a href="index.html#contact" class="text-sm nav-link transition-colors duration-500" data-i18n="nav.contact">Contact</a>
+      </div>
+      <button id="menu-btn" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Menu">
+        <span class="block w-6 h-0.5 menu-bar bg-navy transition-all duration-300" id="bar1"></span>
+        <span class="block w-6 h-0.5 menu-bar bg-navy transition-all duration-300" id="bar2"></span>
+        <span class="block w-6 h-0.5 menu-bar bg-navy transition-all duration-300" id="bar3"></span>
+      </button>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden bg-white/95 nav-blur border-t border-border">
+      <div class="px-6 py-6 flex flex-col gap-5">
+        <a href="index.html#about" class="text-sm text-slate hover:text-navy transition-colors">About</a>
+        <a href="index.html#work" class="text-sm text-navy font-semibold">Work</a>
+        <a href="index.html#contact" class="text-sm text-slate hover:text-navy transition-colors">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="pt-32 pb-20 md:pt-40 md:pb-28 bg-navy text-white relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-sage/15 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-72 h-72 bg-lavender/10 rounded-full blur-3xl"></div>
+
+    <div class="max-w-5xl mx-auto px-6 relative">
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors mb-10 fade-up">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to Home
+      </a>
+      <div class="flex items-center gap-3 mb-6 fade-up">
+        <div class="w-12 h-0.5 bg-sage rounded"></div>
+        <span class="text-sm font-mono text-sage font-medium">Agave Games &middot; Growth Case</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-extrabold leading-[1.1] tracking-tight fade-up">
+        Growth Case: LTV, Breakeven &amp; Ad Creatives
+      </h1>
+      <p class="mt-6 text-white/70 leading-relaxed max-w-2xl fade-up text-base md:text-lg">
+        I modeled retention and 6-month lifetime value for four games to find where user acquisition money earns the most, worked out when a $1k/day campaign breaks even, compared three video ads for scaling, and pitched two ad concepts to lower CPI.
+      </p>
+
+      <!-- Stats Bar -->
+      <div class="mt-10 flex flex-wrap gap-8 md:gap-14 fade-up">
+        <div>
+          <p class="text-3xl font-extrabold text-sage stat-number">4</p>
+          <p class="text-xs text-white/40 font-mono mt-1">Games Modeled</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-white stat-number">3.41&times;</p>
+          <p class="text-xs text-white/40 font-mono mt-1">Best 6-Month ROAS</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-coral stat-number">Day 38</p>
+          <p class="text-xs text-white/40 font-mono mt-1">Daily Breakeven</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-lavender stat-number">3</p>
+          <p class="text-xs text-white/40 font-mono mt-1">Ad Creatives Compared</p>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="mt-8 flex gap-4 fade-up">
+        <a href="assets/agave-growth-case.pdf" target="_blank" class="game-tile pink inline-flex items-center gap-2.5 px-6 py-3 font-semibold text-sm">
+          <span>Read Full Case PDF</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <article class="py-20">
+    <div class="max-w-5xl mx-auto px-6 space-y-16">
+
+      <!-- Section 1: Inputs & model -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-sage bg-sage/10 px-3 py-1 rounded-full">01</span>
+          <h2 class="text-2xl font-extrabold text-navy">Inputs &amp; Retention Model</h2>
+        </div>
+        <p class="text-slate leading-relaxed mb-6">
+          Each game came with three retention points, a CPI, an organic rate (extra organic installs per paid install) and ARPDAU. To estimate retention on every day up to 180, I fitted a power-law curve through the three points with a log-log regression.
+        </p>
+        <div class="overflow-x-auto bg-white rounded-xl shadow-sm mb-6">
+          <table class="prose-table">
+            <thead><tr><th>Game</th><th class="text-right">D1</th><th class="text-right">D7</th><th class="text-right">D30</th><th class="text-right">CPI</th><th class="text-right">Organic rate</th><th class="text-right">ARPDAU</th><th class="text-right">Fit R&sup2;</th></tr></thead>
+            <tbody>
+              <tr><td class="font-semibold">Game A</td><td class="text-right">45%</td><td class="text-right">23%</td><td class="text-right">13%</td><td class="text-right">$4.00</td><td class="text-right">0.75</td><td class="text-right">$0.30</td><td class="text-right">0.999</td></tr>
+              <tr><td class="font-semibold">Game B</td><td class="text-right">42%</td><td class="text-right">18%</td><td class="text-right">8%</td><td class="text-right">$3.00</td><td class="text-right">1.20</td><td class="text-right">$0.28</td><td class="text-right">0.995</td></tr>
+              <tr><td class="font-semibold">Game C</td><td class="text-right">50%</td><td class="text-right">25%</td><td class="text-right">10%</td><td class="text-right">$2.50</td><td class="text-right">0.50</td><td class="text-right">$0.35</td><td class="text-right">0.974</td></tr>
+              <tr><td class="font-semibold">Game D</td><td class="text-right">36%</td><td class="text-right">21%</td><td class="text-right">12%</td><td class="text-right">$3.00</td><td class="text-right">0.33</td><td class="text-right">$0.26</td><td class="text-right">0.991</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy mb-2">Retention curve</h3>
+            <p class="font-mono text-sm text-navy bg-cream rounded-lg px-3 py-2 mb-2">R(t) = a &middot; t<sup>&minus;b</sup></p>
+            <p class="text-xs text-slate leading-relaxed">b measures how fast players leave; a anchors Day 1.</p>
+          </div>
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy mb-2">6-month lifetime</h3>
+            <p class="font-mono text-sm text-navy bg-cream rounded-lg px-3 py-2 mb-2">LT180 = 1 + &Sigma; R(t), t = 1&hellip;179</p>
+            <p class="text-xs text-slate leading-relaxed">Active days an average install generates in 180 days, counting install day as one.</p>
+          </div>
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy mb-2">Effective LTV</h3>
+            <p class="font-mono text-sm text-navy bg-cream rounded-lg px-3 py-2 mb-2">LTV<sub>eff</sub> = LT180 &times; ARPDAU &times; (1 + organic)</p>
+            <p class="text-xs text-slate leading-relaxed">Each paid install also brings organic installs, so they count toward its value.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Lifetime & profitability -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-sage bg-sage/10 px-3 py-1 rounded-full">02</span>
+          <h2 class="text-2xl font-extrabold text-navy">Which Game Earns the Most at 6 Months?</h2>
+        </div>
+        <p class="text-slate leading-relaxed mb-6">
+          To compare at equal spend, I put the same $10,000 UA budget into each game. Lower CPI means more installs for the same money, so I compared total net profit rather than profit per install.
+        </p>
+        <div class="overflow-x-auto bg-white rounded-xl shadow-sm mb-6">
+          <table class="prose-table">
+            <thead><tr><th>Game</th><th class="text-right">LT180 (days)</th><th class="text-right">LTV<sub>eff</sub></th><th class="text-right">Net / install</th><th class="text-right">ROAS</th><th class="text-right">Installs ($10k)</th><th class="text-right">Net profit</th></tr></thead>
+            <tbody>
+              <tr><td class="font-semibold">Game A</td><td class="text-right font-semibold">20.01</td><td class="text-right">$10.51</td><td class="text-right">$6.51</td><td class="text-right">2.63&times;</td><td class="text-right">2,500</td><td class="text-right">$16,266</td></tr>
+              <tr><td class="font-semibold">Game B</td><td class="text-right">12.60</td><td class="text-right">$7.76</td><td class="text-right">$4.76</td><td class="text-right">2.59&times;</td><td class="text-right">3,333</td><td class="text-right">$15,864</td></tr>
+              <tr style="background:#E6F7FE"><td class="font-semibold">Game C</td><td class="text-right">16.25</td><td class="text-right">$8.53</td><td class="text-right">$6.03</td><td class="text-right font-semibold">3.41&times;</td><td class="text-right">4,000</td><td class="text-right font-semibold">$24,133</td></tr>
+              <tr><td class="font-semibold">Game D</td><td class="text-right">19.20</td><td class="text-right">$6.64</td><td class="text-right">$3.64</td><td class="text-right">2.21&times;</td><td class="text-right">3,333</td><td class="text-right">$12,136</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="insight-card bg-white rounded-r-xl p-6 shadow-sm">
+          <p class="text-sm text-slate leading-relaxed"><strong class="text-navy">Winner: Game C.</strong> Game A keeps players longest (highest LT180, best D30), but its $4.00 CPI caps volume at 2,500 installs. Game C&rsquo;s $2.50 CPI buys 4,000 installs, and with the best D1 (50%) and highest ARPDAU ($0.35) it ends $7,867 ahead of Game A. Game D has the second-longest lifetime, but low ARPDAU and organic rate leave it with the lowest effective LTV. All four games pay back within six months; the question is where each dollar works hardest.</p>
+        </div>
+      </section>
+
+      <!-- Section 3: Breakeven -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-sage bg-sage/10 px-3 py-1 rounded-full">03</span>
+          <h2 class="text-2xl font-extrabold text-navy">When Does a $1k/Day Campaign Break Even?</h2>
+        </div>
+        <p class="text-slate leading-relaxed mb-6">
+          Spending $1,000 a day on Game A from 1 September 2026 buys 250 paid installs a day (437.5 with organics). Every day a new cohort joins and older cohorts keep playing, so daily revenue on day D is effective users &times; ARPDAU &times; cumulative retention up to age D&minus;1.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+          <div class="game-tile p-6">
+            <p class="text-3xl font-extrabold text-sage stat-number mb-1">Day 38</p>
+            <h3 class="font-bold text-navy mb-2">Daily breakeven &middot; 8 Oct</h3>
+            <p class="text-xs text-slate leading-relaxed">Daily revenue ($1,010) first covers the $1,000 daily spend.</p>
+          </div>
+          <div class="game-tile p-6">
+            <p class="text-3xl font-extrabold text-coral stat-number mb-1">Day 80</p>
+            <h3 class="font-bold text-navy mb-2">Cumulative breakeven &middot; 19 Nov</h3>
+            <p class="text-xs text-slate leading-relaxed">Total revenue ($80,062) first exceeds total spend ($80,000).</p>
+          </div>
+          <div class="game-tile p-6">
+            <p class="text-3xl font-extrabold text-navy stat-number mb-1">Day 59</p>
+            <h3 class="font-bold text-navy mb-2">New daily breakeven at $2k/day</h3>
+            <p class="text-xs text-slate leading-relaxed">Doubling spend after Day 38 takes 21 more days to cover $2,000 a day (29 Oct), faster than the first ramp because the older cohorts already pay their share.</p>
+          </div>
+        </div>
+        <div class="overflow-x-auto bg-white rounded-xl shadow-sm">
+          <table class="prose-table">
+            <thead><tr><th>Day</th><th>Date</th><th class="text-right">Daily revenue</th><th class="text-right">Daily net</th><th class="text-right">Cumulative net</th></tr></thead>
+            <tbody>
+              <tr><td>1</td><td>1 Sep 2026</td><td class="text-right">$131</td><td class="text-right">&minus;$869</td><td class="text-right">&minus;$869</td></tr>
+              <tr><td>7</td><td>7 Sep 2026</td><td class="text-right">$378</td><td class="text-right">&minus;$622</td><td class="text-right">&minus;$5,125</td></tr>
+              <tr><td>14</td><td>14 Sep 2026</td><td class="text-right">$561</td><td class="text-right">&minus;$439</td><td class="text-right">&minus;$8,722</td></tr>
+              <tr><td>30</td><td>30 Sep 2026</td><td class="text-right">$877</td><td class="text-right">&minus;$123</td><td class="text-right">&minus;$12,944</td></tr>
+              <tr style="background:#E6F7FE"><td class="font-semibold">38</td><td>8 Oct 2026</td><td class="text-right">$1,010</td><td class="text-right font-semibold">+$10</td><td class="text-right">&minus;$13,320</td></tr>
+              <tr><td>60</td><td>30 Oct 2026</td><td class="text-right">$1,332</td><td class="text-right">+$332</td><td class="text-right">&minus;$9,299</td></tr>
+              <tr style="background:#FFE8F0"><td class="font-semibold">80</td><td>19 Nov 2026</td><td class="text-right">$1,587</td><td class="text-right">+$587</td><td class="text-right font-semibold">+$62</td></tr>
+              <tr><td>180</td><td>27 Feb 2027</td><td class="text-right">$2,618</td><td class="text-right">+$1,618</td><td class="text-right">+$113,320</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="text-xs text-slate/80 mt-3">The deepest point is Day 38 at &minus;$13,320: that&rsquo;s roughly how much cash the campaign needs before it starts paying itself back.</p>
+      </section>
+
+      <!-- Section 4: Creatives -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-sage bg-sage/10 px-3 py-1 rounded-full">04</span>
+          <h2 class="text-2xl font-extrabold text-navy">Which Ad Should Scale? Three Wonder Link Creatives</h2>
+        </div>
+        <p class="text-slate leading-relaxed mb-6">
+          A stronger hook raises click-through, and ad platforms reward that with cheaper impressions, so CPI falls. But an ad also sets expectations: if the game isn&rsquo;t what the ad showed, players uninstall and the cheap install was never cheap. I judged each ad on both sides.
+        </p>
+        <div class="overflow-x-auto bg-white rounded-xl shadow-sm mb-6">
+          <table class="prose-table">
+            <thead><tr><th></th><th>Ad 1 &middot; 30s</th><th>Ad 2 &middot; 23s</th><th>Ad 3 &middot; 30s</th></tr></thead>
+            <tbody>
+              <tr><td class="font-semibold">Hook</td><td>Positive: a booster cascade clears the board</td><td>Fail bait: one ball left unconnected loses the level</td><td>&ldquo;Can you solve it?&rdquo; dot puzzle + wrong moves</td></tr>
+              <tr><td class="font-semibold">Real gameplay?</td><td>Yes</td><td>Yes (failure exaggerated, not invented)</td><td class="text-coral font-semibold">No, the puzzle isn&rsquo;t in the game</td></tr>
+              <tr><td class="font-semibold">CTA</td><td>Static button</td><td>Animated hand taps &ldquo;PLAY!&rdquo;</td><td>Static button</td></tr>
+              <tr><td class="font-semibold">Expected CPI</td><td>High</td><td>Medium</td><td>Low</td></tr>
+              <tr><td class="font-semibold">Retention risk</td><td>Low</td><td>Low</td><td class="text-coral font-semibold">High</td></tr>
+              <tr style="background:#E6F7FE"><td class="font-semibold">Effective CPI</td><td>Medium</td><td class="font-semibold">Low</td><td>High</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="insight-card bg-white rounded-r-xl p-6 shadow-sm">
+          <p class="text-sm text-slate leading-relaxed"><strong class="text-navy">Recommendation: scale Ad 2.</strong> Its fail-bait hook (&ldquo;I would never make that mistake&rdquo;) should out-click Ad 1&rsquo;s passive positive hook, and it&rsquo;s the shortest ad with the only animated CTA. Unlike Ad 3, it shows the real game, so the players it brings in find what they expected and stay. At scale, what matters is spend per <em>retained</em> user, and Ad 3&rsquo;s low CPI is wiped out by early churn. These are directional estimates from the creatives themselves; I&rsquo;d confirm them with a test.</p>
+        </div>
+      </section>
+
+      <!-- Section 5: What The Hex concepts -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-sage bg-sage/10 px-3 py-1 rounded-full">05</span>
+          <h2 class="text-2xl font-extrabold text-navy">Two Ad Concepts to Lower CPI for What The Hex</h2>
+        </div>
+        <p class="text-slate leading-relaxed mb-6">
+          Before writing concepts, I studied the ads of five leading hex-sort competitors. The winners share three things: they open on a fully packed board, use a tutorial hand to guide (or misguide) the action, and show locked sections to spark curiosity about what comes next.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="game-tile p-6">
+            <span class="text-xs font-mono text-sage font-medium">Concept 1 &middot; Positive hook</span>
+            <h3 class="font-bold text-navy text-lg mt-1 mb-2">The &ldquo;Satisfying ASMR&rdquo; Cascade</h3>
+            <p class="text-sm text-slate leading-relaxed mb-3">Open on a chaotic, nearly full board. The hand drops one crucial stack into a last empty slot, a crisp click sounds, and a chain reaction merges colour after colour until the board clears. The camera then moves to padlocked areas and a pulsing &ldquo;PLAY NOW&rdquo;.</p>
+            <p class="text-xs text-slate"><strong class="text-navy">Why it lowers CPI:</strong> near-failure tension makes the release more rewarding, and the locks end on curiosity.</p>
+          </div>
+          <div class="game-tile p-6">
+            <span class="text-xs font-mono text-coral font-medium">Concept 2 &middot; Reactance hook</span>
+            <h3 class="font-bold text-navy text-lg mt-1 mb-2">The &ldquo;Obvious Mistake&rdquo; Fail Bait</h3>
+            <p class="text-sm text-slate leading-relaxed mb-3">&ldquo;Only 5% can unlock this!&rdquo; over a full board. The hand makes two good moves to teach the mechanic, then hesitates at the obvious winning move, picks the wrong stack and fails. A buzzer, a grey flash, a &ldquo;FAIL&rdquo; stamp, then &ldquo;Think you can unlock it?&rdquo; with the hand tapping PLAY.</p>
+            <p class="text-xs text-slate"><strong class="text-navy">Why it lowers CPI:</strong> people click to prove they&rsquo;d do better, and higher CTR lowers the cost of every install.</p>
+          </div>
+        </div>
+        <p class="text-xs text-slate/80">I deliberately left the game&rsquo;s town-building meta out of both concepts: in a 30-second ad, mixing meta progression with the core puzzle splits attention and weakens the hook.</p>
+
+        <div class="mt-12 mb-4 flex flex-col items-center gap-3">
+          <span class="text-[15px] font-mono text-slate/40 tracking-wider">thanks to</span>
+          <a href="https://agave.games" target="_blank" class="grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+            <img src="assets/img/agave-logo.png" alt="Agave Games" class="h-10 md:h-12 object-contain">
+          </a>
+        </div>
+      </section>
+
+      <!-- Bottom Next / Prev Navigation -->
+      <section class="pt-10 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-6 fade-up">
+        <a href="case-study-3.html" class="text-sm font-semibold text-slate hover:text-navy transition-colors inline-flex items-center gap-2">
+          &larr; Previous: Match Squad: Reading 100 Levels
+        </a>
+        <a href="index.html#work" class="game-tile px-6 py-3 text-sm font-semibold text-sage hover:text-navy transition-colors inline-flex items-center gap-2">
+          Back to Featured Work &uarr;
+        </a>
+      </section>
+
+    </div>
+  </article>
+
+  <!-- CTA -->
+  <section class="pb-20">
+    <div class="max-w-3xl mx-auto px-6 text-center fade-up">
+      <h2 class="text-2xl md:text-3xl font-extrabold">Interested in working together?</h2>
+      <p class="mt-4 text-slate">I&rsquo;m looking for PM internship opportunities where I can learn fast and contribute from day one.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="mailto:ekinciiezgi02@gmail.com" class="game-tile pink inline-flex items-center gap-2.5 px-6 py-3.5 font-semibold text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <span>Get in Touch</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-border py-8">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-slate font-mono">Designed by Ezgi Ekinci</p>
+      <a href="#" class="text-xs text-slate hover:text-navy transition-colors font-mono">Back to top &uarr;</a>
+    </div>
+  </footer>
+
+  <script>
+    const navbar = document.getElementById('navbar');
+    const navLogo = document.getElementById('nav-logo');
+    const heroSection = document.querySelector('section');
+    window.addEventListener('scroll', () => {
+      const heroBottom = heroSection ? heroSection.offsetTop + heroSection.offsetHeight : 300;
+      if (window.scrollY > heroBottom - 80) {
+        navbar.classList.remove('nav-dark');
+        navbar.classList.add('bg-cream/90', 'nav-blur', 'shadow-sm');
+        navLogo.classList.add('logo-collapsed');
+      } else {
+        navbar.classList.add('nav-dark');
+        navbar.classList.remove('bg-cream/90', 'nav-blur', 'shadow-sm');
+        if (window.scrollY > 40) {
+          navLogo.classList.add('logo-collapsed');
+        } else {
+          navLogo.classList.remove('logo-collapsed');
+        }
+      }
+    });
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    const bar3 = document.getElementById('bar3');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      bar1.classList.toggle('rotate-45');
+      bar1.classList.toggle('translate-y-2');
+      bar2.classList.toggle('opacity-0');
+      bar3.classList.toggle('-rotate-45');
+      bar3.classList.toggle('-translate-y-2');
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        bar1.classList.remove('rotate-45', 'translate-y-2');
+        bar2.classList.remove('opacity-0');
+        bar3.classList.remove('-rotate-45', '-translate-y-2');
+      });
+    });
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>

@@ -1,0 +1,583 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Match Squad: Reading 100 Levels | Ezgi Ekinci</title>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='2' y='24' font-family='system-ui,sans-serif' font-weight='800' font-size='22' fill='%231A0A2E'>EE</text><text x='22' y='24' font-family='system-ui,sans-serif' font-weight='800' font-size='22' fill='%23FF4D8D'>.</text></svg>">
+  <meta name="description" content="Match Squad product case: a log of the first 100 levels, the obstacle system and its pacing, a single-level deep dive, and a new villain designed for dice levels.">
+  <meta property="og:title" content="Case Study — Match Squad: Reading 100 Levels | Ezgi Ekinci">
+  <meta property="og:description" content="Obstacle system, difficulty pacing, level anatomy and villain design for Match Squad.">
+  <meta property="og:type" content="article">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            cream: '#F0E6FF',
+            navy: '#1A0A2E',
+            'navy-light': '#2D1B4E',
+            slate: '#7C6F9B',
+            coral: '#FF4D8D',
+            'coral-dark': '#CC3D71',
+            lavender: '#D4B8FF',
+            sage: '#4DC9F6',
+            gold: '#FFD23F',
+            border: '#D4B8FF',
+          },
+          fontFamily: {
+            sans: ['Inter', 'system-ui', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+        },
+      },
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .fade-up { opacity: 0; transform: translateY(30px); transition: opacity 0.8s cubic-bezier(0.34, 1.56, 0.64, 1), transform 0.8s cubic-bezier(0.34, 1.56, 0.64, 1); }
+    .fade-up.visible { opacity: 1; transform: translateY(0); }
+    .nav-blur { backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px); }
+    .logo-collapse { display: inline-block; max-width: 200px; opacity: 1; overflow: hidden; vertical-align: bottom; transition: max-width 0.45s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease; }
+    .logo-collapsed .logo-collapse { max-width: 0; opacity: 0; }
+    .nav-link { color: #7C6F9B; transition: color 0.5s; }
+    .nav-link:hover { color: #1A0A2E; }
+    .nav-link-active { color: #1A0A2E; }
+    .nav-logo-text { color: #1A0A2E; transition: color 0.5s; }
+    .nav-dot { transition: color 0.5s; }
+    .menu-bar { transition: background-color 0.5s; }
+    .lang-border { border-color: #D4B8FF; transition: border-color 0.5s; }
+    .lang-btn { color: #7C6F9B; transition: color 0.5s; }
+    .lang-btn-active { color: #1A0A2E; }
+    .lang-sep { color: #D4B8FF; transition: color 0.5s; }
+    .nav-dark .nav-link { color: rgba(255,255,255,0.7); }
+    .nav-dark .nav-link:hover { color: #fff; }
+    .nav-dark .nav-link-active { color: #fff; }
+    .nav-dark .nav-logo-text { color: #fff; }
+    .nav-dark .nav-dot { color: #FF4D8D; }
+    .nav-dark .menu-bar { background-color: #fff; }
+    .nav-dark .lang-border { border-color: rgba(255,255,255,0.3); }
+    .nav-dark .lang-btn { color: rgba(255,255,255,0.6); }
+    .nav-dark .lang-btn-active { color: #fff; }
+    .nav-dark .lang-sep { color: rgba(255,255,255,0.3); }
+    .accent-line { width: 48px; height: 3px; background: linear-gradient(90deg, #FF4D8D, #FFD23F); border-radius: 2px; }
+    .gradient-text { background: linear-gradient(135deg, #FF4D8D, #FFD23F, #4DC9F6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; }
+    .game-tile {
+      background: white;
+      border: 3px solid #D4B8FF;
+      border-radius: 1.25rem;
+      box-shadow: 0 6px 0 rgba(212,184,255,0.4);
+      transition: all 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+    .game-tile:hover { transform: translateY(-4px); box-shadow: 0 8px 0 rgba(212,184,255,0.4), 0 0 24px rgba(255,77,141,0.12); }
+    .game-tile.pink { background: #FF4D8D; color: white; border-color: #CC3D71; box-shadow: 0 6px 0 rgba(204,61,113,0.5); }
+    .prose-table { width: 100%; border-collapse: collapse; }
+    .prose-table th, .prose-table td { padding: 0.625rem 0.875rem; text-align: left; border-bottom: 1px solid #D4B8FF; font-size: 0.8125rem; }
+    .prose-table th { font-weight: 600; background: #F0E6FF; color: #1A0A2E; font-size: 0.75rem; text-transform: uppercase; letter-spacing: 0.05em; }
+    .prose-table tr:hover td { background: #F0E6FF; }
+    .insight-card { border-left: 3px solid #FF4D8D; }
+    .stat-number { font-variant-numeric: tabular-nums; }
+  </style>
+</head>
+<body class="bg-cream text-navy font-sans antialiased">
+
+  <!-- Navigation -->
+  <nav id="navbar" class="fixed top-0 left-0 right-0 z-50 transition-all duration-500 nav-dark">
+    <div class="max-w-6xl mx-auto px-6 py-5 flex items-center justify-between">
+      <a href="index.html" id="nav-logo" class="text-lg font-extrabold tracking-tight whitespace-nowrap nav-logo-text transition-colors duration-500">E<span class="logo-collapse">zgi</span>E<span class="logo-collapse">kinci</span><span class="nav-dot text-coral transition-colors duration-500">.</span></a>
+      <div class="hidden md:flex items-center gap-8">
+        <a href="index.html#about" class="text-sm nav-link transition-colors duration-500" data-i18n="nav.about">About</a>
+        <a href="index.html#work" class="text-sm nav-link-active font-semibold transition-colors duration-500" data-i18n="nav.work">Work</a>
+        <a href="index.html#contact" class="text-sm nav-link transition-colors duration-500" data-i18n="nav.contact">Contact</a>
+      </div>
+      <button id="menu-btn" class="md:hidden flex flex-col gap-1.5 p-2" aria-label="Menu">
+        <span class="block w-6 h-0.5 menu-bar bg-navy transition-all duration-300" id="bar1"></span>
+        <span class="block w-6 h-0.5 menu-bar bg-navy transition-all duration-300" id="bar2"></span>
+        <span class="block w-6 h-0.5 menu-bar bg-navy transition-all duration-300" id="bar3"></span>
+      </button>
+    </div>
+    <div id="mobile-menu" class="hidden md:hidden bg-white/95 nav-blur border-t border-border">
+      <div class="px-6 py-6 flex flex-col gap-5">
+        <a href="index.html#about" class="text-sm text-slate hover:text-navy transition-colors">About</a>
+        <a href="index.html#work" class="text-sm text-navy font-semibold">Work</a>
+        <a href="index.html#contact" class="text-sm text-slate hover:text-navy transition-colors">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Hero -->
+  <section class="pt-32 pb-20 md:pt-40 md:pb-28 bg-navy text-white relative overflow-hidden">
+    <div class="absolute top-0 right-0 w-96 h-96 bg-coral/10 rounded-full blur-3xl"></div>
+    <div class="absolute bottom-0 left-0 w-72 h-72 bg-lavender/10 rounded-full blur-3xl"></div>
+
+    <div class="max-w-5xl mx-auto px-6 relative">
+      <a href="index.html" class="inline-flex items-center gap-2 text-sm text-white/50 hover:text-white transition-colors mb-10 fade-up">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        Back to Home
+      </a>
+      <div class="flex items-center gap-3 mb-6 fade-up">
+        <div class="w-12 h-0.5 bg-coral rounded"></div>
+        <span class="text-sm font-mono text-coral font-medium">Cypher Games &middot; Product Intern Case</span>
+      </div>
+      <h1 class="text-3xl md:text-5xl font-extrabold leading-[1.1] tracking-tight fade-up">
+        Match Squad: Reading 100 Levels &amp; Designing a Villain
+      </h1>
+      <p class="mt-6 text-white/70 leading-relaxed max-w-2xl fade-up text-base md:text-lg">
+        I played levels 1&ndash;100 on a fresh account and logged every one of them to reverse-engineer the obstacle system and its pacing, took a single level apart to reconstruct the designer&rsquo;s thinking, and designed a new villain and obstacle for the game&rsquo;s dice levels.
+      </p>
+
+      <!-- Stats Bar -->
+      <div class="mt-10 flex flex-wrap gap-8 md:gap-14 fade-up">
+        <div>
+          <p class="text-3xl font-extrabold text-coral stat-number">100</p>
+          <p class="text-xs text-white/40 font-mono mt-1">Levels Logged</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-white stat-number">18</p>
+          <p class="text-xs text-white/40 font-mono mt-1">Obstacles Catalogued</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-sage stat-number">76%</p>
+          <p class="text-xs text-white/40 font-mono mt-1">First-Try Clears</p>
+        </div>
+        <div>
+          <p class="text-3xl font-extrabold text-lavender stat-number">1</p>
+          <p class="text-xs text-white/40 font-mono mt-1">New Villain Designed</p>
+        </div>
+      </div>
+
+      <!-- Action Button -->
+      <div class="mt-8 flex gap-4 fade-up">
+        <a href="assets/match-squad-case.pdf" target="_blank" class="game-tile pink inline-flex items-center gap-2.5 px-6 py-3 font-semibold text-sm">
+          <span>Read Full Case PDF</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M13.5 6H5.25A2.25 2.25 0 003 8.25v10.5A2.25 2.25 0 005.25 21h10.5A2.25 2.25 0 0018 18.75V10.5m-10.5 6L21 3m0 0h-5.25M21 3v5.25"/></svg>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Content -->
+  <article class="py-20">
+    <div class="max-w-5xl mx-auto px-6 space-y-16">
+
+      <!-- Section 1: Method -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">01</span>
+          <h2 class="text-2xl font-extrabold text-navy">Method: A Log of Every Level</h2>
+        </div>
+        <p class="text-slate leading-relaxed mb-6">
+          The brief asked three things: read the obstacle system across the first 100 levels, explain the reasoning behind one level, and design something new for the dice levels. Every number on this page comes from the spreadsheet I kept while playing.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy text-lg mb-2">Level log</h3>
+            <p class="text-xs text-slate leading-relaxed">For every level: objective, target counts, moves granted, obstacles present, attempts needed and moves left on the win.</p>
+          </div>
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy text-lg mb-2">Obstacle catalogue</h3>
+            <p class="text-xs text-slate leading-relaxed">Each obstacle&rsquo;s mechanic and visual concept, plus my own 1&ndash;5 rating of whether the art teaches the rule before the tutorial does.</p>
+          </div>
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy text-lg mb-2">Honest limits</h3>
+            <p class="text-xs text-slate leading-relaxed">One player, outside-in, no internal telemetry. Attempt counts describe my experience, not the player base. The recording for level 97 was lost, so only its attempt count survives.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 2: Obstacles -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">02</span>
+          <h2 class="text-2xl font-extrabold text-navy">The Obstacle Vocabulary</h2>
+        </div>
+        <p class="text-slate leading-relaxed mb-6">
+          The first 100 levels introduce 18 obstacles. Fourteen appear on ordinary levels; four belong to bosses and are only seen on Clash levels. <strong class="text-navy">Clarity</strong> is my rating of how well the visual communicates the rule: 5 means no popup was needed, 2 means it still didn&rsquo;t make sense after the tutorial.
+        </p>
+        <div class="overflow-x-auto bg-white rounded-xl shadow-sm">
+          <table class="prose-table">
+            <thead><tr><th>Obstacle</th><th>Level</th><th>How it is cleared</th><th class="text-right">Clarity</th></tr></thead>
+            <tbody>
+              <tr><td class="font-semibold">Vase</td><td>1</td><td>Match adjacent, one hit</td><td class="text-right">5</td></tr>
+              <tr><td class="font-semibold">Crate</td><td>2</td><td>Match adjacent, one layer per match (1&ndash;3 layers)</td><td class="text-right">5</td></tr>
+              <tr><td class="font-semibold">Jelly</td><td>3</td><td>Match inside it: it spreads, it is never cleared</td><td class="text-right">3</td></tr>
+              <tr><td class="font-semibold">Sphere <span class="text-coral font-mono text-[10px]">BOSS</span></td><td>5</td><td>Match adjacent; Baron adds 4 more every 4 moves</td><td class="text-right">5</td></tr>
+              <tr><td class="font-semibold">Sapphire</td><td>7</td><td>Match adjacent, one segment per match, as many matches as cells</td><td class="text-right">3</td></tr>
+              <tr><td class="font-semibold">Ivy</td><td>11</td><td>Match adjacent, one layer per match (1&ndash;2 layers)</td><td class="text-right">3</td></tr>
+              <tr><td class="font-semibold">Slime <span class="text-coral font-mono text-[10px]">BOSS</span></td><td>15</td><td>Match adjacent; the boss adds 3 cells every 6 moves</td><td class="text-right">5</td></tr>
+              <tr><td class="font-semibold">Jackpot</td><td>16</td><td>Match adjacent to collect gems; never destroyed</td><td class="text-right">5</td></tr>
+              <tr><td class="font-semibold">Cardboard</td><td>21</td><td>Open the shutter, then match adjacent; match size scales the damage</td><td class="text-right">3</td></tr>
+              <tr><td class="font-semibold">Lantern</td><td>31</td><td>Match adjacent twice (lights up, then breaks)</td><td class="text-right">5</td></tr>
+              <tr><td class="font-semibold">Border <span class="text-coral font-mono text-[10px]">BOSS</span></td><td>35</td><td>Match adjacent; Carver adds 4 to the goal every 7 moves</td><td class="text-right">5</td></tr>
+              <tr><td class="font-semibold">Ice</td><td>41</td><td>Match tiles on top of it, two layers (snow, then ice)</td><td class="text-right">5</td></tr>
+              <tr><td class="font-semibold">Crystals</td><td>51</td><td>Open the cabinet, then match each crystal&rsquo;s colour beside it</td><td class="text-right">4</td></tr>
+              <tr><td class="font-semibold">Dino Egg</td><td>61</td><td>Match adjacent twice; releases a dino that attacks random targets</td><td class="text-right">5</td></tr>
+              <tr><td class="font-semibold">Soil</td><td>71</td><td>Five hits on the same cell; may hide other obstacles</td><td class="text-right text-coral font-semibold">2</td></tr>
+              <tr><td class="font-semibold">Laser <span class="text-coral font-mono text-[10px]">BOSS</span></td><td>75</td><td>Boosters only, 4 hits; heals every 7 moves and locks your boosters</td><td class="text-right">3</td></tr>
+              <tr><td class="font-semibold">Gnome</td><td>81</td><td>Boosters only, one hit</td><td class="text-right">3</td></tr>
+              <tr><td class="font-semibold">Gong</td><td>91</td><td>Match adjacent, 8 hits; then recolours tiles on the board</td><td class="text-right">3</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="insight-card bg-white rounded-r-xl p-6 shadow-sm mt-6">
+          <p class="text-sm text-slate leading-relaxed"><strong class="text-navy">Where it works least well:</strong> Soil is the only obstacle several people I asked could not identify at all (the most common guess was clay), and I only understood it by trial. Border attacks the player&rsquo;s information rather than space, an interesting idea, but after twenty levels I still could not reconcile the goal counter with what I could see on the board. Difficulty that comes from opacity is different from difficulty that comes from the puzzle.</p>
+        </div>
+      </section>
+
+      <!-- Section 3: Decade template -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">03</span>
+          <h2 class="text-2xl font-extrabold text-navy">The Decade Is the Unit of Design</h2>
+        </div>
+        <p class="text-slate leading-relaxed mb-6">
+          From level 21 onward the game runs the same ten-level template, without a single exception across all eight remaining decades. New ordinary obstacles arrive exactly on levels 21, 31, 41 &hellip; 91.
+        </p>
+        <div class="overflow-x-auto bg-white rounded-xl shadow-sm mb-6">
+          <table class="prose-table">
+            <thead><tr><th>Position</th><th>Level type</th><th>Dice bonus</th><th>Function</th></tr></thead>
+            <tbody>
+              <tr><td class="font-mono">X1</td><td>Normal</td><td>&ndash;</td><td>New obstacle, alone on the board</td></tr>
+              <tr><td class="font-mono">X2</td><td>Normal</td><td>&ndash;</td><td>New obstacle plus exactly one known obstacle</td></tr>
+              <tr><td class="font-mono">X3</td><td>Normal</td><td>&ndash;</td><td>A third obstacle enters</td></tr>
+              <tr><td class="font-mono">X4</td><td>Hard</td><td>&times;2</td><td>The new mechanic at full complexity</td></tr>
+              <tr><td class="font-mono">X5</td><td>Dice Clash</td><td>&times;5</td><td>Boss</td></tr>
+              <tr><td class="font-mono">X6&ndash;X8</td><td>Normal</td><td>&ndash;</td><td>Older obstacles rotate; the new one returns at X6 and X8</td></tr>
+              <tr><td class="font-mono">X9</td><td>Super Hard</td><td>&times;3</td><td>Second ramp</td></tr>
+              <tr><td class="font-mono">X0</td><td>Super Clash</td><td>&times;10</td><td>Boss</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy mb-2">Teach, test, forget, remember</h3>
+            <p class="text-xs text-slate leading-relaxed">A new obstacle appears on X1&ndash;X4 without a break, then returns at X6 and X8 with a two-level gap: just enough to forget and have to remember.</p>
+          </div>
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy mb-2">Variety from combination</h3>
+            <p class="text-xs text-slate leading-relaxed">A fixed template means designers only choose <em>which</em> obstacles go in a level. Eighteen obstacles produce a hundred essentially unique levels.</p>
+          </div>
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy mb-2">20 boss fights from 4 assets</h3>
+            <p class="text-xs text-slate leading-relaxed">Boss obstacles arrive at levels 5, 15, 35 and 75; the other sixteen Clash levels remix them. The boss is an exam on everything learned so far.</p>
+          </div>
+        </div>
+        <p class="text-xs text-slate/80 mt-4">This also explains why the brief excluded levels ending in 1 or 2 from the deep dive: X1 teaches and X2 rehearses, so both are tutorial levels.</p>
+      </section>
+
+      <!-- Section 4: Difficulty -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">04</span>
+          <h2 class="text-2xl font-extrabold text-navy">How Difficulty Actually Ramps</h2>
+        </div>
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+          <div class="game-tile p-5 text-center">
+            <p class="text-2xl font-extrabold text-navy stat-number">1.10 &rarr; 2.00</p>
+            <p class="text-xs text-slate mt-1">Avg. attempts, levels 1&ndash;50 vs 51&ndash;100</p>
+          </div>
+          <div class="game-tile p-5 text-center">
+            <p class="text-2xl font-extrabold text-navy stat-number">30 &rarr; 26</p>
+            <p class="text-xs text-slate mt-1">Avg. moves granted, same split</p>
+          </div>
+          <div class="game-tile p-5 text-center">
+            <p class="text-2xl font-extrabold text-coral stat-number">76%</p>
+            <p class="text-xs text-slate mt-1">Cleared on the first try</p>
+          </div>
+          <div class="game-tile p-5 text-center">
+            <p class="text-2xl font-extrabold text-navy stat-number">155</p>
+            <p class="text-xs text-slate mt-1">Total attempts for 100 levels</p>
+          </div>
+        </div>
+
+        <!-- Attempts per level chart -->
+        <div class="bg-white rounded-xl shadow-sm p-5 md:p-6 mb-6">
+          <div class="flex flex-wrap items-baseline justify-between gap-2 mb-4">
+            <h3 class="font-bold text-navy">Attempts per level</h3>
+            <div class="flex items-center gap-4 text-[11px] font-mono text-slate">
+              <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#D4B8FF"></span>1</span>
+              <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#9B6BFF"></span>2&ndash;3</span>
+              <span class="inline-flex items-center gap-1.5"><span class="w-2.5 h-2.5 rounded-sm" style="background:#FF4D8D"></span>4+</span>
+            </div>
+          </div>
+          <svg id="attempts-chart" viewBox="0 0 800 190" class="w-full h-auto" role="img" aria-label="Bar chart of attempts needed for each of levels 1 to 100. Almost every level up to 55 took one attempt; from level 56 onward repeated attempts become common, peaking at 10 attempts on level 89."></svg>
+          <p class="text-xs text-slate mt-3">The first-try rate collapses after level 55. Levels 72&ndash;74 were the first run of consecutive levels that each took several attempts; level 89 took ten.</p>
+        </div>
+
+        <div class="overflow-x-auto bg-white rounded-xl shadow-sm mb-6">
+          <table class="prose-table">
+            <thead><tr><th>Level type</th><th class="text-right">Levels</th><th class="text-right">Avg. attempts</th><th class="text-right">First try</th><th class="text-right">Avg. moves</th></tr></thead>
+            <tbody>
+              <tr><td class="font-semibold">Normal</td><td class="text-right">64</td><td class="text-right">1.45</td><td class="text-right">75%</td><td class="text-right">27.7</td></tr>
+              <tr><td class="font-semibold">Hard (&times;2)</td><td class="text-right">8</td><td class="text-right">1.62</td><td class="text-right">75%</td><td class="text-right">28.2</td></tr>
+              <tr><td class="font-semibold">Super Hard (&times;3)</td><td class="text-right">8</td><td class="text-right text-coral font-semibold">3.38</td><td class="text-right text-coral font-semibold">38%</td><td class="text-right">26.5</td></tr>
+              <tr><td class="font-semibold">Dice Clash (&times;5)</td><td class="text-right">11</td><td class="text-right">1.00</td><td class="text-right">100%</td><td class="text-right">29.3</td></tr>
+              <tr><td class="font-semibold">Super Clash (&times;10)</td><td class="text-right">9</td><td class="text-right">1.22</td><td class="text-right">89%</td><td class="text-right">29.6</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="insight-card bg-white rounded-r-xl p-6 shadow-sm">
+          <p class="text-sm text-slate leading-relaxed"><strong class="text-navy">Key Insight:</strong> Attempts roughly double while the move budget falls by four. The ramp doesn&rsquo;t come from harder obstacles but from the same obstacles with fewer moves. And the labels don&rsquo;t match the experience: &ldquo;Hard&rdquo; is statistically indistinguishable from Normal (1.62 vs 1.45 attempts, identical 75% first-try rate) while paying a &times;2 reward. Super Hard is the real wall.</p>
+        </div>
+      </section>
+
+      <!-- Section 5: Level 54 -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">05</span>
+          <h2 class="text-2xl font-extrabold text-navy">Anatomy of a Single Level: Level 54</h2>
+        </div>
+        <p class="text-slate leading-relaxed mb-6">
+          Level 54 sits in the X4 &ldquo;Hard&rdquo; slot, whose job is to test the decade&rsquo;s new obstacle (Crystals) at full complexity. It uses four obstacles stacked in layers rather than side by side: <strong class="text-navy">Ivy</strong> on the surface, <strong class="text-navy">Sapphire</strong> columns in the middle, <strong class="text-navy">Crystal</strong> cabinets to the right and <strong class="text-navy">Ice</strong> underneath. Clearing each one grants access to the next, so four chores become a single chain.
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+          <div class="game-tile p-6">
+            <p class="text-3xl font-extrabold text-coral stat-number mb-1">16 / 82</p>
+            <h3 class="font-bold text-navy mb-2">Cells playable at move one</h3>
+            <p class="text-xs text-slate leading-relaxed">And they sit in the top-right corner, the point furthest from every goal. The level opens by telling you there&rsquo;s no room to pursue anything yet.</p>
+          </div>
+          <div class="game-tile p-6">
+            <p class="text-3xl font-extrabold text-navy stat-number mb-1">1 route</p>
+            <h3 class="font-bold text-navy mb-2">The dead zone enforces order</h3>
+            <p class="text-xs text-slate leading-relaxed">An empty rectangle bends the board into a C and cuts off the cabinets from above. Without it there would be two routes; with it, the solve order is singular.</p>
+          </div>
+          <div class="game-tile p-6">
+            <p class="text-3xl font-extrabold text-sage stat-number mb-1">56%</p>
+            <h3 class="font-bold text-navy mb-2">Of the goal falls in the last 4 moves</h3>
+            <p class="text-xs text-slate leading-relaxed">The ice counter sat at 16 for 24 of my 26 moves. Four-fifths of the level is excavation with almost nothing to show, then an avalanche.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h3 class="font-bold text-navy mb-3">What I think is strong</h3>
+            <ul class="space-y-2 text-sm text-slate leading-relaxed list-disc pl-5">
+              <li>The board writes its own solution order: ivy, sapphire, crystals, ice, read top to bottom around the C.</li>
+              <li>The hardest constraint (colour-matching beside a specific cabinet) arrives last, when the board is most open and special pieces are plentiful.</li>
+            </ul>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h3 class="font-bold text-navy mb-3">What I think is weak</h3>
+            <ul class="space-y-2 text-sm text-slate leading-relaxed list-disc pl-5">
+              <li>Variance decided the ending: an unplanned Powerball cascade dropped crystals from 10 to 2 in one move. I cleared it first try with 9 moves spare and no boosters, and I&rsquo;m not confident that was repeatable.</li>
+              <li>The &ldquo;Hard&rdquo; label doesn&rsquo;t mean much here or anywhere else in the first 100 levels.</li>
+            </ul>
+          </div>
+        </div>
+        <div class="insight-card bg-white rounded-r-xl p-6 shadow-sm">
+          <p class="text-sm text-slate leading-relaxed"><strong class="text-navy">What I think the designer was solving:</strong> test Crystals without turning them into a colour-matching drill. Four cabinets in the open would reduce to &ldquo;make green matches next to the blue box&rdquo; sixteen times. Burying them turns a repetitive requirement into a paced spatial problem. The ice underneath isn&rsquo;t a fourth objective so much as a receipt: it can only be completed if the other three were done in the right order.</p>
+        </div>
+      </section>
+
+      <!-- Section 6: TEMPEST -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">06</span>
+          <h2 class="text-2xl font-extrabold text-navy">A New Villain: TEMPEST &amp; the BOLT Obstacle</h2>
+        </div>
+        <div class="insight-card bg-white rounded-r-xl p-6 shadow-sm mb-6">
+          <p class="text-sm text-slate leading-relaxed"><strong class="text-navy">The gap:</strong> All four existing bosses attack either the number of goals or the player&rsquo;s resources. <strong class="text-navy">Nothing attacks the board.</strong> Every one of the 18 obstacles acts inside its own cell. TEMPEST attacks the player&rsquo;s information about their <em>next</em> move.</p>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy text-lg mb-2">TEMPEST, the villain</h3>
+            <p class="text-sm text-slate leading-relaxed">An old pig in a white-and-gold wizard&rsquo;s robe who <strong class="text-navy">stirs the board every 5 moves</strong>, reshuffling loose tiles and dropping 3 new BOLTs. The orb on his staff lights up one move before each storm, so the warning lives on the character.</p>
+          </div>
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy text-lg mb-2">BOLT, the obstacle</h3>
+            <p class="text-sm text-slate leading-relaxed">A lightning bolt inside a storm cloud. One adjacent match breaks it: no layers, no colour rule, the most familiar verb in the game. Like Sphere at level 5, the object is easy on purpose, so the only new thing to learn is the storm.</p>
+          </div>
+        </div>
+        <h3 class="font-bold text-navy mb-3">Five rules so the stir reads as &ldquo;adapt&rdquo;, not &ldquo;bad luck&rdquo;</h3>
+        <div class="overflow-x-auto bg-white rounded-xl shadow-sm mb-6">
+          <table class="prose-table">
+            <tbody>
+              <tr><td class="font-semibold whitespace-nowrap">Tile restriction</td><td>Only loose coloured tiles shuffle; obstacles and boosters stay put, or a layered board becomes unreadable.</td></tr>
+              <tr><td class="font-semibold whitespace-nowrap">Fair board state</td><td>A stir can never produce free matches. Otherwise the boss would sometimes hand out gifts.</td></tr>
+              <tr><td class="font-semibold whitespace-nowrap">One-move warning</td><td>The staff glows on the 4th move. You can&rsquo;t adapt to what you can&rsquo;t see; the warning turns randomness into a deadline.</td></tr>
+              <tr><td class="font-semibold whitespace-nowrap">BOLT drop rules</td><td>3 BOLTs land after each shuffle, spaced apart, in visible spots. No clustering.</td></tr>
+              <tr><td class="font-semibold whitespace-nowrap">Cap</td><td>Above a ceiling the storm still comes but drops nothing. The exact number is a tuning question I&rsquo;d leave to live data.</td></tr>
+            </tbody>
+          </table>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h3 class="font-bold text-navy mb-2">The tutorial level</h3>
+            <p class="text-sm text-slate leading-relaxed">It reuses Level 5&rsquo;s outline but inverts the field: 16 BOLTs instead of 34 Spheres, so 33 of 49 cells are free instead of 15, because open space is the material a stir works on. Goal: 20 BOLTs in 25 moves, no other obstacles. The storm counter only starts after the first moves have taught what a BOLT is.</p>
+          </div>
+          <div class="bg-white rounded-xl p-6 shadow-sm">
+            <h3 class="font-bold text-navy mb-2">What I&rsquo;m not sure about</h3>
+            <p class="text-sm text-slate leading-relaxed">The right cap. Whether a stir belongs on layered boards at all (I&rsquo;d keep TEMPEST off Ice, Crystals and Sapphire levels). And fatigue: the stir is the biggest visual event in the game, and a player who stops reading a board that keeps being rewritten is the failure mode.</p>
+          </div>
+        </div>
+      </section>
+
+      <!-- Section 7: Teardown -->
+      <section class="fade-up">
+        <div class="flex items-center gap-3 mb-6">
+          <span class="text-xs font-mono font-medium text-coral bg-coral/10 px-3 py-1 rounded-full">07</span>
+          <h2 class="text-2xl font-extrabold text-navy">Beyond the Case: Economy &amp; Monetization Teardown</h2>
+        </div>
+        <p class="text-slate leading-relaxed mb-6">
+          Alongside the case I wrote an outside-in product teardown from playing through level 374, covering the core loop, the dice economy and the offer ladder. A few findings:
+        </p>
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
+          <div class="game-tile p-6">
+            <p class="text-3xl font-extrabold text-coral stat-number mb-1">77%</p>
+            <h3 class="font-bold text-navy mb-2">Of dice come from 4 levels in 10</h3>
+            <p class="text-xs text-slate leading-relaxed">20 of the 26 dice a cycle pays come from the multiplier levels, the ones most likely to make you fail. Difficulty spike, dice payday and the 900-coin continue offer are the same moment.</p>
+          </div>
+          <div class="game-tile p-6">
+            <p class="text-3xl font-extrabold text-navy stat-number mb-1">900 / 1,000</p>
+            <h3 class="font-bold text-navy mb-2">Continue vs. cheapest coin pack</h3>
+            <p class="text-xs text-slate leading-relaxed">The ₺99.99 pack buys exactly one continue and strands 100 coins. At ~30 coins per level, one continue is about 30 levels of grinding.</p>
+          </div>
+          <div class="game-tile p-6">
+            <p class="text-3xl font-extrabold text-sage stat-number mb-1">~8&times;</p>
+            <h3 class="font-bold text-navy mb-2">Dice Rain vs. shop dice</h3>
+            <p class="text-xs text-slate leading-relaxed">The shop sells dice at ₺3.33 each; the triggered Dice Rain offer at ₺0.43. The standing pack exists mainly as the anchor that makes the offer look extraordinary.</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy text-lg mb-2">Proposal: a bounded revenge loop</h3>
+            <p class="text-sm text-slate leading-relaxed mb-3">Players get attacked by real players but can&rsquo;t strike back, so an attack feels like pure loss. A &ldquo;recent attackers&rdquo; list with one free counter-strike per attack, expiring in 24 hours, turns an anonymous loss into a named reason to open the notification. It reuses the existing attack minigame.</p>
+            <p class="text-xs text-slate"><strong class="text-navy">Metrics:</strong> sessions from attack notifications, revenge usage, D7. <strong class="text-navy">Guardrail:</strong> churn among frequently attacked low-level players.</p>
+          </div>
+          <div class="game-tile p-6">
+            <h3 class="font-bold text-navy text-lg mb-2">Proposal: a procedurally generated second mode</h3>
+            <p class="text-sm text-slate leading-relaxed mb-3">Dice, events and streaks are all fed by hand-authored match-3 levels, the studio&rsquo;s most expensive content. A sliding-block mode can be generated and difficulty-graded algorithmically, minting dice at a controlled rate and giving players who hit the content ceiling somewhere to go.</p>
+            <p class="text-xs text-slate"><strong class="text-navy">Metrics:</strong> share of dice from the new mode, ceiling-cohort retention, cost per retained day. <strong class="text-navy">Guardrail:</strong> time in the main track.</p>
+          </div>
+        </div>
+
+        <div class="mt-12 mb-4 flex flex-col items-center gap-3">
+          <span class="text-[15px] font-mono text-slate/40 tracking-wider">thanks to</span>
+          <a href="https://cypherdgames.com" target="_blank" class="grayscale opacity-40 hover:grayscale-0 hover:opacity-100 transition-all duration-500">
+            <img src="assets/img/cypher-logo.png" alt="Cypher Games" class="h-10 md:h-12 object-contain">
+          </a>
+        </div>
+      </section>
+
+      <!-- Bottom Next / Prev Navigation -->
+      <section class="pt-10 border-t border-border flex flex-col sm:flex-row items-center justify-between gap-6 fade-up">
+        <a href="case-study-2.html" class="text-sm font-semibold text-slate hover:text-navy transition-colors inline-flex items-center gap-2">
+          &larr; Previous: Retention &amp; A/B Test Metrics
+        </a>
+        <a href="case-study-4.html" class="game-tile px-6 py-3 text-sm font-semibold text-coral hover:text-navy transition-colors inline-flex items-center gap-2">
+          Next: Growth Case: LTV, Breakeven &amp; Ad Creatives &rarr;
+        </a>
+      </section>
+
+    </div>
+  </article>
+
+  <!-- CTA -->
+  <section class="pb-20">
+    <div class="max-w-3xl mx-auto px-6 text-center fade-up">
+      <h2 class="text-2xl md:text-3xl font-extrabold">Interested in working together?</h2>
+      <p class="mt-4 text-slate">I&rsquo;m looking for PM internship opportunities where I can learn fast and contribute from day one.</p>
+      <div class="mt-8 flex flex-wrap justify-center gap-4">
+        <a href="mailto:ekinciiezgi02@gmail.com" class="game-tile pink inline-flex items-center gap-2.5 px-6 py-3.5 font-semibold text-sm">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/></svg>
+          <span>Get in Touch</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="border-t border-border py-8">
+    <div class="max-w-6xl mx-auto px-6 flex flex-col sm:flex-row items-center justify-between gap-4">
+      <p class="text-xs text-slate font-mono">Designed by Ezgi Ekinci</p>
+      <a href="#" class="text-xs text-slate hover:text-navy transition-colors font-mono">Back to top &uarr;</a>
+    </div>
+  </footer>
+
+  <script>
+    // Attempts per level, from my level log (match_squad_case_log.xlsx)
+    (function() {
+      const ATTEMPTS = [1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 2, 1, 2, 3, 3, 1, 1, 1, 1, 1, 1, 2, 3, 1, 1, 1, 5, 2, 4, 1, 2, 1, 6, 4, 1, 1, 2, 1, 3, 1, 1, 2, 2, 10, 1, 1, 1, 1, 1, 1, 1, 6, 3, 4, 1];
+      const svg = document.getElementById('attempts-chart');
+      if (!svg) return;
+      const NS = 'http://www.w3.org/2000/svg';
+      const left = 28, top = 10, w = 760, h = 150, step = w / ATTEMPTS.length, unit = h / 10;
+      const label = { 'font-size': 11, fill: '#7C6F9B', 'font-family': 'JetBrains Mono, monospace' };
+      function el(tag, attrs, text) {
+        const n = document.createElementNS(NS, tag);
+        for (const k in attrs) n.setAttribute(k, attrs[k]);
+        if (text !== undefined) n.textContent = text;
+        svg.appendChild(n);
+      }
+      [1, 5, 10].forEach(v => {
+        const y = top + h - v * unit;
+        el('line', { x1: left, x2: left + w, y1: y, y2: y, stroke: '#D4B8FF', 'stroke-width': 1, 'stroke-dasharray': '2 4' });
+        el('text', Object.assign({ x: left - 8, y: y + 4, 'text-anchor': 'end' }, label), v);
+      });
+      ATTEMPTS.forEach((a, i) => {
+        const color = a >= 4 ? '#FF4D8D' : a >= 2 ? '#9B6BFF' : '#D4B8FF';
+        el('rect', { x: left + i * step + 1, y: top + h - a * unit, width: step - 2, height: a * unit, rx: 1.5, fill: color });
+      });
+      el('line', { x1: left + 50 * step, x2: left + 50 * step, y1: top, y2: top + h, stroke: '#1A0A2E', 'stroke-opacity': 0.25 });
+      el('text', Object.assign({ x: left + 25 * step, y: top + 14, 'text-anchor': 'middle' }, label), 'avg 1.10');
+      el('text', Object.assign({ x: left + 75 * step, y: top + 14, 'text-anchor': 'middle' }, label), 'avg 2.00');
+      [1, 25, 50, 75, 100].forEach(l => {
+        el('text', Object.assign({ x: left + (l - 0.5) * step, y: top + h + 18, 'text-anchor': 'middle' }, label), 'L' + l);
+      });
+    })();
+
+    const navbar = document.getElementById('navbar');
+    const navLogo = document.getElementById('nav-logo');
+    const heroSection = document.querySelector('section');
+    window.addEventListener('scroll', () => {
+      const heroBottom = heroSection ? heroSection.offsetTop + heroSection.offsetHeight : 300;
+      if (window.scrollY > heroBottom - 80) {
+        navbar.classList.remove('nav-dark');
+        navbar.classList.add('bg-cream/90', 'nav-blur', 'shadow-sm');
+        navLogo.classList.add('logo-collapsed');
+      } else {
+        navbar.classList.add('nav-dark');
+        navbar.classList.remove('bg-cream/90', 'nav-blur', 'shadow-sm');
+        if (window.scrollY > 40) {
+          navLogo.classList.add('logo-collapsed');
+        } else {
+          navLogo.classList.remove('logo-collapsed');
+        }
+      }
+    });
+    const menuBtn = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    const bar1 = document.getElementById('bar1');
+    const bar2 = document.getElementById('bar2');
+    const bar3 = document.getElementById('bar3');
+    menuBtn.addEventListener('click', () => {
+      mobileMenu.classList.toggle('hidden');
+      bar1.classList.toggle('rotate-45');
+      bar1.classList.toggle('translate-y-2');
+      bar2.classList.toggle('opacity-0');
+      bar3.classList.toggle('-rotate-45');
+      bar3.classList.toggle('-translate-y-2');
+    });
+    mobileMenu.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => {
+        mobileMenu.classList.add('hidden');
+        bar1.classList.remove('rotate-45', 'translate-y-2');
+        bar2.classList.remove('opacity-0');
+        bar3.classList.remove('-rotate-45', '-translate-y-2');
+      });
+    });
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.fade-up').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
